@@ -1,7 +1,8 @@
 package com.example.weatherapp.WeatherModel
 
+import com.example.weatherapp.ForcastModel.City
 import com.google.gson.annotations.SerializedName
-
+import com.example.weatherapp.ForcastModel.List
 
 data class Forcast (
 

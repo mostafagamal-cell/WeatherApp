@@ -65,9 +65,8 @@ dependencies {
 
     // Saved state module for ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.savedstate)
-
-    // Annotation processor
     kapt(libs.androidx.lifecycle.compiler)
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
