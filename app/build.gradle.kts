@@ -59,7 +59,8 @@ dependencies {
     implementation(libs.retrofit)
     implementation (libs.threetenabp)
 
-    implementation ("org.osmdroid:osmdroid-android:6.1.21-SNAPSHOT")
+    implementation ("org.osmdroid:osmdroid-android:6.1.14")
+
 
     // ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
