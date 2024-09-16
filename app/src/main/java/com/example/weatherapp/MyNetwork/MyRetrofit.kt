@@ -4,7 +4,6 @@ import com.example.weatherapp.ApiKey
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -18,7 +17,7 @@ interface Iweather
     fun getWeatherByCity(@Query("q") city: String, @Query("apiKey") apiKey: String= ApiKey): Call<ResponseBody>
     @GET("forecast")
     fun getForecastByCity(
-        @Query("id") cityId: Int,
+        @Query("q") city: String,
         @Query("appid") apiKey: String= ApiKey
     ): Call<ResponseBody>
 }

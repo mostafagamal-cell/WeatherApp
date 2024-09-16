@@ -57,6 +57,9 @@ dependencies {
     implementation(libs.androidx.navigation.ui)
     implementation(libs.gson)
     implementation(libs.retrofit)
+    implementation (libs.threetenabp)
+
+    implementation ("org.osmdroid:osmdroid-android:6.1.21-SNAPSHOT")
 
     // ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
@@ -72,6 +75,7 @@ dependencies {
     // Saved state module for ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.savedstate)
     kapt(libs.androidx.lifecycle.compiler)
+    implementation ("com.github.bumptech.glide:glide:4.16.0")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
