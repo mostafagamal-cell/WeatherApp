@@ -4,7 +4,6 @@ import com.google.gson.annotations.SerializedName
 
 
 data class Main (
-
   @SerializedName("temp"       ) var temp      : Double? = null,
   @SerializedName("feels_like" ) var feelsLike : Double? = null,
   @SerializedName("temp_min"   ) var tempMin   : Double? = null,
@@ -14,5 +13,4 @@ data class Main (
   @SerializedName("grnd_level" ) var grndLevel : Int?    = null,
   @SerializedName("humidity"   ) var humidity  : Int?    = null,
   @SerializedName("temp_kf"    ) var tempKf    : Double? = null
-
 )

@@ -9,7 +9,7 @@ class RemoteDataSource(val api: Iweather) {
     fun getWeather(city:String): Response<ResponseBody> {
        return api.getWeatherByCity("cairo").execute()
     }
-    fun getForecast(cityId:Int): Response<ResponseBody> {
-        return api.getForecastByCity(cityId).execute()
+    fun getForecast(cityName:String): Response<ResponseBody> {
+        return api.getForecastByCity(cityName).execute()
     }
 }

@@ -1,12 +1,12 @@
 package com.example.weatherapp.ForcastModel
 
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
 
 data class City (
-
   @SerializedName("id"         ) var id         : Int?    = null,
-  @SerializedName("name"       ) var name       : String? = null,
+  @SerializedName("name"       ) var name       : String="" ,
   @SerializedName("coord"      ) var coord      : Coord?  = null,
   @SerializedName("country"    ) var country    : String? = null,
   @SerializedName("population" ) var population : Int?    = null,
