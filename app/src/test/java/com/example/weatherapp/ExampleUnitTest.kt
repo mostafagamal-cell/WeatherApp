@@ -29,16 +29,12 @@ class ExampleUnitTest {
         val d = Instant.now() // Current UTC time
         val e = API.getWeatherByCity("Moscow", ApiKey).execute()
 
-// Retrieve the timezone offset from the API response
         val timezoneOffsetInSeconds = e.body()?.timezone ?: 0
 
-// Adjusting the time to the correct timezone
         val adjustedTime = d.plusSeconds(timezoneOffsetInSeconds.toLong())
 
-// Convert the adjusted time to LocalDateTime
         val nd = LocalDateTime.ofInstant(adjustedTime, ZoneId.ofOffset("UTC", ZoneOffset.ofTotalSeconds(timezoneOffsetInSeconds)))
 
-// Format or use the LocalDateTime object as needed
         println(nd.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
         try {
             println(e.body())

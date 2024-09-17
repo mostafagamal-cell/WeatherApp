@@ -61,6 +61,7 @@ dependencies {
 
     implementation ("org.osmdroid:osmdroid-android:6.1.14")
     implementation("androidx.room:room-ktx:$room_version")
+    implementation ("com.google.android.gms:play-services-location:19.0.1")
 
 
     // ViewModel

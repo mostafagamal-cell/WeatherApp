@@ -8,10 +8,10 @@ import retrofit2.Response
 
 class RemoteDataSource(val api: Iweather) {
 
-    fun getWeather(city:String): Response<ExampleJson2KtKotlin> {
+    suspend fun getWeather(city:String): Response<ExampleJson2KtKotlin> {
        return api.getWeatherByCity("cairo").execute()
     }
-    fun getForecast(cityName:String): Response<Forcast> {
+    suspend fun getForecast(cityName:String): Response<Forcast> {
         return api.getForecastByCity(cityName).execute()
     }
 }
