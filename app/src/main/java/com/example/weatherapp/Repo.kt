@@ -8,32 +8,28 @@ import com.example.weatherapp.ForecastDatabase.ForecastDataBase
 import com.example.weatherapp.WeatherModel.ExampleJson2KtKotlin
 import java.io.IOError
 
-class Repo(val localDataSource: LocalDataSource ,val remoteDataSource: RemoteDataSource) {
+class Repo(val localDataSource: LocalDataSource
+,val remoteDataSource: RemoteDataSource) {
     suspend fun getWeather(city:String): ExampleJson2KtKotlin {
         try {
             val e = remoteDataSource.getWeather(city)
-            if (e.code()==200) {
+            if (e.isSuccessful) {
                 localDataSource.insertWeather(e.body()!!)
-            }else if (e.code()==401 ){
-                throw Exception("Key is Invalid")
             }
+            return localDataSource.getWeather(city)
         }catch (e:IOError){
-
+            throw e
         }
-        return localDataSource.getWeather(city)
     }
     suspend fun getForecast(cityName:String):Forcast{
         try {
             val e = remoteDataSource.getForecast(cityName)
-            if (e.isSuccessful) {
-                localDataSource.insertForecast(e.body()!!)
-            }else{
-                throw Exception(e.message())
-            }
-        }catch (e:Exception){
-
+            localDataSource.insertForecast(e.body()!!)
+            return localDataSource.getForecast(cityName)
+        }catch (e:IOError){
+            throw e
         }
-        return localDataSource.getForecast(cityName)
+
     }
     suspend fun getFavorite():List<ExampleJson2KtKotlin>{
         return localDataSource.getFavorite()

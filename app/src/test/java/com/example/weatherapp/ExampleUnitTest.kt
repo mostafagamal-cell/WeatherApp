@@ -1,27 +1,34 @@
 package com.example.weatherapp
 
-import android.util.Log
-import com.example.weatherapp.ForcastModel.Forcast
-import com.example.weatherapp.MyNetwork.API
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import org.junit.Test
+import android.app.Application
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.LargeTest
 
-import org.junit.Assert.*
+import com.example.weatherapp.DataSource.LocalDataSource
+import com.example.weatherapp.DataSource.RemoteDataSource
+import com.example.weatherapp.ForecastDatabase.ForecastDataBase
+import com.example.weatherapp.MyNetwork.API
+import kotlinx.coroutines.runBlocking
+import org.junit.Test
+import org.junit.runner.RunWith
+
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
-import java.time.ZoneOffset.UTC
 import java.time.format.DateTimeFormatter
-import java.util.Date
+
 
 /**
  * Example local unit test, which will execute on the development machine (host).
  *
  * See [testing documentation](http://d.android.com/tools/testing).
  */
-class ExampleUnitTest {
+@RunWith(AndroidJUnit4::class)
+
+ class ExampleUnitTest {
     @Test
     fun addition_isCorrect() {
 
@@ -42,5 +49,14 @@ class ExampleUnitTest {
         println(e.message)
         }
         val x=0
+    }
+    @Test
+     fun gettext()= runBlocking {
+        val context= ApplicationProvider.getApplicationContext<Context>() as Application
+        val db= ForecastDataBase.getDatabase(context)
+        val repo=Repo(LocalDataSource(db.yourDao()), RemoteDataSource(API))
+        val data= repo.getWeather("cairo")
+        println(data)
+
     }
 }

@@ -42,6 +42,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.junit.ktx)
+    testImplementation(libs.androidx.runner)
     val room_version = "2.6.1"
 
     implementation("androidx.room:room-runtime:$room_version")
@@ -88,4 +90,38 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+
+
+        val androidXTestVersion="1.6.1"
+        val testRulesVersion="1.6.1"
+        val testJunitVersion="1.1.5"
+       val testRunnerVersion="1.6.1"
+       val espressoVersion= "3.6.1"
+       val  truthVersion= "1.5.0"
+        // Core library
+        androidTestImplementation("androidx.test:core:$androidXTestVersion")
+
+        // AndroidJUnitRunner and JUnit Rules
+        androidTestImplementation("androidx.test:runner:$testRunnerVersion")
+        androidTestImplementation("androidx.test:rules:$testRulesVersion")
+
+        // Assertions
+        androidTestImplementation("androidx.test.ext:junit:$testJunitVersion")
+        androidTestImplementation("androidx.test.ext:truth:$truthVersion")
+
+        // Espresso dependencies
+        androidTestImplementation( "androidx.test.espresso:espresso-core:$espressoVersion")
+        androidTestImplementation( "androidx.test.espresso:espresso-contrib:$espressoVersion")
+        androidTestImplementation( "androidx.test.espresso:espresso-intents:$espressoVersion")
+        androidTestImplementation( "androidx.test.espresso:espresso-accessibility:$espressoVersion")
+        androidTestImplementation( "androidx.test.espresso:espresso-web:$espressoVersion")
+        androidTestImplementation( "androidx.test.espresso.idling:idling-concurrent:$espressoVersion")
+
+        // The following Espresso dependency can be either "implementation",
+        // or "androidTestImplementation", depending on whether you want the
+        // dependency to appear on your APK"s compile classpath or the test APK
+        // classpath.
+        androidTestImplementation( "androidx.test.espresso:espresso-idling-resource:$espressoVersion")
+
 }
