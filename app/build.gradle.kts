@@ -43,6 +43,7 @@ android {
 
 dependencies {
     implementation(libs.androidx.junit.ktx)
+    implementation(libs.core.ktx)
     testImplementation(libs.androidx.runner)
     val room_version = "2.6.1"
 
@@ -81,6 +82,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.savedstate)
     kapt(libs.androidx.lifecycle.compiler)
     implementation (libs.glide)
+    testImplementation ("org.robolectric:robolectric:4.10.3")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

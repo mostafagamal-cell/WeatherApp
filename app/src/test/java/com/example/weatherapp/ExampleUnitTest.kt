@@ -2,18 +2,26 @@ package com.example.weatherapp
 
 import android.app.Application
 import android.content.Context
+import androidx.lifecycle.ViewModelProvider
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.LargeTest
-
+import androidx.test.runner.AndroidJUnitRunner
 import com.example.weatherapp.DataSource.LocalDataSource
 import com.example.weatherapp.DataSource.RemoteDataSource
 import com.example.weatherapp.ForecastDatabase.ForecastDataBase
 import com.example.weatherapp.MyNetwork.API
-import kotlinx.coroutines.runBlocking
-import org.junit.Test
-import org.junit.runner.RunWith
 
+import org.junit.Test
+
+import org.junit.Assert.*
+
+import getOrAwaitValue
+import kotlinx.coroutines.runBlocking
+import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.CoreMatchers.not
+import org.hamcrest.CoreMatchers.nullValue
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -27,11 +35,9 @@ import java.time.format.DateTimeFormatter
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 @RunWith(AndroidJUnit4::class)
-
  class ExampleUnitTest {
     @Test
     fun addition_isCorrect() {
-
 
         val d = Instant.now() // Current UTC time
         val e = API.getWeatherByCity("Moscow", ApiKey).execute()
