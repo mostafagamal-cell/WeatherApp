@@ -18,7 +18,7 @@ class LocalDataSource(val dataBase: ForecastDao) {
     suspend fun getFavorite(): List<ExampleJson2KtKotlin> {
         return dataBase.getfavorite()
     }
-    suspend fun insertWeather(weather: ExampleJson2KtKotlin) {
+    suspend fun insertWeather(weather: ExampleJson2KtKotlin):Long {
         return dataBase.insert(weather)
     }
     suspend fun getWeather(cityName: String): ExampleJson2KtKotlin {

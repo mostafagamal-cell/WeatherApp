@@ -13,10 +13,9 @@ class Repo(val localDataSource: LocalDataSource
     suspend fun getWeather(city:String): ExampleJson2KtKotlin {
         try {
             val e = remoteDataSource.getWeather(city)
-            if (e.isSuccessful) {
-                localDataSource.insertWeather(e.body()!!)
-            }
-            return localDataSource.getWeather(city)
+             val se=  localDataSource.insertWeather(e.body()!!)
+             println(se)
+             return localDataSource.getWeather(city)
         }catch (e:IOError){
             throw e
         }

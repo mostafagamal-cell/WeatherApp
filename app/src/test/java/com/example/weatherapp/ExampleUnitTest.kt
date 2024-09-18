@@ -61,7 +61,7 @@ import java.time.format.DateTimeFormatter
         val context= ApplicationProvider.getApplicationContext<Context>() as Application
         val db= ForecastDataBase.getDatabase(context)
         val repo=Repo(LocalDataSource(db.yourDao()), RemoteDataSource(API))
-        val data= repo.getWeather("cairo")
+        val data= repo.getWeather("Cairo")
         println(data)
 
     }

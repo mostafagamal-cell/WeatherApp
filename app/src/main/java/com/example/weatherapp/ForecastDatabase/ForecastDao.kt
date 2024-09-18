@@ -29,7 +29,7 @@ interface ForecastDao {
     @Query("SELECT * FROM myweather where isFavorite=1")
     suspend fun getfavorite(): List<ExampleJson2KtKotlin>
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(weather: ExampleJson2KtKotlin)
+    suspend fun insert(weather: ExampleJson2KtKotlin):Long
     @Query("SELECT * FROM myweather where name=:myname")
     suspend fun getWeather(myname: String):ExampleJson2KtKotlin
     @Delete
