@@ -11,9 +11,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 const val url = "https://api.openweathermap.org/data/2.5/"
-
 val retro = Retrofit.Builder().addConverterFactory(GsonConverterFactory.create()).baseUrl(url).build()
-
 interface Iweather
 {
     @GET("weather")

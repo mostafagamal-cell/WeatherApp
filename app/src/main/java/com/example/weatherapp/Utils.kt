@@ -8,3 +8,10 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.util.Calendar
+
+enum class States {
+    NONE,
+    Loading,
+    Success,
+    Error
+}

@@ -6,16 +6,24 @@ import androidx.core.content.edit
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.weatherapp.DataSource.LocalDataSource
+import com.example.weatherapp.DataSource.RemoteDataSource
 import com.example.weatherapp.ForcastModel.Forcast
 import com.example.weatherapp.Repo
+import com.example.weatherapp.States
 import com.example.weatherapp.WeatherModel.ExampleJson2KtKotlin
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
-
-class MyViewModel(val repo:Repo,val sharedpref:SharedPreferences): ViewModel() {
+class MyViewModelFac(val localDataSource: LocalDataSource, val remoteDataSource: RemoteDataSource) : ViewModelProvider.Factory{
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return MyViewModel(Repo(localDataSource,remoteDataSource)) as T
+    }
+}
+class MyViewModel(val repo:Repo): ViewModel() {
 
     private val _state=MutableLiveData<States>()
     val stateLiveData:LiveData<States>
@@ -78,10 +86,4 @@ class MyViewModel(val repo:Repo,val sharedpref:SharedPreferences): ViewModel() {
             _state.value = States.Success
         }
     }
-}
-enum class States{
-    NONE,
-    Loading,
-    Success,
-    Error
 }

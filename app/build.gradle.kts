@@ -44,6 +44,7 @@ android {
 dependencies {
     implementation(libs.androidx.junit.ktx)
     implementation(libs.core.ktx)
+    implementation(libs.androidx.swiperefreshlayout)
     testImplementation(libs.androidx.runner)
     val room_version = "2.6.1"
 
@@ -111,6 +112,7 @@ dependencies {
         // Assertions
         androidTestImplementation("androidx.test.ext:junit:$testJunitVersion")
         androidTestImplementation("androidx.test.ext:truth:$truthVersion")
+
 
         // Espresso dependencies
         androidTestImplementation( "androidx.test.espresso:espresso-core:$espressoVersion")
