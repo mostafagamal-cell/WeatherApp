@@ -25,10 +25,21 @@ class Repo(val localDataSource: LocalDataSource
         try {
             val e = remoteDataSource.getForecast(cityName,"en")
             val d=  remoteDataSource.getForecast(cityName,"ar")
-            e.body()?.lang="en"
-            d.body()?.lang="ar"
-            localDataSource.insertForecast(d.body()!!)
-            localDataSource.insertForecast(e.body()!!)
+            if (e.isSuccessful){
+                e.body()?.lang="en"
+                e.body()?.cityName=cityName
+                if (e.body()!=null&&e.body()?.list!=null && e.body()?.list?.size!=0){
+                    localDataSource.insertForecast(e.body()!!)
+                }
+                localDataSource.insertForecast(e.body()!!)
+            }
+            if (d.isSuccessful) {
+                d.body()?.lang = "ar"
+                d.body()?.cityName = cityName
+                if (d.body()!=null&&d.body()?.list!=null && d.body()?.list?.size!=0){
+                    localDataSource.insertForecast(d.body()!!)
+                }
+            }
             return localDataSource.getForecast(cityName)
         }catch (e:IOError){
             throw e
