@@ -35,8 +35,6 @@ interface ForecastDao {
     @Delete
     suspend fun deleteAll(weather: ExampleJson2KtKotlin)
 
-
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAlerm(weather: MyAlerts)
     @Query("SELECT * FROM Alerts")

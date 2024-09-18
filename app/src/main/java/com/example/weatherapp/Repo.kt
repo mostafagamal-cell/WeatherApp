@@ -65,4 +65,14 @@ class Repo(val localDataSource: LocalDataSource ,val remoteDataSource: RemoteDat
     suspend fun getAlert(id:Int):MyAlerts{
         return localDataSource.getAlert(id)
     }
+    suspend fun deleteForecast(forecast: Forcast){
+        localDataSource.deleteForecast(forecast)
+    }
+    suspend fun addForecast(forecast: Forcast){
+        localDataSource.insertForecast(forecast)
+    }
+    suspend fun getForecast(forecast: Forcast):Forcast{
+        return localDataSource.getForecast(forecast.city.name)
+    }
+
 }

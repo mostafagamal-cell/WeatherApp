@@ -1,6 +1,8 @@
 package com.example.weatherapp.myViewModel
 
+import android.content.SharedPreferences
 import android.location.Geocoder
+import androidx.core.content.edit
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,7 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 
-class MyViewModel(val repo:Repo): ViewModel() {
+class MyViewModel(val repo:Repo,val sharedpref:SharedPreferences): ViewModel() {
 
     private val _state=MutableLiveData<States>()
     val stateLiveData:LiveData<States>
@@ -24,6 +26,10 @@ class MyViewModel(val repo:Repo): ViewModel() {
         get() = _forecast
     private val _weather = MutableLiveData<ExampleJson2KtKotlin>()
     private val _forecast = MutableLiveData<Forcast>()
+
+    private val _allWeather = MutableLiveData<List<ExampleJson2KtKotlin>>()
+    val allWeather: LiveData<List<ExampleJson2KtKotlin>>
+        get() = _allWeather
     fun getWeather(city:String){
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -39,8 +45,8 @@ class MyViewModel(val repo:Repo): ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
              _state.value = States.Loading
-            _forecast.value = repo.getForecast(cityName)
-            _state.value = States.Success
+             _forecast.value = repo.getForecast(cityName)
+             _state.value = States.Success
            }catch (e:Exception){
                _state.value = States.Error
             }
@@ -49,26 +55,32 @@ class MyViewModel(val repo:Repo): ViewModel() {
     fun addFavorite(name:String){
         viewModelScope.launch(Dispatchers.IO) {
             repo.addFavorite(name)
+            getFavorites()
         }
     }
     fun deleteFavorite(name:String){
         viewModelScope.launch(Dispatchers.IO) {
             repo.deleteFavorite(name)
+            getFavorites()
         }
     }
-    private val _allWeather = MutableLiveData<List<ExampleJson2KtKotlin>>()
-    val allWeather: LiveData<List<ExampleJson2KtKotlin>>
-        get() = _allWeather
-
-    fun getFavorite(){
+    fun getFavorites(){
         viewModelScope.launch(Dispatchers.IO) {
             _state.value = States.Loading
             _allWeather.value = repo.getFavorite()
             _state.value = States.Success
         }
     }
+    fun getMyWeather(){
+        viewModelScope.launch(Dispatchers.IO) {
+            _state.value = States.Loading
+            _allWeather.value = repo.getAllWeather()
+            _state.value = States.Success
+        }
+    }
 }
 enum class States{
+    NONE,
     Loading,
     Success,
     Error
