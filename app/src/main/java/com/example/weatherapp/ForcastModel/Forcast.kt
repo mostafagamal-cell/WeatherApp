@@ -7,12 +7,13 @@ import com.google.gson.annotations.SerializedName
 import com.example.weatherapp.ForcastModel.List
 @Entity(tableName = "forecast")
 data class Forcast (
+  var lang:String,
   @SerializedName("cod"     ) val cod     : String,
   @SerializedName("message" ) val message : Int,
   @SerializedName("cnt"     ) val cnt     : Int,
   @SerializedName("list"    ) val list    : ArrayList<List>,
   @SerializedName("city"    ) val city    : City,
-  @PrimaryKey
-  val cityName: String = city.name
-
+  var cityName: String = city.name,
+  @PrimaryKey(autoGenerate = true)
+  val id:Int
 )

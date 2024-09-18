@@ -15,10 +15,11 @@ val retro = Retrofit.Builder().addConverterFactory(GsonConverterFactory.create()
 interface Iweather
 {
     @GET("weather")
-    fun getWeatherByCity(@Query("q") city: String, @Query("apiKey") apiKey: String= ApiKey): Call<ExampleJson2KtKotlin>
+    fun getWeatherByCity(@Query("q") city: String,@Query("lang") lang: String="en" ,@Query("apiKey") apiKey: String= ApiKey): Call<ExampleJson2KtKotlin>
     @GET("forecast")
     fun getForecastByCity(
         @Query("q") city: String,
+        @Query("lang") lang: String="en",
         @Query("appid") apiKey: String= ApiKey
     ): Call<Forcast>
 }

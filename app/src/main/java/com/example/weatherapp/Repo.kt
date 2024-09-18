@@ -12,9 +12,10 @@ class Repo(val localDataSource: LocalDataSource
 ,val remoteDataSource: RemoteDataSource) {
     suspend fun getWeather(city:String): ExampleJson2KtKotlin {
         try {
-            val e = remoteDataSource.getWeather(city)
-             val se=  localDataSource.insertWeather(e.body()!!)
-             println(se)
+             val e = remoteDataSource.getWeather(city,"en")
+             val d=  remoteDataSource.getWeather(city,"ar")
+             localDataSource.insertWeather(e.body()!!)
+             localDataSource.insertWeather(d.body()!!)
              return localDataSource.getWeather(city)
         }catch (e:IOError){
             throw e
@@ -22,7 +23,11 @@ class Repo(val localDataSource: LocalDataSource
     }
     suspend fun getForecast(cityName:String):Forcast{
         try {
-            val e = remoteDataSource.getForecast(cityName)
+            val e = remoteDataSource.getForecast(cityName,"en")
+            val d=  remoteDataSource.getForecast(cityName,"ar")
+            e.body()?.lang="en"
+            d.body()?.lang="ar"
+            localDataSource.insertForecast(d.body()!!)
             localDataSource.insertForecast(e.body()!!)
             return localDataSource.getForecast(cityName)
         }catch (e:IOError){

@@ -34,7 +34,7 @@ import java.time.format.DateTimeFormatter
  *
  * See [testing documentation](http://d.android.com/tools/testing).
  */
-@RunWith(AndroidJUnit4::class)
+@RunWith(RobolectricTestRunner::class)
  class ExampleUnitTest {
     @Test
     fun addition_isCorrect() {
@@ -61,7 +61,9 @@ import java.time.format.DateTimeFormatter
         val context= ApplicationProvider.getApplicationContext<Context>() as Application
         val db= ForecastDataBase.getDatabase(context)
         val repo=Repo(LocalDataSource(db.yourDao()), RemoteDataSource(API))
-        val data= repo.getWeather("Cairo")
+        repo.getWeather("Cairo")
+
+        val data=  repo.getWeather("القاهرة")
         println(data)
 
     }

@@ -113,7 +113,7 @@ dependencies {
         androidTestImplementation("androidx.test.ext:junit:$testJunitVersion")
         androidTestImplementation("androidx.test.ext:truth:$truthVersion")
 
-
+            testImplementation ("org.robolectric:robolectric:4.10.3")
         // Espresso dependencies
         androidTestImplementation( "androidx.test.espresso:espresso-core:$espressoVersion")
         androidTestImplementation( "androidx.test.espresso:espresso-contrib:$espressoVersion")
