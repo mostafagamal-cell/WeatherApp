@@ -10,11 +10,25 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import com.bumptech.glide.util.Util
 import com.example.weatherapp.R
 import com.example.weatherapp.databinding.FragmentSettingsBinding
 
 import com.example.weatherapp.*
 
+ enum class consts{
+    ar,
+    en,
+    C,
+    K,
+    F,
+    MS,
+    MH,
+    enable,
+    disable,
+    GPS,
+    Map
+}
 
 class SettingsFragment : Fragment() {
    lateinit var db:FragmentSettingsBinding
@@ -26,104 +40,95 @@ class SettingsFragment : Fragment() {
         db= FragmentSettingsBinding.inflate(layoutInflater)
         return db.root
     }
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
 
-    }
+
     private fun setup() {
         val pref = requireActivity().getSharedPreferences(settings, Context.MODE_PRIVATE)
-        val mode = pref.getInt(mode, 1)
-        val unite = pref.getInt(units, 1)
-        val mylanguage = pref.getInt(language, 1)
-        val myspeed=pref.getInt(speed,1)
-        val mynotification = pref.getInt(notification, 1)
-        if (myspeed==1){
+        val mymode = pref.getInt(mode, consts.Map.ordinal)
+        val myunite = pref.getInt(units, consts.C.ordinal)
+        val mylanguage = pref.getInt(language, consts.en.ordinal)
+        val myspeed=pref.getInt(speed,consts.MS.ordinal)
+        val mynotification = pref.getInt(notification, consts.enable.ordinal)
+        if (myspeed==consts.MS.ordinal){
             db.MS.isChecked=true
         }else{
             db.MH.isChecked=true
         }
-        if (mynotification == 1) {
+        if (mynotification == consts.enable.ordinal) {
             db.enablenf.isChecked = true
         } else {
             db.disablenf.isChecked = true
         }
-        if (mode == 1) {
-            if (checkpermessions()){
+        if (mymode == consts.GPS.ordinal &&checkpermessions()) {
                 db.GPSrdb.isChecked = true
-            }
         } else {
             db.Map.isChecked = true
         }
-        if (mylanguage == 1) {
+        if (mylanguage == consts.en.ordinal) {
             db.Englishrdb.isChecked = true
         } else {
             db.arabicrdb.isChecked = true
         }
-        if (unite == 1) {
+        if (myunite == consts.C.ordinal) {
             db.Crdb.isChecked = true
-        } else if (unite == 2) {
+        } else if (myunite == consts.K.ordinal) {
             db.Krdb.isChecked = true
         } else {
             db.Frdb.isChecked = true
         }
         db.SpeenUnits.setOnCheckedChangeListener { e, c ->
-
             if (db.MS.isChecked) {
-                pref.edit().putInt(speed, 1).apply()
+                pref.edit().putInt(speed, consts.MS.ordinal).apply()
             }
             if (db.MH.isChecked) {
-                pref.edit().putInt(speed, 2).apply()
+                pref.edit().putInt(speed, consts.MH.ordinal).apply()
             }
         }
         db.notification.setOnCheckedChangeListener { e, c ->
             if (db.enablenf.isChecked) {
-                pref.edit().putInt(notification, 1).apply()
+                pref.edit().putInt(notification, consts.enable.ordinal).apply()
             }
             if (db.disablenf.isChecked) {
-                pref.edit().putInt(notification, 2).apply()
+                pref.edit().putInt(notification, consts.disable.ordinal).apply()
             }
         }
         db.languge.setOnCheckedChangeListener { e, c ->
             if (db.Englishrdb.isChecked) {
-                pref.edit().putInt(language, 1).apply()
+                pref.edit().putInt(language, consts.en.ordinal).apply()
             }
             if (db.arabicrdb.isChecked) {
-                pref.edit().putInt(language, 2).apply()
+                pref.edit().putInt(language, consts.ar.ordinal).apply()
             }
         }
 
         db.enablenf.setOnCheckedChangeListener { e, c ->
             if (db.enablenf.isChecked) {
-                pref.edit().putInt(notification, 1).apply()
+                pref.edit().putInt(notification, consts.enable.ordinal).apply()
             }
             if (db.disablenf.isChecked) {
-                pref.edit().putInt(notification, 2).apply()
+                pref.edit().putInt(notification, consts.disable.ordinal).apply()
             }
         }
 
         db.Temp.setOnCheckedChangeListener { e, c ->
             if (db.Crdb.isChecked) {
-                pref.edit().putInt(units, 1).apply()
+                pref.edit().putInt(units, consts.C.ordinal).apply()
             }
             if (db.Krdb.isChecked) {
-                pref.edit().putInt(units, 2).apply()
+                pref.edit().putInt(units, consts.K.ordinal).apply()
             }
             if(db.Frdb.isChecked) {
-                pref.edit().putInt(units, 3).apply()
+                pref.edit().putInt(units, consts.F.ordinal).apply()
             }
         }
 
         db.mode.setOnCheckedChangeListener{ e,c->
             if (db.GPSrdb.isChecked){
-                pref.edit().putInt("mode",1).apply()
-                if (!checkpermessions()){
-                    startGPS()
-                }else{
-                    Toast.makeText(this.requireContext(),"ok",Toast.LENGTH_SHORT).show()
-                }
+                startGPS()
+                pref.edit().putInt(mode,consts.GPS.ordinal).apply()
             }
             if (db.Map.isChecked){
-                pref.edit().putInt("mode",2).apply()
+                pref.edit().putInt(mode,consts.Map.ordinal).apply()
             }
         }
 
@@ -133,9 +138,6 @@ class SettingsFragment : Fragment() {
         setup()
     }
 
-    override fun onPause() {
-        super.onPause()
-    }
     val per=arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION
     ,android.Manifest.permission.ACCESS_COARSE_LOCATION
     ,android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
@@ -155,9 +157,9 @@ class SettingsFragment : Fragment() {
                requestPermessions()
            }
            .setNegativeButton(this.getString(R.string.cancel)) { e, c ->
+               db.Map.isChecked=true
                e.dismiss()
-           }
-           .create().show()
+           }.create().show()
    }
 
     override fun onRequestPermissionsResult(
@@ -169,8 +171,9 @@ class SettingsFragment : Fragment() {
         if (requestCode==req){
             val t=PackageManager.PERMISSION_GRANTED
             if (grantResults[0]==t){
-                Toast.makeText(this.requireContext(),"ok", Toast.LENGTH_SHORT).show()
+                db.GPSrdb.isChecked=true
             }else{
+                db.Map.isChecked=true
                 val Snak=AlertDialog.Builder(this.requireContext())
                     .setMessage(this.getString(R.string.faild_GPS_permissions))
                     .setPositiveButton(R.string.ok){e,c->

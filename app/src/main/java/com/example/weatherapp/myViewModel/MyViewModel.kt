@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.weatherapp.AppViews.consts
 import com.example.weatherapp.DataSource.LocalDataSource
 import com.example.weatherapp.DataSource.RemoteDataSource
 import com.example.weatherapp.ForcastModel.Forcast
@@ -20,7 +21,7 @@ import kotlinx.coroutines.withContext
 import retrofit2.Response
 class MyViewModelFac(val localDataSource: LocalDataSource, val remoteDataSource: RemoteDataSource) : ViewModelProvider.Factory{
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return MyViewModel(Repo(localDataSource,remoteDataSource)) as T
+        return MyViewModel(Repo.getInstance(localDataSource,remoteDataSource)) as T
     }
 }
 class MyViewModel(val repo:Repo): ViewModel() {
@@ -42,7 +43,9 @@ class MyViewModel(val repo:Repo): ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 _state.value = States.Loading
-                _weather.value = repo.getWeather(city)
+                repo.getWeather(city,consts.ar.ordinal).collect {
+                    _weather.value = it
+                }
                 _state.value = States.Success
             }catch (e:Exception){
                 _state.value = States.Error

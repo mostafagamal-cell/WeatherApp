@@ -9,6 +9,7 @@ import com.example.weatherapp.Alerts.MyAlerts
 import com.example.weatherapp.ForcastModel.Forcast
 import com.example.weatherapp.WeatherModel.ExampleJson2KtKotlin
 import com.example.weatherapp.WeatherModel.Weather
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ForecastDao {
@@ -30,8 +31,8 @@ interface ForecastDao {
     suspend fun getfavorite(): List<ExampleJson2KtKotlin>
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(weather: ExampleJson2KtKotlin):Long
-    @Query("SELECT * FROM myweather where name=:myname")
-    suspend fun getWeather(myname: String):ExampleJson2KtKotlin
+    @Query("SELECT * FROM myweather where name=:myname and language=:lang")
+     fun getWeather(myname: String,lang:Int): Flow<ExampleJson2KtKotlin>
     @Delete
     suspend fun deleteAll(weather: ExampleJson2KtKotlin)
 

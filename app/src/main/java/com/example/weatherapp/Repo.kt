@@ -1,23 +1,45 @@
 package com.example.weatherapp
 
 import com.example.weatherapp.Alerts.MyAlerts
+import com.example.weatherapp.AppViews.consts
 import com.example.weatherapp.DataSource.LocalDataSource
 import com.example.weatherapp.DataSource.RemoteDataSource
 import com.example.weatherapp.ForcastModel.Forcast
 import com.example.weatherapp.ForecastDatabase.ForecastDataBase
 import com.example.weatherapp.WeatherModel.ExampleJson2KtKotlin
+import kotlinx.coroutines.flow.Flow
 import java.io.IOError
+import java.io.IOException
+import java.lang.NullPointerException
+import java.net.UnknownHostException
 
-class Repo(val localDataSource: LocalDataSource
-,val remoteDataSource: RemoteDataSource) {
-    suspend fun getWeather(city:String): ExampleJson2KtKotlin {
+class Repo private constructor(
+    private val localDataSource: LocalDataSource
+    , private val remoteDataSource: RemoteDataSource) {
+    companion object {
+        private var instance: Repo? = null
+        fun getInstance(localDataSource: LocalDataSource, remoteDataSource: RemoteDataSource): Repo {
+            return instance ?: Repo(localDataSource, remoteDataSource)
+        }
+    }
+    suspend fun getWeather(city:String,ze:Int): Flow<ExampleJson2KtKotlin> {
         try {
              val e = remoteDataSource.getWeather(city,"en")
              val d=  remoteDataSource.getWeather(city,"ar")
+             if (e.code()==404){
+                 throw NullPointerException("no data found for that location")
+             }
+             if (e.code()==401){
+                throw NullPointerException("key is not vaild")
+             }
+             e.body()?.language= consts.en.ordinal
+             d.body()?.language= consts.ar.ordinal
              localDataSource.insertWeather(e.body()!!)
              localDataSource.insertWeather(d.body()!!)
-             return localDataSource.getWeather(city)
-        }catch (e:IOError){
+             return localDataSource.getWeather(city,ze)
+        }catch (e: UnknownHostException){
+            throw e
+        }catch (e:IOException){
             throw e
         }
     }

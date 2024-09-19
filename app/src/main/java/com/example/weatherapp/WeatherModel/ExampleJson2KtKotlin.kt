@@ -5,6 +5,7 @@ import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
+import org.intellij.lang.annotations.Language
 import java.io.Serializable
 
 @Entity(tableName = "myweather")
@@ -20,6 +21,7 @@ data class ExampleJson2KtKotlin (
   @SerializedName("sys"        ) var sys        : Sys?               = Sys(),
   @SerializedName("timezone"   ) var timezone   : Int?               = null,
   @SerializedName("id"         ) var id         : Int?               = null,
+  var language:Int,
   @PrimaryKey
   @SerializedName("name"       ) var name       : String,
   @SerializedName("cod"        ) var cod        : Int?               = null,

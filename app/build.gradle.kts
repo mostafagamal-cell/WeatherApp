@@ -93,7 +93,9 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
+    testImplementation ("androidx.test:core:1.6.1") // from 1.4.0
+    testImplementation ("androidx.arch.core:core-testing:2.2.0") // from 2.1.0
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3") // from 1.3.0
 
 
         val androidXTestVersion="1.6.1"

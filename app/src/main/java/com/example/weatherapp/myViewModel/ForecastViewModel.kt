@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 
 class ForecastViewModelFac(val localDataSource: LocalDataSource, val remoteDataSource: RemoteDataSource) : ViewModelProvider.Factory{
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return MyViewModel(Repo(localDataSource,remoteDataSource)) as T
+        return MyViewModel(Repo.getInstance(localDataSource,remoteDataSource)) as T
     }
 }
 class ForecastViewModel(val repo: Repo):ViewModel() {

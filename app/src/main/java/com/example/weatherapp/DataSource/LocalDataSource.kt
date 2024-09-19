@@ -4,6 +4,7 @@ import com.example.weatherapp.Alerts.MyAlerts
 import com.example.weatherapp.ForcastModel.Forcast
 import com.example.weatherapp.ForecastDatabase.ForecastDao
 import com.example.weatherapp.WeatherModel.ExampleJson2KtKotlin
+import kotlinx.coroutines.flow.Flow
 
 class LocalDataSource(val dataBase: ForecastDao) {
    suspend fun insertForecast(forecast: Forcast) {
@@ -21,8 +22,8 @@ class LocalDataSource(val dataBase: ForecastDao) {
     suspend fun insertWeather(weather: ExampleJson2KtKotlin):Long {
         return dataBase.insert(weather)
     }
-    suspend fun getWeather(cityName: String): ExampleJson2KtKotlin {
-        return dataBase.getWeather(cityName)
+    suspend fun getWeather(cityName: String,e:Int): Flow<ExampleJson2KtKotlin> {
+        return dataBase.getWeather(cityName,e)
     }
     suspend fun deleteWeather(weather: ExampleJson2KtKotlin) {
         return dataBase.deleteAll(weather)

@@ -17,8 +17,5 @@ class StartFragment : Fragment() {
        db=FragmentStartBinding.inflate(layoutInflater)
         return db.root
     }
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-    }
 
 }
