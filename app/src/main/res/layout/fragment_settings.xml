@@ -10,7 +10,7 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView99"
-        android:layout_width="155dp"
+        android:layout_width="125dp"
         android:layout_height="wrap_content"
         android:elevation="0dp"
         app:cardBackgroundColor="@android:color/transparent"
@@ -54,20 +54,22 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
 
+        android:layout_marginTop="16dp"
         android:layout_marginBottom="24dp"
         android:background="@android:color/transparent"
         android:gravity="center"
         android:text="@string/temp"
         android:textColor="@color/black"
-        android:textSize="24sp"
+        android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/cardView5"
         app:layout_constraintEnd_toEndOf="@+id/cardView5"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/cardView5" />
+        app:layout_constraintStart_toStartOf="@+id/cardView5"
+        app:layout_constraintTop_toBottomOf="@+id/cardView2" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView5"
-        android:layout_width="155dp"
+        android:layout_width="125dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         app:cardBackgroundColor="@android:color/transparent"
@@ -104,6 +106,7 @@
                 android:gravity="start|center"
                 android:text="@string/K"
                 android:textColor="@color/black" />
+
             <RadioButton
                 android:id="@+id/Frdb"
                 android:layout_width="match_parent"
@@ -118,7 +121,7 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView3"
 
-        android:layout_width="155dp"
+        android:layout_width="125dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="24dp"
         android:elevation="0dp"
@@ -139,7 +142,7 @@
             android:orientation="vertical">
 
             <RadioButton
-                android:id="@+id/radioButton6"
+                android:id="@+id/MS"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -149,7 +152,7 @@
                 android:textColor="@color/black" />
 
             <RadioButton
-                android:id="@+id/radioButton7"
+                android:id="@+id/MH"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -170,7 +173,7 @@
         android:gravity="center"
         android:text="@string/location"
         android:textColor="@color/black"
-        android:textSize="24sp"
+        android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/cardView2"
         app:layout_constraintEnd_toEndOf="@+id/cardView2"
         app:layout_constraintHorizontal_bias="0.0"
@@ -178,14 +181,13 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView2"
-        android:layout_width="155dp"
+        android:layout_width="125dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
         app:cardBackgroundColor="@android:color/transparent"
         app:cardCornerRadius="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/cardView3"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardView"
@@ -277,7 +279,7 @@
         android:gravity="center"
         android:text="@string/lang"
         android:textColor="@color/black"
-        android:textSize="24sp"
+        android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/cardView"
         app:layout_constraintEnd_toEndOf="@+id/cardView"
         app:layout_constraintHorizontal_bias="0.0"
@@ -292,7 +294,7 @@
         android:text="@string/Wind_Speed"
         android:textColor="@color/black"
         android:textColorLink="@color/black"
-        android:textSize="24sp"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@+id/textView3"
         app:layout_constraintEnd_toEndOf="@+id/cardView3"
         app:layout_constraintStart_toStartOf="@+id/cardView3"
@@ -303,7 +305,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:textColor="@color/black"
-        android:textSize="24sp"
+        android:textSize="20sp"
         android:text="@string/notif"
         app:layout_constraintBottom_toBottomOf="@+id/textView8"
         app:layout_constraintEnd_toEndOf="@+id/cardView99"
