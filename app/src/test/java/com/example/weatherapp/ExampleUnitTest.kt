@@ -64,6 +64,7 @@ import java.time.format.DateTimeFormatter
         repo.getWeather("Cairo")
 
         val data=  repo.getWeather("القاهرة")
+        assertThat(data.name, `is`("القاهرة"))
         println(data)
 
     }

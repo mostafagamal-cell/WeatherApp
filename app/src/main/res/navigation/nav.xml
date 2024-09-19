@@ -8,25 +8,25 @@
     <fragment
         android:id="@+id/startFragment"
         android:name="com.example.weatherapp.AppViews.StartFragment"
-        android:label="StartFragment" />
+        android:label="@string/home" />
     <fragment
         android:id="@+id/alarmsFragment"
         android:name="com.example.weatherapp.AppViews.AlarmsFragment"
-        android:label="fragment_alarms"
+        android:label="@string/alarms"
         tools:layout="@layout/fragment_alarms" />
     <fragment
         android:id="@+id/favFragment"
         android:name="com.example.weatherapp.AppViews.FavFragment"
-        android:label="fragment_fav"
+        android:label="@string/favourits"
         tools:layout="@layout/fragment_fav" />
     <fragment
         android:id="@+id/mapFragment"
         android:name="com.example.weatherapp.AppViews.MapFragment"
-        android:label="fragment_map"
+        android:label="@string/Map"
         tools:layout="@layout/fragment_map" />
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.example.weatherapp.AppViews.SettingsFragment"
-        android:label="fragment_settings"
+        android:label="@string/Settings"
         tools:layout="@layout/fragment_settings" />
 </navigation>

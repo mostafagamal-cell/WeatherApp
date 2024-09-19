@@ -13,7 +13,6 @@ data class Forcast (
   @SerializedName("cnt"     ) val cnt     : Int,
   @SerializedName("list"    ) val list    : ArrayList<List>,
   @SerializedName("city"    ) val city    : City,
+  @PrimaryKey
   var cityName: String = city.name,
-  @PrimaryKey(autoGenerate = true)
-  val id:Int
 )

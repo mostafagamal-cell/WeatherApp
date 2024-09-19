@@ -19,8 +19,7 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class MapFragment : Fragment() {
-      lateinit var db: FragmentMapBinding
-
+    lateinit var db: FragmentMapBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
