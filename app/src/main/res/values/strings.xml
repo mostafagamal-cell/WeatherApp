@@ -55,4 +55,7 @@
     <string name="faild_GPS_permissions">failed to get  GPS permissions</string>
     <string name="please_Give_GPS_permissions">please Give us GPS permissions</string>
     <string name="cloud">"cloud "</string>
+    <string name="windspeed">wind speed</string>
+    <string name="speed">speed</string>
+    <string name="visibility">visibility</string>
 </resources>
