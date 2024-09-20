@@ -16,6 +16,7 @@ import com.example.weatherapp.longite
 import com.example.weatherapp.map
 import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapEventsReceiver
+import org.osmdroid.util.BoundingBox
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.MapEventsOverlay
@@ -39,8 +40,17 @@ class MapFragment : Fragment() {
         val sharedPreferences = requireContext().getSharedPreferences(map, Context.MODE_PRIVATE)
         Configuration.getInstance().load(requireContext(), sharedPreferences)
         mymap = db.map
-        mymap.setTileSource(org.osmdroid.tileprovider.tilesource.TileSourceFactory.HIKEBIKEMAP)
+        if (marker==null){
+            set_invis(db.floatingActionButton2)
+            set_invis(db.floatingActionButton3)
+        }
+        mymap.setScrollableAreaLimitDouble(BoundingBox(85.0, 180.0, -85.0, -180.0))
+        mymap.maxZoomLevel = 20.0;
+        mymap.minZoomLevel = 3.0;
+        mymap.setTileSource(org.osmdroid.tileprovider.tilesource.TileSourceFactory.DEFAULT_TILE_SOURCE)
         mymap.setMultiTouchControls(true)
+        mymap.isHorizontalMapRepetitionEnabled = false
+        mymap.isVerticalMapRepetitionEnabled = false
         val startPoint = GeoPoint(48.8583, 2.2944)
         mymap.controller.setZoom(15.0)
         mymap.controller.setCenter(startPoint)
@@ -82,7 +92,7 @@ class MapFragment : Fragment() {
            editor.putFloat(lat,mylat!!)
            editor.putFloat(longite,mylong!!)
            editor.apply()
-           findNavController().navigateUp()
+           findNavController().popBackStack()
        }
        db.floatingActionButton3.setOnClickListener {
             set_invis(db.floatingActionButton2)
