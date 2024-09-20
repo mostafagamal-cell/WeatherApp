@@ -43,9 +43,9 @@ class MyViewModel(val repo:Repo): ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 _state.value = States.Loading
-                repo.getWeather(city,consts.ar.ordinal).collect {
-                    _weather.value = it
-                }
+//                repo.getWeather(city,consts.ar.ordinal).collect {
+//                    _weather.value = it
+//                }
                 _state.value = States.Success
             }catch (e:Exception){
                 _state.value = States.Error

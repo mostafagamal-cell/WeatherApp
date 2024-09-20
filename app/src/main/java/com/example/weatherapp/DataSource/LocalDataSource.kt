@@ -22,8 +22,11 @@ class LocalDataSource(val dataBase: ForecastDao) {
     suspend fun insertWeather(weather: ExampleJson2KtKotlin):Long {
         return dataBase.insert(weather)
     }
-    suspend fun getWeather(cityName: String,e:Int): Flow<ExampleJson2KtKotlin> {
+     fun getWeather(cityName: Int,e:Int): Flow<ExampleJson2KtKotlin> {
         return dataBase.getWeather(cityName,e)
+    }
+    fun getWeather(cityName: String): Flow<ExampleJson2KtKotlin> {
+        return dataBase.getWeather(cityName)
     }
     suspend fun deleteWeather(weather: ExampleJson2KtKotlin) {
         return dataBase.deleteAll(weather)
@@ -31,7 +34,7 @@ class LocalDataSource(val dataBase: ForecastDao) {
     suspend fun getAlerts(): List<MyAlerts> {
         return dataBase.getAlerts()
     }
-    suspend fun addAlert(weather: MyAlerts) {
+    suspend fun addAlert(weather: MyAlerts):Long {
         return dataBase.addAlerm(weather)
     }
     suspend fun deleteAlert(weather: MyAlerts) {

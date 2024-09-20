@@ -5,10 +5,10 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "Alerts")
 data class MyAlerts(
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     var id: Int=0,
     var type: Int,
-    var start:String,
-    var end:String,
+    var start:Long,
+    var end:Long,
     var city:String,
     )

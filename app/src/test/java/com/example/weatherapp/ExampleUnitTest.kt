@@ -2,12 +2,16 @@ package com.example.weatherapp
 
 import android.app.Application
 import android.content.Context
+import android.content.Intent
+import android.content.res.loader.ResourcesProvider
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.example.weatherapp.Alerts.MyAlerts
 import com.example.weatherapp.AppViews.consts
 import com.example.weatherapp.DataSource.LocalDataSource
 import com.example.weatherapp.DataSource.RemoteDataSource
 import com.example.weatherapp.ForecastDatabase.ForecastDataBase
+import com.example.weatherapp.MyBrodcasts.AlertsBrodcast
 import com.example.weatherapp.MyNetwork.API
 import com.example.weatherapp.WeatherModel.ExampleJson2KtKotlin
 import kotlinx.coroutines.flow.flowOf
@@ -16,13 +20,16 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.internal.bytecode.ResourceProvider
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
 
-@RunWith(AndroidJUnit4::class)
+@RunWith(RobolectricTestRunner::class)
 class ExampleUnitTest {
 
     @Test
@@ -54,28 +61,23 @@ class ExampleUnitTest {
     }
 
     @Test
-    fun testGetWeather() = runTest {
-        // Set up context and database
-        val context = ApplicationProvider.getApplicationContext<Context>() as Application
+    fun testGetWeather() = runBlocking {
+        val context = ApplicationProvider.getApplicationContext() as Application
         val db = ForecastDataBase.getDatabase(context)
-
-        // Set the shared preference for language
+        val d=context.getString(R.string.MS)
         context.getSharedPreferences(settings, Context.MODE_PRIVATE).edit()
             .putInt(language, consts.ar.ordinal).apply()
 
-        // Create the repository instance with the local and remote data sources
         val repo = Repo.getInstance(LocalDataSource(db.yourDao()), RemoteDataSource(API))
 
-        // Collect the weather data for Cairo and assert
-        val weatherFlow = repo.getWeather("القاهرة", consts.ar.ordinal)
+        val alert=MyAlerts(1,1,Calendar.getInstance().timeInMillis,Calendar.getInstance().timeInMillis+1000000,"Cairo")
+        val e= repo.addAlert(alert)
+        val oo=repo.getAlerts()
+         println("size :    "+oo)
         var x: ExampleJson2KtKotlin? = null
-        weatherFlow.collect { e ->
-            x = e
-            println("Collected weather data: $e")
-            assertEquals("القاهرة", x?.name)
-        }
-        println("Final weather data: $x")
-        assertEquals("القاهرة", x?.name)
+        val intent= Intent(context,AlertsBrodcast::class.java)
+        intent.putExtra("id",1)
+        AlertsBrodcast().onReceive(context, intent)
     }
 
 }

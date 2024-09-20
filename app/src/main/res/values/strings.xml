@@ -50,7 +50,9 @@
     <string name="Settings">Settings</string>
     <string name="Location">Location</string>
     <string name="Map">Map</string>
+    <string name="expire">there is no internet connection to check</string>
     <string name="request_GPS_permissions">request GPS permissions</string>
     <string name="faild_GPS_permissions">failed to get  GPS permissions</string>
     <string name="please_Give_GPS_permissions">please Give us GPS permissions</string>
+    <string name="cloud">"cloud "</string>
 </resources>

@@ -31,13 +31,19 @@ interface ForecastDao {
     suspend fun getfavorite(): List<ExampleJson2KtKotlin>
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(weather: ExampleJson2KtKotlin):Long
-    @Query("SELECT * FROM myweather where name=:myname and language=:lang")
-     fun getWeather(myname: String,lang:Int): Flow<ExampleJson2KtKotlin>
+
+
+    @Query("SELECT * FROM myweather where id=:myname and language=:lang")
+    fun getWeather(myname: Int,lang:Int): Flow<ExampleJson2KtKotlin>
+
+    @Query("SELECT * FROM myweather where name=:myname")
+    fun getWeather(myname: String): Flow<ExampleJson2KtKotlin>
+
     @Delete
     suspend fun deleteAll(weather: ExampleJson2KtKotlin)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addAlerm(weather: MyAlerts)
+    suspend fun addAlerm(weather: MyAlerts):Long
     @Query("SELECT * FROM Alerts")
     suspend fun getAlerts(): List<MyAlerts>
     @Delete

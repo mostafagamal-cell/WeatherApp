@@ -8,6 +8,7 @@ import com.example.weatherapp.ForcastModel.Forcast
 import com.example.weatherapp.ForecastDatabase.ForecastDataBase
 import com.example.weatherapp.WeatherModel.ExampleJson2KtKotlin
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.runBlocking
 import java.io.IOError
 import java.io.IOException
 import java.lang.NullPointerException
@@ -22,7 +23,10 @@ class Repo private constructor(
             return instance ?: Repo(localDataSource, remoteDataSource)
         }
     }
-    suspend fun getWeather(city:String,ze:Int): Flow<ExampleJson2KtKotlin> {
+    fun getWeather(cityName: Int,lang:Int): Flow<ExampleJson2KtKotlin> {
+        return localDataSource.getWeather(cityName,lang)
+    }
+       fun getWeather(city:String): Flow<ExampleJson2KtKotlin> = runBlocking{
         try {
              val e = remoteDataSource.getWeather(city,"en")
              val d=  remoteDataSource.getWeather(city,"ar")
@@ -32,11 +36,13 @@ class Repo private constructor(
              if (e.code()==401){
                 throw NullPointerException("key is not vaild")
              }
-             e.body()?.language= consts.en.ordinal
-             d.body()?.language= consts.ar.ordinal
-             localDataSource.insertWeather(e.body()!!)
-             localDataSource.insertWeather(d.body()!!)
-             return localDataSource.getWeather(city,ze)
+             val m=consts.en.ordinal
+             val m2=consts.ar.ordinal
+             e.body()?.language= m
+             d.body()?.language= m2
+             val y= localDataSource.insertWeather(e.body()!!)
+             val x= localDataSource.insertWeather(d.body()!!)
+            return@runBlocking localDataSource.getWeather(city)
         }catch (e: UnknownHostException){
             throw e
         }catch (e:IOException){
@@ -86,8 +92,8 @@ class Repo private constructor(
     suspend fun deleteWeather(weather: ExampleJson2KtKotlin){
         localDataSource.deleteWeather(weather)
     }
-    suspend fun addAlert(myAlerts: MyAlerts){
-        localDataSource.addAlert(myAlerts)
+    suspend fun addAlert(myAlerts: MyAlerts):Long{
+       return localDataSource.addAlert(myAlerts)
     }
     suspend fun deleteAlert(myAlerts: MyAlerts){
         localDataSource.deleteAlert(myAlerts)

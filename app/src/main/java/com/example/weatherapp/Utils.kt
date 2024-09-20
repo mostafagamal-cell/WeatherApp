@@ -37,13 +37,19 @@ const val settings="settings"
 const val nextid="nextid"
 const val lat="latitude"
 const val longite="longitude"
-fun createAlarm(context: Context,city:String, startDate:Long, endDate:Long){
-    val id= context.getSharedPreferences(nextid,Context.MODE_PRIVATE).getInt("id",0)
+fun createAlarm(context: Context, startDate:Long){
+    var id= context.getSharedPreferences(nextid,Context.MODE_PRIVATE).getInt("id",0)
     val alarm=context.getSystemService(android.app.AlarmManager::class.java) as AlarmManager
     val intent= Intent(context,AlertsBrodcast::class.java)
-    val now=Calendar.getInstance().timeInMillis
     intent.putExtra("id",id)
     val pendingIntent = PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+    id++
+    //not to over flow
+
+    if (id>=Int.MAX_VALUE){
+        id=0
+    }
+    id++
     context.getSharedPreferences(nextid,Context.MODE_PRIVATE).edit().putInt("id",id+1).apply()
     alarm.set(AlarmManager.RTC_WAKEUP, startDate, pendingIntent)
 }
