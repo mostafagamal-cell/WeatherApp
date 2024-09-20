@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:clickable="true"
         android:focusable="true"
+        android:backgroundTint="#FD0002"
         android:src="@drawable/baseline_close_24"
         app:layout_constraintBottom_toBottomOf="@+id/floatingActionButton2"
         app:layout_constraintEnd_toStartOf="@+id/floatingActionButton2"
@@ -22,7 +23,7 @@
         android:id="@+id/floatingActionButton2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/white"
+        android:backgroundTint="#3BFD01"
         android:src="@drawable/baseline_check_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -32,6 +33,7 @@
         app:layout_constraintVertical_bias="0.90999997" />
 
     <org.osmdroid.views.MapView
+
         android:id="@+id/map"
         android:clickable="true"
         android:layout_width="0dp"
