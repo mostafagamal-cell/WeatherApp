@@ -17,5 +17,4 @@ class StartFragment : Fragment() {
        db=FragmentStartBinding.inflate(layoutInflater)
         return db.root
     }
-
 }
