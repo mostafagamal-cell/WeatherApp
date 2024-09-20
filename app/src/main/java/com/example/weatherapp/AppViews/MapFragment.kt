@@ -39,6 +39,7 @@ class MapFragment : Fragment() {
         val sharedPreferences = requireContext().getSharedPreferences(map, Context.MODE_PRIVATE)
         Configuration.getInstance().load(requireContext(), sharedPreferences)
         mymap = db.map
+        mymap.setTileSource(org.osmdroid.tileprovider.tilesource.TileSourceFactory.HIKEBIKEMAP)
         mymap.setMultiTouchControls(true)
         val startPoint = GeoPoint(48.8583, 2.2944)
         mymap.controller.setZoom(15.0)
