@@ -4,12 +4,17 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
+import android.content.DialogInterface
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.LocationManager
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.provider.Settings
+import android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.weatherapp.DataSource.LocalDataSource
 import com.example.weatherapp.DataSource.RemoteDataSource
@@ -40,8 +45,9 @@ class StartFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val pref = requireActivity().getSharedPreferences(TAG, Context.MODE_PRIVATE)
-        if (requireActivity().getSharedPreferences(TAG, MODE_PRIVATE).getBoolean("first", true)) {
+        val pref2 = requireActivity().getSharedPreferences(TAG, Context.MODE_PRIVATE)
+        if (pref2.getBoolean("first", true)) {
+            val pref = requireActivity().getSharedPreferences(settings, MODE_PRIVATE)
                 db.scrollView.visibility=View.INVISIBLE
                 Dialog(requireContext()).apply {
                     setContentView(mydb.root)
@@ -66,7 +72,7 @@ class StartFragment : Fragment() {
                     mydb.ok.setOnClickListener {
                         if (pref.contains(mode) && pref.contains(language)) {
                             db.scrollView.visibility=View.VISIBLE
-                            pref.edit().putBoolean("first", false).apply()
+                            pref2.edit().putBoolean("first", false).apply()
                             dismiss()
                         }
                     }
@@ -80,10 +86,47 @@ class StartFragment : Fragment() {
         return db.root
     }
     private  val TAG = "StartFragment"
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-          }
-    fun startGPS(){
+         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+          super.onViewCreated(view, savedInstanceState)
+
+         }
+
+    override fun onResume() {
+        super.onResume()
+        val pref = requireActivity().getSharedPreferences(settings, MODE_PRIVATE)
+        val e=pref.getInt(mode,consts.Map.ordinal)
+        if (e==consts.GPS.ordinal)
+        {
+            if (!checkpermessions()) {
+                startGPS()
+            }
+            val lm = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            var gps_enabled = false
+            var network_enabled = false
+            try {
+                gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER)
+            } catch (_: Exception) {
+            }
+
+            try {
+                network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+            } catch (_: Exception) {
+            }
+            if (!gps_enabled && !network_enabled) {
+                AlertDialog.Builder(context)
+                    .setMessage(R.string.expire)
+                    .setPositiveButton(R.string.open_location_settings
+                    ) { _, _ ->
+                        requireContext().startActivity(
+                            Intent(ACTION_LOCATION_SOURCE_SETTINGS)
+                        )
+                    }
+                    .setNegativeButton(R.string.cancel, null)
+                    .show()
+            }
+        }
+    }
+    private fun startGPS(){
         androidx.appcompat.app.AlertDialog.Builder(this.requireContext())
             .setTitle(this.getString(R.string.request_GPS_permissions))
             .setMessage(this.getString(R.string.please_Give_GPS_permissions))
@@ -108,9 +151,11 @@ class StartFragment : Fragment() {
             val t= PackageManager.PERMISSION_GRANTED
             if (grantResults[0]==t){
                 mydb.GPSrdb.isChecked=true
+                requireActivity().getSharedPreferences(settings, MODE_PRIVATE).edit().putInt(mode,consts.GPS.ordinal).apply()
             }else{
                 mydb.Maprdb.isChecked=true
-               androidx.appcompat.app.AlertDialog.Builder(this.requireContext())
+                requireActivity().getSharedPreferences(settings, MODE_PRIVATE).edit().putInt(mode,consts.Map.ordinal).apply()
+                androidx.appcompat.app.AlertDialog.Builder(this.requireContext())
                     .setMessage(this.getString(R.string.faild_GPS_permissions))
                     .setPositiveButton(R.string.ok){e,c->
                         e.dismiss()
