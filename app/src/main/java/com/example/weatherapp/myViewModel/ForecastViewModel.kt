@@ -24,11 +24,11 @@ class ForecastViewModel(val repo: Repo):ViewModel() {
     val forecast:MutableLiveData<Forcast>
         get()=_forecast
     val state: LiveData<States>get() = _state
-    fun getForecast(cityName:String){
+    fun getForecast(lat:Double,lon:Double){
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 _state.value = States.Loading
-                _forecast.value = repo.getForecast(cityName)
+                _forecast.value = repo.getForecast(lat,lon)
                 _state.value = States.Success
             }catch (e:Exception){
                 _state.value = States.Error

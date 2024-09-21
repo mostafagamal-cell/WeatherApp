@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -33,9 +34,9 @@ import java.util.Calendar
 class ExampleUnitTest {
 
     @Test
-    fun addition_isCorrect() {
+    fun addition_isCorrect()= runBlocking{
         val d = Instant.now() // Current UTC time
-        val e = API.getWeatherByCity("Moscow", ApiKey).execute()
+        val e = API.getWeatherByCity("Moscow", ApiKey)
 
         val timezoneOffsetInSeconds = e.body()?.timezone ?: 0
         val adjustedTime = d.plusSeconds(timezoneOffsetInSeconds.toLong())
@@ -64,7 +65,6 @@ class ExampleUnitTest {
     fun testGetWeather() = runBlocking {
         val context = ApplicationProvider.getApplicationContext() as Application
         val db = ForecastDataBase.getDatabase(context)
-        val d=context.getString(R.string.MS)
         context.getSharedPreferences(settings, Context.MODE_PRIVATE).edit()
             .putInt(language, consts.ar.ordinal).apply()
 
@@ -78,6 +78,18 @@ class ExampleUnitTest {
         val intent= Intent(context,AlertsBrodcast::class.java)
         intent.putExtra("id",1)
         AlertsBrodcast().onReceive(context, intent)
+    }
+    @Test
+    fun getForecast() = runBlocking {
+        val context = ApplicationProvider.getApplicationContext() as Application
+        val db = ForecastDataBase.getDatabase(context)
+        val repo = Repo.getInstance(LocalDataSource(db.yourDao()), RemoteDataSource(API))
+
+        val data=repo.getDailyForecast(30.0081,31.2357)
+       data.forEach {
+           println(it)
+       }
+        assertNotEquals(0,data.size)
     }
 
 }

@@ -1,5 +1,7 @@
 package com.example.weatherapp
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.example.weatherapp.Alerts.MyAlerts
 import com.example.weatherapp.AppViews.consts
 import com.example.weatherapp.DataSource.LocalDataSource
@@ -49,30 +51,38 @@ class Repo private constructor(
             throw e
         }
     }
-    suspend fun getForecast(cityName:String):Forcast{
+    suspend fun getForecast(lat:Double,lon:Double):Forcast{
         try {
-            val e = remoteDataSource.getForecast(cityName,"en")
-            val d=  remoteDataSource.getForecast(cityName,"ar")
+            val e = remoteDataSource.getForecast(lat,lon,"en")
+            val d=  remoteDataSource.getForecast(lat,lon,"ar")
             if (e.isSuccessful){
                 e.body()?.lang="en"
-                e.body()?.cityName=cityName
+                e.body()?.cityName= e.body()?.city?.name.toString()
+                e.body()?.lat=e.body()?.city?.coord?.lat!!
+                e.body()?.lon=e.body()?.city?.coord?.lon!!
                 if (e.body()!=null&&e.body()?.list!=null && e.body()?.list?.size!=0){
                     localDataSource.insertForecast(e.body()!!)
                 }
                 localDataSource.insertForecast(e.body()!!)
             }
             if (d.isSuccessful) {
+                d.body()?.lat=d.body()?.city?.coord?.lat!!
+                d.body()?.lon=d.body()?.city?.coord?.lon!!
                 d.body()?.lang = "ar"
-                d.body()?.cityName = cityName
+                d.body()?.cityName = d.body()?.city?.name.toString()
                 if (d.body()!=null&&d.body()?.list!=null && d.body()?.list?.size!=0){
                     localDataSource.insertForecast(d.body()!!)
                 }
             }
-            return localDataSource.getForecast(cityName)
+            return localDataSource.getForecast(lat,lon)
         }catch (e:IOError){
             throw e
         }
-
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    suspend fun getDailyForecast(lat:Double,lon:Double):List<com.example.weatherapp.ForcastModel.List>{
+        getForecast(lat,lon)
+        return localDataSource.day_forcast(lat,lon)
     }
     suspend fun getFavorite():List<ExampleJson2KtKotlin>{
         return localDataSource.getFavorite()
@@ -111,7 +121,7 @@ class Repo private constructor(
         localDataSource.insertForecast(forecast)
     }
     suspend fun getForecast(forecast: Forcast):Forcast{
-        return localDataSource.getForecast(forecast.city.name)
+        return localDataSource.getForecast(forecast.lat,forecast.lon)
     }
 
 }

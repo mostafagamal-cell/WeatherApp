@@ -15,4 +15,6 @@ data class Forcast (
   @SerializedName("city"    ) val city    : City,
   @PrimaryKey
   var cityName: String = city.name,
+  var lat:Double=city.coord?.lat!!,
+  var lon:Double=city.coord?.lon!!
 )

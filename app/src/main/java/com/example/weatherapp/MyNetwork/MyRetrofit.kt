@@ -5,6 +5,7 @@ import com.example.weatherapp.ForcastModel.Forcast
 import com.example.weatherapp.WeatherModel.ExampleJson2KtKotlin
 import okhttp3.ResponseBody
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -15,13 +16,18 @@ val retro = Retrofit.Builder().addConverterFactory(GsonConverterFactory.create()
 interface Iweather
 {
     @GET("weather")
-    fun getWeatherByCity(@Query("q") city: String,@Query("lang") lang: String="en" ,@Query("apiKey") apiKey: String= ApiKey): Call<ExampleJson2KtKotlin>
+    suspend fun getWeatherByCity(
+        @Query("q") city: String
+        ,@Query("lang") lang: String
+        ,@Query("apiKey") apiKey: String= ApiKey)
+        : Response<ExampleJson2KtKotlin>
     @GET("forecast")
-    fun getForecastByCity(
-        @Query("q") city: String,
-        @Query("lang") lang: String="en",
+    suspend fun getForecastByCity(
+        @Query("lat") lat: Double,
+        @Query("lon") lon: Double,
+        @Query("lang") lang: String,
         @Query("appid") apiKey: String= ApiKey
-    ): Call<Forcast>
+    ): Response<Forcast>
 }
 val API by lazy {
     retro.create(Iweather::class.java)

@@ -42,6 +42,7 @@ class SettingsFragment : Fragment() {
     }
 
 
+
     private fun setup() {
         val pref = requireActivity().getSharedPreferences(settings, Context.MODE_PRIVATE)
         val mymode = pref.getInt(mode, consts.Map.ordinal)
@@ -124,7 +125,10 @@ class SettingsFragment : Fragment() {
 
         db.mode.setOnCheckedChangeListener{ e,c->
             if (db.GPSrdb.isChecked){
-                startGPS()
+                if (!checkpermessions()) {
+                    startGPS()
+                    return@setOnCheckedChangeListener
+                }
                 pref.edit().putInt(mode,consts.GPS.ordinal).apply()
             }
             if (db.Map.isChecked){
@@ -138,7 +142,8 @@ class SettingsFragment : Fragment() {
         setup()
     }
 
-    val per=arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION
+    val per=arrayOf(
+        android.Manifest.permission.ACCESS_FINE_LOCATION
     ,android.Manifest.permission.ACCESS_COARSE_LOCATION
     ,android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
     ,android.Manifest.permission.SET_ALARM
@@ -168,12 +173,15 @@ class SettingsFragment : Fragment() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        val pref = requireActivity().getSharedPreferences(settings, Context.MODE_PRIVATE)
         if (requestCode==req){
             val t=PackageManager.PERMISSION_GRANTED
             if (grantResults[0]==t){
                 db.GPSrdb.isChecked=true
+                pref.edit().putInt(mode,consts.GPS.ordinal).apply()
             }else{
                 db.Map.isChecked=true
+                pref.edit().putInt(mode,consts.Map.ordinal).apply()
                 val Snak=AlertDialog.Builder(this.requireContext())
                     .setMessage(this.getString(R.string.faild_GPS_permissions))
                     .setPositiveButton(R.string.ok){e,c->
@@ -182,8 +190,9 @@ class SettingsFragment : Fragment() {
             }
         }
     }
-    fun checkpermessions():Boolean{
-        return this.requireContext().checkSelfPermission(per[0]) == PackageManager.PERMISSION_GRANTED
+     fun checkpermessions():Boolean{
+        val b=this.requireContext().checkSelfPermission(per[0]) == PackageManager.PERMISSION_GRANTED||this.requireContext().checkSelfPermission(per[1]) == PackageManager.PERMISSION_GRANTED
+        return b
     }
 
 }

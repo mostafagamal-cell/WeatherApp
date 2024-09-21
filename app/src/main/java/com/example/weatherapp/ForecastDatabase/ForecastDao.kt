@@ -16,9 +16,10 @@ interface ForecastDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(forecast: Forcast)
+    @Query("SELECT * FROM forecast where  lat =:lat and lon=:lon")
+    suspend fun getAllForecast(lat:Double,lon:Double): Forcast
     @Query("SELECT * FROM forecast where cityName=:city")
     suspend fun getAllForecast(city:String): Forcast
-
     @Delete
     suspend fun deleteAll(forecast: Forcast)
     @Query("SELECT * FROM myweather")

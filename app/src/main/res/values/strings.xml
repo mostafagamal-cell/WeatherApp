@@ -58,4 +58,7 @@
     <string name="windspeed">wind speed</string>
     <string name="speed">speed</string>
     <string name="visibility">visibility</string>
+    <string name="Date">Date</string>
+    <string name="conf">initialize configurations</string>
+    <string name="conf_msg">save</string>
 </resources>
