@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
-@Entity(tableName = "myweather",primaryKeys = ["name","language"])
+@Entity(tableName = "myweather",primaryKeys = ["lat","lon","language"])
 data class ExampleJson2KtKotlin (
   @SerializedName("coord"      ) var coord      : Coord?             = Coord(),
   @SerializedName("weather"    ) var weather    : ArrayList<Weather> = arrayListOf(),

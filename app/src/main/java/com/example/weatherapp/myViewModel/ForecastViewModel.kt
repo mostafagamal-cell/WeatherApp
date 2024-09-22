@@ -16,6 +16,10 @@ import com.example.weatherapp.States
 import com.example.weatherapp.weathermodel.ExampleJson2KtKotlin
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
@@ -25,84 +29,52 @@ class ForecastViewModelFac(val localDataSource: LocalDataSource, val remoteDataS
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return ForecastViewModel(Repo.getInstance(localDataSource,remoteDataSource)) as T
     }
-}
-class ForecastViewModel(val repo: Repo):ViewModel() {
-    private val _state= MutableLiveData<States>()
-    private val _forecast= MutableLiveData<Forcast>()
-    val forecast:MutableLiveData<Forcast>
-        get()=_forecast
-    val state: LiveData<States>get() = _state
-    private val _weather= MutableLiveData<ExampleJson2KtKotlin>()
-    val weather:LiveData<ExampleJson2KtKotlin>
-        get()=_weather
-    fun getForecast(lat:Double,lon:Double,lang:Int){
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                _state.value = States.Loading
-              repo.getForecast(lat,lon, lang  ).collect {
-                    _forecast.value = it
-                    _state.value = States.Success
-                }
-            }catch (e:Exception){
-                _state.value = States.Error
-            }
-        }
-    }
-    fun getWeather(lat:Double,lon:Double,lang:Int){
-        _state.value = States.Loading
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                 repo.getWeather(lat,lon,lang).collect {
-                     _weather.postValue( it)
-                     Log.i("xxxxxxxxxxxxxxxxxxxxxxx",it.toString())
-                     _state.postValue (States.Success)
-                }
+}class ForecastViewModel(val repo: Repo) : ViewModel() {
+    private var weatherJob: Job? = null
+    private var forecastJob: Job? = null
 
-            }catch (e:Exception){
-                Log.i("eeeeeeeeeeeeeeeee",e.message.toString())
-                _state.postValue (States.Error)
-            }
-        }
-    }
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun getDailyForcast(lat:Double,lon:Double,lang:Int){
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                _state.value = States.Loading
-                repo.getDailyForecast(lat,lon,lang).collect { data ->
-                    val timeZone = TimeZone.getTimeZone("GMT+${data.city.timezone?.div(3600)}")
-                    val start = Calendar.getInstance()
-                    start.timeZone = timeZone
-                    start.set(Calendar.HOUR_OF_DAY, 0)
-                    start.set(Calendar.MINUTE, 0)
-                    start.set(Calendar.SECOND, 0)
-                    start.set(Calendar.MILLISECOND, 0)
-                    val end = Calendar.getInstance()
-                    end.timeZone = timeZone
-                    end.set(Calendar.HOUR_OF_DAY, 23)
-                    end.set(Calendar.MINUTE, 59)
-                    end.set(Calendar.SECOND, 59)
-                    end.set(Calendar.MILLISECOND, 999)
-                    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-                    val startZonedDateTime = start.toInstant().atZone(timeZone.toZoneId())
-                    val endZonedDateTime = end.toInstant().atZone(timeZone.toZoneId())
-                    val x = formatter.format(startZonedDateTime)
-                    val y = formatter.format(endZonedDateTime)
-                    println(x)
-                    println(y)
-                    val list = ArrayList<com.example.weatherapp.forcastmodel.List>()
-                    for (i in data.list) {
-                        val e = i.dt!!
-                        println("$e      $x    $y")
-                        if (i.dtTxt in x..y) {
-                            list.add(i)
+    private val _forecast = MutableStateFlow<State>(State.Empty)
+    val forecast: StateFlow<State> get() = _forecast
+
+    private val _weather = MutableStateFlow<State>(State.Empty)
+    val weather: StateFlow<State> get() = _weather
+
+    fun getWeather(lat: Double, lon: Double, lang: Int) {
+        weatherJob?.cancel()  // Cancel the previous weather request if running
+        _weather.value = State.Empty  // Reset the state to avoid old data
+        weatherJob = viewModelScope.launch(Dispatchers.IO) {
+            _weather.value = State.Loading
+                repo.getWeather(lat, lon, lang)
+                    .catch { e -> _weather.value = State.Error(e) }
+                    .collect { data ->
+                        if (data != null) {
+                            _weather.value = State.Success(data)
+                        }else{
+                            _weather.value=State.Error(Exception("no data found"))
                         }
                     }
-                }
-                _state.value = States.Success
-            }catch (e:Exception){
-                _state.value = States.Error
-         }
         }
     }
+
+    fun getForecast(lat: Double, lon: Double, lang: Int) {
+        forecastJob?.cancel()  // Cancel previous forecast request if running
+        _forecast.value = State.Empty  // Reset the state
+        forecastJob = viewModelScope.launch(Dispatchers.IO) {
+            _forecast.value = State.Loading
+            try {
+                repo.getForecast(lat, lon, lang)
+                    .catch { e -> _forecast.value = State.Error(e) }
+                    .collect { data -> _forecast.value = State.Success(data) }
+            } catch (e: Exception) {
+                _forecast.value = State.Error(e)
+            }
+        }
+    }
+}
+
+sealed class State{
+    class Success(val data:Any):State()
+    class Error(val message:Throwable):State()
+    object Loading:State()
+    object Empty:State()
 }

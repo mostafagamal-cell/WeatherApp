@@ -11,6 +11,7 @@ import com.example.weatherapp.DataSource.RemoteDataSource
 import com.example.weatherapp.ForecastDatabase.ForecastDataBase
 import com.example.weatherapp.MyBrodcasts.AlertsBrodcast
 import com.example.weatherapp.MyNetwork.API
+import com.example.weatherapp.myViewModel.ForecastViewModel
 import com.example.weatherapp.weathermodel.ExampleJson2KtKotlin
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
@@ -65,26 +66,8 @@ class ExampleUnitTest {
             .putInt(language, consts.ar.ordinal).apply()
 
         val repo = Repo.getInstance(LocalDataSource(db.yourDao()), RemoteDataSource(API))
-
-        val alert=MyAlerts(1,1,Calendar.getInstance().timeInMillis,Calendar.getInstance().timeInMillis+1000000,55.7558,37.6173)
-        val e= repo.addAlert(alert)
-        val oo=repo.getAlerts()
-         println("size :    "+oo)
-        var x: ExampleJson2KtKotlin? = null
-        val intent= Intent(context,AlertsBrodcast::class.java)
-        intent.putExtra("id",1)
-        AlertsBrodcast().onReceive(context, intent)
-    }
-    @Test
-    fun getForecast() = runBlocking {
-        val context = ApplicationProvider.getApplicationContext() as Application
-        val db = ForecastDataBase.getDatabase(context)
-        context.getSharedPreferences(settings, Context.MODE_PRIVATE).edit()
-            .putInt(language, consts.ar.ordinal).apply()
-        val repo = Repo.getInstance(LocalDataSource(db.yourDao()), RemoteDataSource(API))
-        repo.getForecast(55.7558,37.6173,consts.ar.ordinal).collect {
-            println(it)
-        }
+        val viewmodel= ForecastViewModel(repo)
+        viewmodel.getWeather(55.7558,37.6173,context.getSharedPreferences(settings, Context.MODE_PRIVATE).getInt(language,consts.ar.ordinal))
 
     }
 

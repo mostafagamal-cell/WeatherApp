@@ -15,7 +15,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.weatherapp.DataSource.LocalDataSource
 import com.example.weatherapp.DataSource.RemoteDataSource
@@ -36,6 +39,7 @@ import com.example.weatherapp.map
 import com.example.weatherapp.mode
 import com.example.weatherapp.myViewModel.ForecastViewModel
 import com.example.weatherapp.myViewModel.ForecastViewModelFac
+import com.example.weatherapp.myViewModel.State
 import com.example.weatherapp.pickec
 import com.example.weatherapp.settings
 import com.example.weatherapp.weathermodel.Clouds
@@ -47,6 +51,7 @@ import com.example.weatherapp.weathermodel.Wind
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.launch
 
 class StartFragment : Fragment() {
 
@@ -70,26 +75,8 @@ class StartFragment : Fragment() {
         return db.root
     }
     private  val TAG = "StartFragment"
-         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-          super.onViewCreated(view, savedInstanceState)
-             viewModel.state.observe(viewLifecycleOwner){
-                 when(it){
-                      States.Loading->{
-                          db.viewModel=createTempWeather()
-                      }
-                      States.Success->{
-                          val e=viewModel.weather.value
-                         db.viewModel=e
-                      }
-                     States.Error->{
-                         Toast.makeText(this.requireContext(),this.getString(R.string.ok),Toast.LENGTH_LONG).show()
-                     }
-                     else->{
-                         db.viewModel=createTempWeather()
-                     }
-                 }
-             }
-         }
+
+
     fun createTempForecast():Forcast{
         return Forcast(
             city =City(-1,"---",Coord(1.0000,0.0),"----")
@@ -100,8 +87,6 @@ class StartFragment : Fragment() {
             , lang = requireActivity().getSharedPreferences(settings, MODE_PRIVATE).getInt(language,consts.ar.ordinal)
         )
     }
-
-
 
 
     private fun startGPS(){
@@ -202,22 +187,45 @@ class StartFragment : Fragment() {
                 findNavController().navigate(R.id.mapFragment)
                 select=true
             }
-                if (select) {
+            Log.i("eeeqqqqqqqqqqqeeeeeeeefff"," before map  $late $lon")
+            if (select) {
                     select=false
                     val e = requireActivity().getSharedPreferences(TAG, MODE_PRIVATE)
-                    late = requireActivity().getSharedPreferences(map, MODE_PRIVATE)
-                        .getFloat(lat, e.getFloat(lat, 0.0F))
-                    lon = requireActivity().getSharedPreferences(map, MODE_PRIVATE)
-                        .getFloat(longite, e.getFloat(longite, 0.0F))
+                    late = requireActivity().getSharedPreferences(map, MODE_PRIVATE).getFloat(lat, e.getFloat(lat, 0.0F))
+                    lon = requireActivity().getSharedPreferences(map, MODE_PRIVATE).getFloat(longite, e.getFloat(longite, 0.0F))
                     val ee = e.edit()
                     ee.putFloat(lat, late)
                     ee.putFloat(longite, lon)
                     ee.apply()
+                   }
+                   Log.i("eeeqqqqqqqqqqqeeeeeeeefff"," after map  $late $lon")
+                 viewModel.getWeather(late.toDouble(),lon.toDouble(),requireActivity().getSharedPreferences(settings, MODE_PRIVATE).getInt(language,consts.ar.ordinal))
+                 requireActivity().getSharedPreferences(map, MODE_PRIVATE).edit().clear().apply()
+                 }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.weather.collect{
+                    if (it is State.Success){
+                        Log.i("SSSSSTTTTTAAAATTTTEEEEE","Success")
+                        val t= it.data as ExampleJson2KtKotlin
+                        db.viewModel=(t)
+                    }
+                    if (it is State.Error){
+                        Log.i("SSSSSTTTTTAAAATTTTEEEEE","Error")
+
+                        db.viewModel=createTempWeather()
+                        Toast.makeText(requireContext(),it.message.message,Toast.LENGTH_LONG).show()
+                    }
+                    if (it is State.Loading){
+                        Log.i("SSSSSTTTTTAAAATTTTEEEEE","Loading")
+
+                        db.viewModel=createTempWeather()
+                    }
+
                 }
-               Log.i("xxxxxxxxxxxxxxxxxxxxxxx","$late $lon")
-                viewModel.getWeather(late.toDouble(),lon.toDouble(),requireActivity().getSharedPreferences(settings, MODE_PRIVATE).getInt(language,consts.ar.ordinal))
+            }
         }
-    }
+        }
     private  var fusedClient : FusedLocationProviderClient?=null
 
     override fun onPause() {

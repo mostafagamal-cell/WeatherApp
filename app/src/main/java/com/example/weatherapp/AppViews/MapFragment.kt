@@ -88,13 +88,13 @@ class MapFragment : Fragment() {
                 val latitude = p.latitude
                 val longitude = p.longitude
                 val geocoder= Geocoder(requireContext())
-
                 mymap.overlays.remove(marker)
                 marker = Marker(mymap)
                 marker?.position = p
                 marker?.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                 try {
                     res= geocoder.getFromLocation(latitude,longitude,1)?.get(0)?.getAddressLine(0)?:""
+                    Log.i("mmmmmmmmmm33333333333333","$latitude $longitude")
                     marker?.title = res
                     Toast.makeText(requireContext(), res, Toast.LENGTH_LONG).show()
                 }catch (e:Exception){
@@ -112,7 +112,7 @@ class MapFragment : Fragment() {
            val ysharedPreferences = requireContext().getSharedPreferences(map, Context.MODE_PRIVATE)
            val editor = ysharedPreferences.edit()
            val mylat=marker?.position?.latitude?.toFloat()
-           val mylong=marker?.position?.latitude?.toFloat()
+           val mylong=marker?.position?.longitude?.toFloat()
            editor.putFloat(lat,mylat!!)
            editor.putFloat(longite,mylong!!)
            editor.apply()

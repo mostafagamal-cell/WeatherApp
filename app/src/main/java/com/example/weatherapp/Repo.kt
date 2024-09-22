@@ -1,5 +1,6 @@
 package com.example.weatherapp
 
+import android.location.Geocoder
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -28,32 +29,29 @@ class Repo private constructor(
     fun getWeather(cityName: Int,lang:Int): Flow<ExampleJson2KtKotlin> {
         return localDataSource.getWeather(cityName,lang)
     }
-       fun getWeather(lat:Double,lon:Double,lang:Int): Flow<ExampleJson2KtKotlin> = runBlocking{
+      suspend fun getWeather(lat:Double,lon:Double,lang:Int): Flow<ExampleJson2KtKotlin> {
         try {
              val e = remoteDataSource.getWeather(lat,lon,"en")
              val d=  remoteDataSource.getWeather(lat,lon,"ar")
-             if (e.code()==404){
-                 throw NullPointerException("no data found for that location")
-             }
-             if (e.code()==401){
-                throw NullPointerException("key is not vaild")
-             }
-             val m=consts.en.ordinal
-             val m2=consts.ar.ordinal
-              e.body()?.lat=lat
-              e.body()?.lon=lon
-             d.body()?.lat=lat
-             d.body()?.lon=lon
-             e.body()?.language= m
-             d.body()?.language= m2
-             val name=d.body()!!.name
-             val xxe=name
-              val y= localDataSource.insertWeather(e.body()!!)
-              val x= localDataSource.insertWeather(d.body()!!)
-            Log.i("xxxxxxxxxxxxxxxxxxxxxxx", y.toString())
-            return@runBlocking localDataSource.getWeather(lat,lon,lang)
+            val m=consts.en.ordinal
+            val m2=consts.ar.ordinal
+                if (e.body()!=null){
+                    e.body()?.lat=lat
+                    e.body()?.lon=lon
+                    e.body()?.language= m
+                    localDataSource.insertWeather(e.body()!!)
+                    Log.i("eeeeeeeeeeeeeeeeeeeeeeeeeeee",e.body()!!.name)
+                }
+            if (e.body()!=null){
+                d.body()?.lat=lat
+                d.body()?.lon=lon
+                d.body()?.language= m2
+                localDataSource.insertWeather(d.body()!!)
+                Log.i("eeeeeeeeeeeeeeeeeeeeeeeeeeee",d.body()!!.name)
+            }
+            return localDataSource.getWeather(lat,lon,lang)
         }catch (e: UnknownHostException){
-            throw e
+            return localDataSource.getWeather(lat,lon,lang)
         }catch (e:IOException){
             throw e
         }
