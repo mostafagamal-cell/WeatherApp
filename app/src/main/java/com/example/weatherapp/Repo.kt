@@ -1,6 +1,7 @@
 package com.example.weatherapp
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import com.example.weatherapp.Alerts.MyAlerts
 import com.example.weatherapp.AppViews.consts
@@ -39,11 +40,18 @@ class Repo private constructor(
              }
              val m=consts.en.ordinal
              val m2=consts.ar.ordinal
+              e.body()?.lat=lat
+              e.body()?.lon=lon
+             d.body()?.lat=lat
+             d.body()?.lon=lon
              e.body()?.language= m
              d.body()?.language= m2
-             val y= localDataSource.insertWeather(e.body()!!)
-             val x= localDataSource.insertWeather(d.body()!!)
-            return@runBlocking localDataSource.getWeather(e.body()!!.name,lang)
+             val name=d.body()!!.name
+             val xxe=name
+              val y= localDataSource.insertWeather(e.body()!!)
+              val x= localDataSource.insertWeather(d.body()!!)
+            Log.i("xxxxxxxxxxxxxxxxxxxxxxx", y.toString())
+            return@runBlocking localDataSource.getWeather(lat,lon,lang)
         }catch (e: UnknownHostException){
             throw e
         }catch (e:IOException){

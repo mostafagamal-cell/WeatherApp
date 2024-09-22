@@ -36,8 +36,8 @@ interface ForecastDao {
     @Query("SELECT * FROM myweather where id=:myname and language=:lang")
     fun getWeather(myname: Int,lang:Int): Flow<ExampleJson2KtKotlin>
 
-    @Query("SELECT * FROM myweather where name=:myname and language=:lang")
-    fun getWeather(myname: String,lang:Int): Flow<ExampleJson2KtKotlin>
+    @Query("SELECT * FROM myweather where lat=:lat and lon=:lon and language=:lang")
+    fun getWeather(lat:Double,lon:Double,lang:Int): Flow<ExampleJson2KtKotlin>
 
     @Delete
     suspend fun deleteAll(weather: ExampleJson2KtKotlin)

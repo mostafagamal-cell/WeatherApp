@@ -20,5 +20,7 @@ data class ExampleJson2KtKotlin (
   var language:Int,
   @SerializedName("name"       ) var name       : String,
   @SerializedName("cod"        ) var cod        : Int?               = null,
-  var isFavorite: Boolean = false
+  var isFavorite: Boolean = false,
+  var lat:Double=0.0,
+  var lon:Double=0.0
 )

@@ -54,7 +54,7 @@ class ForecastViewModel(val repo: Repo):ViewModel() {
             try {
                  repo.getWeather(lat,lon,lang).collect {
                      _weather.postValue( it)
-                     Log.i("eeeeeeeeeeeeeeeee",it.toString())
+                     Log.i("xxxxxxxxxxxxxxxxxxxxxxx",it.toString())
                      _state.postValue (States.Success)
                 }
 

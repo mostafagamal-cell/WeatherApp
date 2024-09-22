@@ -25,8 +25,8 @@ class LocalDataSource(private val dataBase: ForecastDao) {
      fun getWeather(cityName: Int,e:Int): Flow<ExampleJson2KtKotlin> {
         return dataBase.getWeather(cityName,e)
     }
-    fun getWeather(cityName: String,lang:Int): Flow<ExampleJson2KtKotlin> {
-        return dataBase.getWeather(cityName,lang)
+    fun getWeather(lat:Double,lon:Double,lang:Int): Flow<ExampleJson2KtKotlin> {
+        return dataBase.getWeather(lat,lon,lang)
     }
     suspend fun deleteWeather(weather: ExampleJson2KtKotlin) {
         return dataBase.deleteAll(weather)

@@ -9,6 +9,7 @@ import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -195,20 +196,25 @@ class StartFragment : Fragment() {
             }
         }else{
             db.gotomap.visibility=View.VISIBLE
-            var late=requireActivity().getSharedPreferences(map, MODE_PRIVATE).getFloat(lat, 0.0F)
-            var lon=requireActivity().getSharedPreferences(map, MODE_PRIVATE).getFloat(longite, 0.0F)
-
+            var late=requireActivity().getSharedPreferences(TAG, MODE_PRIVATE).getFloat(lat, 0.0F)
+            var lon=requireActivity().getSharedPreferences(TAG, MODE_PRIVATE).getFloat(longite, 0.0F)
             db.gotomap.setOnClickListener {
                 findNavController().navigate(R.id.mapFragment)
                 select=true
             }
-                val e= requireActivity().getSharedPreferences(TAG, MODE_PRIVATE)
-                late=requireActivity().getSharedPreferences(map, MODE_PRIVATE).getFloat(lat,e.getFloat(lat,0.0F))
-                lon=requireActivity().getSharedPreferences(map, MODE_PRIVATE).getFloat(longite,e.getFloat(longite,0.0F))
-                val ee=e.edit()
-                ee.putFloat(lat,late)
-                ee.putFloat(longite,lon)
-                ee.apply()
+                if (select) {
+                    select=false
+                    val e = requireActivity().getSharedPreferences(TAG, MODE_PRIVATE)
+                    late = requireActivity().getSharedPreferences(map, MODE_PRIVATE)
+                        .getFloat(lat, e.getFloat(lat, 0.0F))
+                    lon = requireActivity().getSharedPreferences(map, MODE_PRIVATE)
+                        .getFloat(longite, e.getFloat(longite, 0.0F))
+                    val ee = e.edit()
+                    ee.putFloat(lat, late)
+                    ee.putFloat(longite, lon)
+                    ee.apply()
+                }
+               Log.i("xxxxxxxxxxxxxxxxxxxxxxx","$late $lon")
                 viewModel.getWeather(late.toDouble(),lon.toDouble(),requireActivity().getSharedPreferences(settings, MODE_PRIVATE).getInt(language,consts.ar.ordinal))
         }
     }
