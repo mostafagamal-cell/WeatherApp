@@ -6,9 +6,8 @@ import com.example.weatherapp.Alerts.MyAlerts
 import com.example.weatherapp.AppViews.consts
 import com.example.weatherapp.DataSource.LocalDataSource
 import com.example.weatherapp.DataSource.RemoteDataSource
-import com.example.weatherapp.ForcastModel.Forcast
-import com.example.weatherapp.ForecastDatabase.ForecastDataBase
-import com.example.weatherapp.WeatherModel.ExampleJson2KtKotlin
+import com.example.weatherapp.forcastmodel.Forcast
+import com.example.weatherapp.weathermodel.ExampleJson2KtKotlin
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
 import java.io.IOError
@@ -28,10 +27,10 @@ class Repo private constructor(
     fun getWeather(cityName: Int,lang:Int): Flow<ExampleJson2KtKotlin> {
         return localDataSource.getWeather(cityName,lang)
     }
-       fun getWeather(city:String): Flow<ExampleJson2KtKotlin> = runBlocking{
+       fun getWeather(lat:Double,lon:Double,lang:Int): Flow<ExampleJson2KtKotlin> = runBlocking{
         try {
-             val e = remoteDataSource.getWeather(city,"en")
-             val d=  remoteDataSource.getWeather(city,"ar")
+             val e = remoteDataSource.getWeather(lat,lon,"en")
+             val d=  remoteDataSource.getWeather(lat,lon,"ar")
              if (e.code()==404){
                  throw NullPointerException("no data found for that location")
              }
@@ -44,45 +43,43 @@ class Repo private constructor(
              d.body()?.language= m2
              val y= localDataSource.insertWeather(e.body()!!)
              val x= localDataSource.insertWeather(d.body()!!)
-            return@runBlocking localDataSource.getWeather(city)
+            return@runBlocking localDataSource.getWeather(e.body()!!.name,lang)
         }catch (e: UnknownHostException){
             throw e
         }catch (e:IOException){
             throw e
         }
     }
-    suspend fun getForecast(lat:Double,lon:Double):Forcast{
+    suspend fun getForecast(lat:Double,lon:Double,lang:Int):Flow<Forcast>{
         try {
             val e = remoteDataSource.getForecast(lat,lon,"en")
             val d=  remoteDataSource.getForecast(lat,lon,"ar")
             if (e.isSuccessful){
-                e.body()?.lang="en"
+                e.body()?.lang=consts.en.ordinal
                 e.body()?.cityName= e.body()?.city?.name.toString()
                 e.body()?.lat=e.body()?.city?.coord?.lat!!
                 e.body()?.lon=e.body()?.city?.coord?.lon!!
                 if (e.body()!=null&&e.body()?.list!=null && e.body()?.list?.size!=0){
                     localDataSource.insertForecast(e.body()!!)
                 }
-                localDataSource.insertForecast(e.body()!!)
             }
             if (d.isSuccessful) {
                 d.body()?.lat=d.body()?.city?.coord?.lat!!
                 d.body()?.lon=d.body()?.city?.coord?.lon!!
-                d.body()?.lang = "ar"
+                d.body()?.lang =consts.ar.ordinal
                 d.body()?.cityName = d.body()?.city?.name.toString()
                 if (d.body()!=null&&d.body()?.list!=null && d.body()?.list?.size!=0){
                     localDataSource.insertForecast(d.body()!!)
                 }
             }
-            return localDataSource.getForecast(lat,lon)
+            return localDataSource.getForecast(lat,lon,lang)
         }catch (e:IOError){
             throw e
         }
     }
     @RequiresApi(Build.VERSION_CODES.O)
-    suspend fun getDailyForecast(lat:Double,lon:Double):List<com.example.weatherapp.ForcastModel.List>{
-        getForecast(lat,lon)
-        return localDataSource.day_forcast(lat,lon)
+    suspend fun getDailyForecast(lat:Double,lon:Double,lang:Int):Flow<Forcast>{
+       return getForecast(lat,lon,lang)
     }
     suspend fun getFavorite():List<ExampleJson2KtKotlin>{
         return localDataSource.getFavorite()
@@ -120,8 +117,8 @@ class Repo private constructor(
     suspend fun addForecast(forecast: Forcast){
         localDataSource.insertForecast(forecast)
     }
-    suspend fun getForecast(forecast: Forcast):Forcast{
-        return localDataSource.getForecast(forecast.lat,forecast.lon)
+     fun getForecast(forecast: Forcast,lang:Int):Flow<Forcast>{
+        return localDataSource.getForecast(forecast.lat,forecast.lon,lang)
     }
 
 }

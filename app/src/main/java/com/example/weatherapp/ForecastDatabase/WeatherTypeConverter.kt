@@ -1,7 +1,7 @@
 package com.example.weatherapp.ForecastDatabase
 
 import androidx.room.TypeConverter
-import com.example.weatherapp.WeatherModel.*
+import com.example.weatherapp.weathermodel.*
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 

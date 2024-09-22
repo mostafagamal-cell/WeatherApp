@@ -1,4 +1,4 @@
-package com.example.weatherapp.WeatherModel
+package com.example.weatherapp.weathermodel
 
 import android.os.Parcel
 import android.os.Parcelable

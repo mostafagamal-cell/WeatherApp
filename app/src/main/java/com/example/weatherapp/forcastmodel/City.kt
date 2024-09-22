@@ -1,6 +1,5 @@
-package com.example.weatherapp.ForcastModel
+package com.example.weatherapp.forcastmodel
 
-import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
 

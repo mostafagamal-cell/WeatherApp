@@ -3,7 +3,6 @@ package com.example.weatherapp.MyBrodcasts
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
@@ -25,8 +24,6 @@ import com.example.weatherapp.ForecastDatabase.ForecastDataBase
 import com.example.weatherapp.MyNetwork.API
 import com.example.weatherapp.R
 import com.example.weatherapp.Repo
-import com.example.weatherapp.WeatherModel.ExampleJson2KtKotlin
-import com.example.weatherapp.WeatherModel.Weather
 import com.example.weatherapp.createAlarm
 import com.example.weatherapp.databinding.PopupfragmentBinding
 import com.example.weatherapp.from_C_to_K
@@ -34,12 +31,6 @@ import com.example.weatherapp.language
 import com.example.weatherapp.settings
 import com.example.weatherapp.speed
 import com.example.weatherapp.units
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.util.Calendar
 
@@ -53,7 +44,7 @@ class AlertsBrodcast:BroadcastReceiver() {
         )
         val alert = repo.getAlert(id)
         var i = 0
-        repo.getWeather(alert.city).collect {
+        repo.getWeather(alert.lat,alert.lon,context.getSharedPreferences(settings, MODE_PRIVATE).getInt(language,consts.en.ordinal)).collect {
             if (it==null){
                 // no item found
                 return@collect

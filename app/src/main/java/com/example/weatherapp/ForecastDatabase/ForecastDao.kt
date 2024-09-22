@@ -6,9 +6,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.weatherapp.Alerts.MyAlerts
-import com.example.weatherapp.ForcastModel.Forcast
-import com.example.weatherapp.WeatherModel.ExampleJson2KtKotlin
-import com.example.weatherapp.WeatherModel.Weather
+import com.example.weatherapp.forcastmodel.Forcast
+import com.example.weatherapp.weathermodel.ExampleJson2KtKotlin
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -16,8 +15,8 @@ interface ForecastDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(forecast: Forcast)
-    @Query("SELECT * FROM forecast where  lat =:lat and lon=:lon")
-    suspend fun getAllForecast(lat:Double,lon:Double): Forcast
+    @Query("SELECT * FROM forecast where  lat =:lat and lon=:lon and lang=:lang")
+     fun getAllForecast(lat:Double,lon:Double,lang:Int): Flow<Forcast>
     @Query("SELECT * FROM forecast where cityName=:city")
     suspend fun getAllForecast(city:String): Forcast
     @Delete
@@ -37,8 +36,8 @@ interface ForecastDao {
     @Query("SELECT * FROM myweather where id=:myname and language=:lang")
     fun getWeather(myname: Int,lang:Int): Flow<ExampleJson2KtKotlin>
 
-    @Query("SELECT * FROM myweather where name=:myname")
-    fun getWeather(myname: String): Flow<ExampleJson2KtKotlin>
+    @Query("SELECT * FROM myweather where name=:myname and language=:lang")
+    fun getWeather(myname: String,lang:Int): Flow<ExampleJson2KtKotlin>
 
     @Delete
     suspend fun deleteAll(weather: ExampleJson2KtKotlin)

@@ -129,5 +129,6 @@ dependencies {
         // dependency to appear on your APK"s compile classpath or the test APK
         // classpath.
         androidTestImplementation( "androidx.test.espresso:espresso-idling-resource:$espressoVersion")
+         implementation("androidx.core:core-splashscreen:1.0.1")
 
 }

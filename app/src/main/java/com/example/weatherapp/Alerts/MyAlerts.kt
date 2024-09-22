@@ -10,5 +10,6 @@ data class MyAlerts(
     var type: Int,
     var start:Long,
     var end:Long,
-    var city:String,
+    var lat:Double,
+    var lon:Double,
     )

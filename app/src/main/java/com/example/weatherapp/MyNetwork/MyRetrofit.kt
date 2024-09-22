@@ -1,10 +1,8 @@
 package com.example.weatherapp.MyNetwork
 
 import com.example.weatherapp.ApiKey
-import com.example.weatherapp.ForcastModel.Forcast
-import com.example.weatherapp.WeatherModel.ExampleJson2KtKotlin
-import okhttp3.ResponseBody
-import retrofit2.Call
+import com.example.weatherapp.forcastmodel.Forcast
+import com.example.weatherapp.weathermodel.ExampleJson2KtKotlin
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -17,7 +15,8 @@ interface Iweather
 {
     @GET("weather")
     suspend fun getWeatherByCity(
-        @Query("q") city: String
+        @Query("lat") lat: Double
+        ,@Query("lon") lon: Double
         ,@Query("lang") lang: String
         ,@Query("apiKey") apiKey: String= ApiKey)
         : Response<ExampleJson2KtKotlin>
