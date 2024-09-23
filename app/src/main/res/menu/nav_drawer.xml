@@ -3,11 +3,15 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:title="@string/favourits"
-        android:icon="@android:drawable/ic_menu_agenda"
+        android:icon="@drawable/heart"
         android:checkable="true"
     />
     <item android:title="@string/alarms"
-        android:icon="@android:drawable/btn_dialog"
+        android:icon="@drawable/bell"
+        android:checkable="true"
+        />
+    <item android:title="@string/alarms"
+        android:icon="@drawable/settings"
         android:checkable="true"
         />
 </menu>

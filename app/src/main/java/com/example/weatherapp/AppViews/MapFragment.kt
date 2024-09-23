@@ -7,9 +7,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.example.weatherapp.MainActivity
 import com.example.weatherapp.databinding.FragmentMapBinding
 import com.example.weatherapp.lat
 import com.example.weatherapp.longite
@@ -21,6 +24,7 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
+import java.util.Locale
 
 
 class MapFragment : Fragment() {
@@ -39,7 +43,7 @@ class MapFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         mymap = db.map
         startPoint = GeoPoint(48.8583, 2.2944)
-
+        val connection= MainActivity.start(requireContext())
         if (savedInstanceState!=null){
             if (savedInstanceState.containsKey("res")&&savedInstanceState.containsKey("lat")&&savedInstanceState.containsKey("lon")){
             val la=savedInstanceState.getDouble("lat")
@@ -108,6 +112,11 @@ class MapFragment : Fragment() {
                 return true
             }
         }))
+        var e=false
+        MainActivity.start(requireContext()).observe(viewLifecycleOwner){
+            e=it
+        }
+
        db.floatingActionButton2.setOnClickListener {
            val ysharedPreferences = requireContext().getSharedPreferences(map, Context.MODE_PRIVATE)
            val editor = ysharedPreferences.edit()
