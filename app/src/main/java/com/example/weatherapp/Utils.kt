@@ -24,6 +24,7 @@ fun from_C_to_K(double: Double)=double-273.15
 fun from_C_to_F(double: Double)=double-459.67
 fun from_MS_to_MH(double: Double)=double*2.23694
 const val pickec="pickec"
+const val cities="cities"
 const val current="current"
 const val forecast="forecast"
 const val weather="weather"

@@ -33,15 +33,15 @@ class ForecastViewModelFac(val localDataSource: LocalDataSource, val remoteDataS
     private var weatherJob: Job? = null
     private var forecastJob: Job? = null
 
-    private val _forecast = MutableStateFlow<State>(State.Empty)
+    private val _forecast = MutableStateFlow<State>(State.Loading)
     val forecast: StateFlow<State> get() = _forecast
 
-    private val _weather = MutableStateFlow<State>(State.Empty)
+    private val _weather = MutableStateFlow<State>(State.Loading)
     val weather: StateFlow<State> get() = _weather
 
     fun getWeather(lat: Double, lon: Double, lang: Int) {
         weatherJob?.cancel()  // Cancel the previous weather request if running
-        _weather.value = State.Empty  // Reset the state to avoid old data
+        _weather.value = State.Loading  // Reset the state to avoid old data
         weatherJob = viewModelScope.launch(Dispatchers.IO) {
             _weather.value = State.Loading
                 repo.getWeather(lat, lon, lang)
@@ -58,7 +58,7 @@ class ForecastViewModelFac(val localDataSource: LocalDataSource, val remoteDataS
 
     fun getForecast(lat: Double, lon: Double, lang: Int) {
         forecastJob?.cancel()  // Cancel previous forecast request if running
-        _forecast.value = State.Empty  // Reset the state
+        _forecast.value = State.Loading  // Reset the state
         forecastJob = viewModelScope.launch(Dispatchers.IO) {
             _forecast.value = State.Loading
             try {
@@ -75,6 +75,5 @@ class ForecastViewModelFac(val localDataSource: LocalDataSource, val remoteDataS
 sealed class State{
     class Success(val data:Any):State()
     class Error(val message:Throwable):State()
-    object Loading:State()
-    object Empty:State()
+    data object Loading:State()
 }

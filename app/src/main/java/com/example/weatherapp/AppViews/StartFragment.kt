@@ -127,7 +127,7 @@ class StartFragment : Fragment() {
         }
     }
 
-    @SuppressLint("MissingPermission")
+    @SuppressLint("MissingPermission", "RepeatOnLifecycleWrongUsage")
     override fun onResume() {
         super.onResume()
         if (requireActivity().getSharedPreferences(settings, MODE_PRIVATE).getInt(mode,consts.Map.ordinal)==consts.GPS.ordinal){

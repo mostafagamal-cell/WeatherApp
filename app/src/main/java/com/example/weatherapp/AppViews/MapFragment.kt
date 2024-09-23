@@ -1,5 +1,6 @@
 package com.example.weatherapp.AppViews
 
+import android.R
 import android.content.Context
 import android.location.Geocoder
 import android.os.Bundle
@@ -8,6 +9,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.MultiAutoCompleteTextView
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
@@ -17,6 +21,7 @@ import com.example.weatherapp.databinding.FragmentMapBinding
 import com.example.weatherapp.lat
 import com.example.weatherapp.longite
 import com.example.weatherapp.map
+import com.example.weatherapp.weathermodel.cityes
 import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.util.BoundingBox
@@ -33,6 +38,8 @@ class MapFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
+
         db = FragmentMapBinding.inflate(layoutInflater)
         return db.root
     }
@@ -42,6 +49,13 @@ class MapFragment : Fragment() {
     var res=""
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         mymap = db.map
+
+        db.multiAutoCompleteTextView.apply {
+            setAdapter(ArrayAdapter(requireContext(), R.layout.simple_dropdown_item_1line, MainActivity.allcities!!.map { it.city+", "+it.country }))
+            setTokenizer(MultiAutoCompleteTextView.CommaTokenizer())
+            inputType = EditorInfo.TYPE_CLASS_TEXT
+        }
+
         startPoint = GeoPoint(48.8583, 2.2944)
         val connection= MainActivity.start(requireContext())
         if (savedInstanceState!=null){
@@ -74,6 +88,22 @@ class MapFragment : Fragment() {
             }
             mymap.overlays.add(marker)
         }
+        db.multiAutoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
+            val selectedCity = MainActivity.allcities!!.find { it.city == parent.getItemAtPosition(position).toString().split(",")[0] && it.country==parent.getItemAtPosition(position).toString().split(",")[1].trim() }
+
+            db.multiAutoCompleteTextView.setText("${selectedCity!!.city}, ${selectedCity.country}")
+
+            val geoPoint = GeoPoint(selectedCity.lat, selectedCity.lng)
+            mymap.overlays.remove(marker)
+            marker = Marker(mymap).apply {
+                setPosition(geoPoint)
+                setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+            }
+            mymap.controller.setCenter(geoPoint)
+            mymap.overlays.add(marker)
+            set_vis(db.floatingActionButton2)
+            set_vis(db.floatingActionButton3)
+        }
         mymap.setScrollableAreaLimitDouble(BoundingBox(85.0, 180.0, -85.0, -180.0))
         mymap.maxZoomLevel = 20.0;
         mymap.minZoomLevel = 3.0;
@@ -103,7 +133,6 @@ class MapFragment : Fragment() {
                     Toast.makeText(requireContext(), res, Toast.LENGTH_LONG).show()
                 }catch (e:Exception){
                     Toast.makeText(requireContext(), "No connection", Toast.LENGTH_LONG).show()
-
                 }
                 mymap.overlays.add(marker)
                 mymap.invalidate()

@@ -7,11 +7,21 @@
             name="viewModel"
             type="com.example.weatherapp.weathermodel.ExampleJson2KtKotlin" />
     </data>
+    <LinearLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ProgressBar
+            android:visibility="invisible"
+            android:id="@+id/prog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".AppViews.StartFragment">
+
 
         <androidx.cardview.widget.CardView
             android:id="@+id/details"
@@ -329,4 +339,5 @@
             app:layout_constraintTop_toBottomOf="@+id/cardView4" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 </layout>
