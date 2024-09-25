@@ -130,55 +130,8 @@ class StartFragment : Fragment() {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
-                viewModel.weather.collect{
-                    if (it is State.Success){
-                        Log.i("SSSSSTTTTTAAAATTTTEEEEE","Success")
-                        val t= it.data as ExampleJson2KtKotlin
-                        db.viewModel=(t)
-                    }
-                    if (it is State.Error){
-                        Log.i("SSSSSTTTTTAAAATTTTEEEEE","Error")
-
-                        db.viewModel=createTempWeather()
-                        Toast.makeText(requireContext(),it.message.message,Toast.LENGTH_LONG).show()
-                    }
-                    if (it is State.Loading){
-                        Log.i("SSSSSTTTTTAAAATTTTEEEEE","Loading")
-
-                        db.viewModel=createTempWeather()
-                    }
-
-                }
-            }
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
-                viewModel.hours.collect{
-                    // Log.i("eaaaaaaaaaaaaaaa","runned ")
-
-                    if (it is State.Success){
-                        val  e =it.data as Forcast
-                        adpt.submitList(e.list)
-                    }
-                    if (it is State.Error){
-                        Log.i("eaaaaaaaaaaaaaaa","Error ${it.message}")
-
-                    }
-                    if (it is State.Loading){
-                        Log.i("eaaaaaaaaaaaaaaa","Loading")
-
-                    }
-
-                }
-            }
-        }
-    }
     @RequiresApi(Build.VERSION_CODES.O)
-    @SuppressLint("MissingPermission")
+    @SuppressLint("MissingPermission", "RepeatOnLifecycleWrongUsage")
     override fun onResume() {
         super.onResume()
         db.recyclerView3.adapter=adpt
@@ -255,6 +208,51 @@ class StartFragment : Fragment() {
               viewModel.getWeather(late.toDouble(),lon.toDouble(),requireActivity().getSharedPreferences(settings, MODE_PRIVATE).getInt(language,consts.ar.ordinal))
               viewModel.getForecasts(late.toDouble(),lon.toDouble(),requireActivity().getSharedPreferences(settings, MODE_PRIVATE).getInt(language,consts.ar.ordinal))
         }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.weather.collect{
+                    if (it is State.Success){
+                        Log.i("SSSSSTTTTTAAAATTTTEEEEE","Success")
+                        val t= it.data as ExampleJson2KtKotlin
+                        db.viewModel=(t)
+                    }
+                    if (it is State.Error){
+                        Log.i("SSSSSTTTTTAAAATTTTEEEEE","Error")
+
+                        db.viewModel=createTempWeather()
+                        Toast.makeText(requireContext(),it.message.message,Toast.LENGTH_LONG).show()
+                    }
+                    if (it is State.Loading){
+                        Log.i("SSSSSTTTTTAAAATTTTEEEEE","Loading")
+
+                        db.viewModel=createTempWeather()
+                    }
+
+                }
+            }
+          }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.hours.collect{
+                   // Log.i("eaaaaaaaaaaaaaaa","runned ")
+
+                    if (it is State.Success){
+                        val  e =it.data as Forcast
+                        adpt.submitList(e.list)
+                    }
+                    if (it is State.Error){
+                        Log.i("eaaaaaaaaaaaaaaa","Error ${it.message}")
+
+                             }
+                    if (it is State.Loading){
+                        Log.i("eaaaaaaaaaaaaaaa","Loading")
+
+                    }
+
+                }
+            }
+         }
 
         }
     private  var fusedClient : FusedLocationProviderClient?=null
