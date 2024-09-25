@@ -51,7 +51,8 @@ class MapFragment : Fragment() {
         mymap = db.map
 
         db.multiAutoCompleteTextView.apply {
-            setAdapter(ArrayAdapter(requireContext(), R.layout.simple_dropdown_item_1line, MainActivity.allcities!!.map { it.city+", "+it.country }))
+            val c=MainActivity.allcities
+            setAdapter(ArrayAdapter(requireContext(), R.layout.simple_dropdown_item_1line,  c!!.map { it.city+", "+it.country }))
             setTokenizer(MultiAutoCompleteTextView.CommaTokenizer())
             inputType = EditorInfo.TYPE_CLASS_TEXT
         }
