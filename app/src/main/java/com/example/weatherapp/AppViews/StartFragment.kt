@@ -7,6 +7,7 @@ import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
 import android.util.Log
@@ -14,6 +15,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
@@ -51,6 +53,7 @@ import com.example.weatherapp.weathermodel.Wind
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class StartFragment : Fragment() {
@@ -127,9 +130,11 @@ class StartFragment : Fragment() {
         }
     }
 
-    @SuppressLint("MissingPermission", "RepeatOnLifecycleWrongUsage")
+    @RequiresApi(Build.VERSION_CODES.O)
+    @SuppressLint("MissingPermission")
     override fun onResume() {
         super.onResume()
+        db.recyclerView3.adapter=adpt
         if (requireActivity().getSharedPreferences(settings, MODE_PRIVATE).getInt(mode,consts.Map.ordinal)==consts.GPS.ordinal){
             db.gotomap.visibility=View.INVISIBLE
          if (!checkpermessions()){
@@ -191,19 +196,21 @@ class StartFragment : Fragment() {
             if (select) {
                     select=false
                     val e = requireActivity().getSharedPreferences(TAG, MODE_PRIVATE)
-                    late = requireActivity().getSharedPreferences(map, MODE_PRIVATE).getFloat(lat, e.getFloat(lat, 0.0F))
-                    lon = requireActivity().getSharedPreferences(map, MODE_PRIVATE).getFloat(longite, e.getFloat(longite, 0.0F))
+                    late = requireActivity().getSharedPreferences(map, MODE_PRIVATE).getFloat(lat, e.getFloat(lat, 30.0444F))
+                    lon = requireActivity().getSharedPreferences(map, MODE_PRIVATE).getFloat(longite, e.getFloat(longite,  31.2357F))
                     val ee = e.edit()
                     ee.putFloat(lat, late)
                     ee.putFloat(longite, lon)
                     ee.apply()
                    }
                    Log.i("eeeqqqqqqqqqqqeeeeeeeefff"," after map  $late $lon")
-                 viewModel.getWeather(late.toDouble(),lon.toDouble(),requireActivity().getSharedPreferences(settings, MODE_PRIVATE).getInt(language,consts.ar.ordinal))
-                 requireActivity().getSharedPreferences(map, MODE_PRIVATE).edit().clear().apply()
-                 }
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED){
+                  requireActivity().getSharedPreferences(map, MODE_PRIVATE).edit().clear().apply()
+              viewModel.getWeather(late.toDouble(),lon.toDouble(),requireActivity().getSharedPreferences(settings, MODE_PRIVATE).getInt(language,consts.ar.ordinal))
+              viewModel.getForecasts(late.toDouble(),lon.toDouble(),requireActivity().getSharedPreferences(settings, MODE_PRIVATE).getInt(language,consts.ar.ordinal))
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.weather.collect{
                     if (it is State.Success){
                         Log.i("SSSSSTTTTTAAAATTTTEEEEE","Success")
@@ -224,7 +231,29 @@ class StartFragment : Fragment() {
 
                 }
             }
-        }
+          }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.hours.collect{
+                   // Log.i("eaaaaaaaaaaaaaaa","runned ")
+
+                    if (it is State.Success){
+                        val  e =it.data as Forcast
+                        adpt.submitList(e.list)
+                    }
+                    if (it is State.Error){
+                        Log.i("eaaaaaaaaaaaaaaa","Error ${it.message}")
+
+                             }
+                    if (it is State.Loading){
+                        Log.i("eaaaaaaaaaaaaaaa","Loading")
+
+                    }
+
+                }
+            }
+         }
+
         }
     private  var fusedClient : FusedLocationProviderClient?=null
 
@@ -233,7 +262,7 @@ class StartFragment : Fragment() {
         fusedClient=null
     }
 
-
+     var adpt=TodayAdapter()
     val per=arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION
         ,android.Manifest.permission.ACCESS_COARSE_LOCATION
         ,android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
@@ -249,9 +278,9 @@ class StartFragment : Fragment() {
     fun  showDailalog(){
         val pref2 = requireActivity().getSharedPreferences(TAG, Context.MODE_PRIVATE)
         if (pref2.getBoolean("first", true)) {
+            db.scrollView.visibility = View.INVISIBLE
             val pref = requireActivity().getSharedPreferences(settings, MODE_PRIVATE)
-            db.scrollView.visibility=View.INVISIBLE
-            Dialog(requireContext()).apply {
+           val e= Dialog(requireContext()).apply {
                 setContentView(mydb.root)
                 mydb.radioGroup2.setOnCheckedChangeListener { radioGroup, i ->
                     if (mydb.GPSrdb.isChecked) {
@@ -273,8 +302,8 @@ class StartFragment : Fragment() {
                 }
                 mydb.ok.setOnClickListener {
                     if (pref.contains(mode) && pref.contains(language)) {
-                        db.scrollView.visibility=View.VISIBLE
                         pref2.edit().putBoolean("first", false).apply()
+                        db.scrollView.visibility = View.VISIBLE
                         dismiss()
                     }
                 }
@@ -282,8 +311,10 @@ class StartFragment : Fragment() {
                 mydb.button3.setOnClickListener {
                     requireActivity().finish()
                 }
-                create()
-            }.show()
+
+            }
+            e.create()
+            e.show()
         }
     }
     fun createTempWeather():ExampleJson2KtKotlin{

@@ -56,4 +56,8 @@ class LocalDataSource(private val dataBase: ForecastDao) {
     suspend fun addWeather(weather: ExampleJson2KtKotlin) {
         dataBase.insert(weather)
         }
+    fun getTodayForecast(lat:Double,lon:Double,lang:Int): Flow<Forcast> {
+        return dataBase.getTodayForecast(lat,lon,lang)
+
+    }
 }

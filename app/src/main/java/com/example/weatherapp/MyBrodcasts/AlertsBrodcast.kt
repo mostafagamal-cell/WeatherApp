@@ -26,7 +26,9 @@ import com.example.weatherapp.R
 import com.example.weatherapp.Repo
 import com.example.weatherapp.createAlarm
 import com.example.weatherapp.databinding.PopupfragmentBinding
+import com.example.weatherapp.from_C_to_F
 import com.example.weatherapp.from_C_to_K
+import com.example.weatherapp.from_MS_to_MH
 import com.example.weatherapp.language
 import com.example.weatherapp.settings
 import com.example.weatherapp.speed
@@ -75,7 +77,7 @@ class AlertsBrodcast:BroadcastReceiver() {
                 val tempUnits = context.getSharedPreferences(settings, Context.MODE_PRIVATE).getInt(units, consts.C.ordinal)
                 val speed = when (speedUnits) {
                     consts.MS.ordinal -> "${it.wind?.speed!!} ${context.getString(R.string.MS)}"
-                    consts.MH.ordinal -> "${from_C_to_K(it.wind?.speed!!)} ${
+                    consts.MH.ordinal -> "${from_MS_to_MH(it.wind?.speed!!)} ${
                         context.getString(
                             R.string.MH
                         )
@@ -83,14 +85,14 @@ class AlertsBrodcast:BroadcastReceiver() {
                     else -> "Meter / Sec"
                 }
                 val temp = when (tempUnits) {
-                    consts.C.ordinal -> "${it.main?.temp} ${context.getString(R.string.C)}"
-                    consts.K.ordinal -> "${from_C_to_K(it.main?.temp!!)} ${
+                    consts.C.ordinal -> "${from_C_to_K(it.main?.temp!!)} ${context.getString(R.string.C)}"
+                    consts.K.ordinal -> "${it.main?.temp!!} ${
                         context.getString(
                             R.string.K
                         )
                     }"
 
-                    consts.F.ordinal -> "${from_C_to_K(it.main?.temp!!)} ${
+                    consts.F.ordinal -> "${from_C_to_F(it.main?.temp!!)} ${
                         context.getString(
                             R.string.F
                         )

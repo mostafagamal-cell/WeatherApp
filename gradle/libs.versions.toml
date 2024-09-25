@@ -19,6 +19,7 @@ junitKtx = "1.2.1"
 runner = "1.6.1"
 coreKtxVersion = "1.6.1"
 swiperefreshlayout = "1.1.0"
+coreI18n = "1.0.0-alpha01"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -48,6 +49,7 @@ androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.
 androidx-runner = { group = "androidx.test", name = "runner", version.ref = "runner" }
 core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "coreKtxVersion" }
 androidx-swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
+androidx-core-i18n = { group = "androidx.core", name = "core-i18n", version.ref = "coreI18n" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

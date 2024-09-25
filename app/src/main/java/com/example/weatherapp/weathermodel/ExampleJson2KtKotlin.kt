@@ -13,7 +13,7 @@ data class ExampleJson2KtKotlin (
   @SerializedName("visibility" ) var visibility : Int?               = null,
   @SerializedName("wind"       ) var wind       : Wind?              = Wind(),
   @SerializedName("clouds"     ) var clouds     : Clouds?            = Clouds(),
-  @SerializedName("dt"         ) var dt         : Int?               = null,
+  @SerializedName("dt"         ) var dt         : Long?               = null,
   @SerializedName("sys"        ) var sys        : Sys?               = Sys(),
   @SerializedName("timezone"   ) var timezone   : Int?               = null,
   @SerializedName("id"         ) var id         : Int?               = null,

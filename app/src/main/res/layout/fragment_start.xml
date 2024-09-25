@@ -7,11 +7,12 @@
             name="viewModel"
             type="com.example.weatherapp.weathermodel.ExampleJson2KtKotlin" />
     </data>
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <ProgressBar
+            android:layout_gravity="center"
             android:visibility="invisible"
             android:id="@+id/prog"
             android:layout_width="wrap_content"
@@ -231,7 +232,7 @@
                     android:id="@+id/state"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    app:setTime="@{viewModel.dt}"
+                    app:setTime="@{viewModel}"
                     app:layout_constraintBottom_toTopOf="@+id/textView20"
                     app:layout_constraintEnd_toEndOf="@+id/date"
                     app:layout_constraintHorizontal_bias="0.5"
@@ -324,7 +325,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/recyclerView3" />
+            app:layout_constraintTop_toBottomOf="@+id/recyclerView3"
+            app:layout_constraintVertical_weight="1" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView3"
@@ -336,8 +338,9 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cardView4" />
+            app:layout_constraintTop_toBottomOf="@+id/cardView4"
+            app:layout_constraintVertical_weight="2" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-    </LinearLayout>
+    </FrameLayout>
 </layout>

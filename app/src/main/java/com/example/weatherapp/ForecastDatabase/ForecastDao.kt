@@ -50,4 +50,7 @@ interface ForecastDao {
     suspend fun deleteAlert(weather: MyAlerts)
     @Query("SELECT * FROM Alerts WHERE id=:id")
     suspend fun getAlert(id:Int): MyAlerts
+    @Query("SELECT * FROM forecast where lat=:lat and lon=:lon and lang=:lang")
+    fun getTodayForecast(lat:Double,lon:Double,lang:Int): Flow<Forcast>
+
 }

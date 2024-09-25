@@ -12,8 +12,10 @@ import com.example.weatherapp.ForecastDatabase.ForecastDataBase
 import com.example.weatherapp.MyBrodcasts.AlertsBrodcast
 import com.example.weatherapp.MyNetwork.API
 import com.example.weatherapp.myViewModel.ForecastViewModel
+import com.example.weatherapp.myViewModel.State
 import com.example.weatherapp.weathermodel.ExampleJson2KtKotlin
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -59,7 +61,7 @@ class ExampleUnitTest {
     }
 
     @Test
-    fun testGetWeather() = runBlocking {
+    fun testGetWeather(): Unit = runBlocking {
         val context = ApplicationProvider.getApplicationContext() as Application
         val db = ForecastDataBase.getDatabase(context)
         context.getSharedPreferences(settings, Context.MODE_PRIVATE).edit()
@@ -67,8 +69,14 @@ class ExampleUnitTest {
 
         val repo = Repo.getInstance(LocalDataSource(db.yourDao()), RemoteDataSource(API))
         val viewmodel= ForecastViewModel(repo)
-        viewmodel.getWeather(55.7558,37.6173,context.getSharedPreferences(settings, Context.MODE_PRIVATE).getInt(language,consts.ar.ordinal))
 
+        viewmodel.getForecasts(55.7558,37.6173,context.getSharedPreferences(settings, Context.MODE_PRIVATE).getInt(language,consts.ar.ordinal))
+        viewmodel.forecast.collect{
+            if (it is State.Success){
+                println(it.data)
+            }
+
+        }
     }
 
 }

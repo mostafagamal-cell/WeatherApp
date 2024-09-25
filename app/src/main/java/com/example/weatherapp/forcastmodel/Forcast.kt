@@ -13,7 +13,7 @@ data class Forcast (
   @SerializedName("cod"     ) val cod     : String,
   @SerializedName("message" ) val message : Int,
   @SerializedName("cnt"     ) val cnt     : Int,
-  @SerializedName("list"    ) val list    : ArrayList<List>,
+  @SerializedName("list"    ) var list    : ArrayList<List>,
   @SerializedName("city"    ) val city    : City,
   var cityName: String = city.name,
   var lat:Double=city.coord?.lat!!,

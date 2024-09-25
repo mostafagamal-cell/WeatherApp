@@ -1,5 +1,6 @@
 package com.example.weatherapp
 
+import android.annotation.SuppressLint
 import android.location.Geocoder
 import android.os.Build
 import android.util.Log
@@ -16,6 +17,7 @@ import java.io.IOError
 import java.io.IOException
 import java.lang.NullPointerException
 import java.net.UnknownHostException
+import java.util.Calendar
 
 class Repo private constructor(
     private val localDataSource: LocalDataSource
@@ -29,7 +31,8 @@ class Repo private constructor(
     fun getWeather(cityName: Int,lang:Int): Flow<ExampleJson2KtKotlin> {
         return localDataSource.getWeather(cityName,lang)
     }
-      suspend fun getWeather(lat:Double,lon:Double,lang:Int): Flow<ExampleJson2KtKotlin> {
+      @SuppressLint("SuspiciousIndentation")
+      suspend fun getWeather(lat:Double, lon:Double, lang:Int): Flow<ExampleJson2KtKotlin> {
         try {
              val e = remoteDataSource.getWeather(lat,lon,"en")
              val d=  remoteDataSource.getWeather(lat,lon,"ar")
@@ -63,15 +66,15 @@ class Repo private constructor(
             if (e.isSuccessful){
                 e.body()?.lang=consts.en.ordinal
                 e.body()?.cityName= e.body()?.city?.name.toString()
-                e.body()?.lat=e.body()?.city?.coord?.lat!!
-                e.body()?.lon=e.body()?.city?.coord?.lon!!
+                e.body()?.lat=lat
+                e.body()?.lon=lon
                 if (e.body()!=null&&e.body()?.list!=null && e.body()?.list?.size!=0){
                     localDataSource.insertForecast(e.body()!!)
                 }
             }
             if (d.isSuccessful) {
-                d.body()?.lat=d.body()?.city?.coord?.lat!!
-                d.body()?.lon=d.body()?.city?.coord?.lon!!
+                d.body()?.lat=lat
+                d.body()?.lon=lon
                 d.body()?.lang =consts.ar.ordinal
                 d.body()?.cityName = d.body()?.city?.name.toString()
                 if (d.body()!=null&&d.body()?.list!=null && d.body()?.list?.size!=0){
@@ -125,6 +128,9 @@ class Repo private constructor(
     }
      fun getForecast(forecast: Forcast,lang:Int):Flow<Forcast>{
         return localDataSource.getForecast(forecast.lat,forecast.lon,lang)
+    }
+    fun getTodayForecast(lat:Double,lon:Double,lang:Int):Flow<Forcast>{
+        return localDataSource.getTodayForecast(lat,lon,lang)
     }
 
 }
