@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.preference.ListPreference
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
@@ -15,6 +16,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
@@ -41,7 +43,6 @@ class MainActivity : AppCompatActivity() {
         var allcities:Array<cityes>?=null
         fun start(context: Context):LiveData<Boolean>{
             return ConnectionLiveData(context)
-
         }
     }
     lateinit var e:MutableLiveData<Boolean>
@@ -62,6 +63,7 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("NewApi")
     fun  showDailalog(){
+
         val pref2 = getSharedPreferences(TAG, Context.MODE_PRIVATE)
 
             val pref =getSharedPreferences(settings, MODE_PRIVATE)
@@ -109,7 +111,22 @@ class MainActivity : AppCompatActivity() {
     fun start(){
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
          navController = navHostFragment.navController
-
+         navController.addOnDestinationChangedListener { controller, destination, arguments ->
+             if (destination.id==R.id.mapFragment){
+                 db.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+             }else{
+                 db.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+             }
+             if (destination.id==R.id.startFragment){
+                 db.swipeRefreshLayout.post {
+                     supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_menu_24)
+                 }
+             }else{
+                 db.swipeRefreshLayout.post {
+                     supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_arrow_back_24)
+                 }
+             }
+         }
         NavigationUI.setupWithNavController(db.navigationView, navController)
         val pref2 = getSharedPreferences(TAG, Context.MODE_PRIVATE)
         e= MutableLiveData<Boolean>(true)

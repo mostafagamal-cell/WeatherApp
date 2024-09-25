@@ -35,6 +35,7 @@ import com.example.weatherapp.States
 import com.example.weatherapp.current
 import com.example.weatherapp.databinding.FragmentStartBinding
 import com.example.weatherapp.databinding.InialBinding
+import com.example.weatherapp.forcastmodel.List
 import com.example.weatherapp.language
 import com.example.weatherapp.lat
 import com.example.weatherapp.longite
@@ -215,11 +216,12 @@ class StartFragment : Fragment() {
         }
         }
     fun coolect(){
+        db.recyclerView.adapter=adpt2
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.weather.collect{
                     if (it is State.Success){
-                        Log.i("SSSSSTTTTTAAAATTTTEEEEE","Success")
+                        Log.i("SSSSSTTTTTAAAATTTTEEEEE","Success ${it.data as ExampleJson2KtKotlin}")
                         val t= it.data as ExampleJson2KtKotlin
                         db.viewModel=(t)
                     }
@@ -244,7 +246,7 @@ class StartFragment : Fragment() {
                     // Log.i("eaaaaaaaaaaaaaaa","runned ")
 
                     if (it is State.Success){
-                        Log.i("eaaaaaaaaaaaaaaa","Sucesss")
+                        Log.i("eaaaaaaaaaaaaaaa","Sucesss ${it.data as Forcast}")
 
                         val  e =it.data as Forcast
                         adpt.submitList(e.list)
@@ -258,7 +260,28 @@ class StartFragment : Fragment() {
                         Log.i("eaaaaaaaaaaaaaaa","Loading")
 
                     }
+                }
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.day.collect{
+                    // Log.i("eaaaaaaaaaaaaaaa","runned ")
 
+                    if (it is State.Success){
+                        Log.i("eaaaaaaaaaaaaaaa","Sucesss ${it.data as Forcast}")
+                        val  data=it.data as Forcast
+                        adpt2.submitList(data.list)
+
+                    }
+                    if (it is State.Error){
+                        Log.i("eaaaaaaaaaaaaaaa","Error ${it.message}")
+
+                    }
+                    if (it is State.Loading){
+                        Log.i("eaaaaaaaaaaaaaaa","Loading")
+
+                    }
                 }
             }
         }
@@ -271,6 +294,7 @@ class StartFragment : Fragment() {
     }
 
      var adpt=TodayAdapter()
+    var adpt2=WeekAdpter()
     val per=arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION
         ,android.Manifest.permission.ACCESS_COARSE_LOCATION
         ,android.Manifest.permission.ACCESS_BACKGROUND_LOCATION

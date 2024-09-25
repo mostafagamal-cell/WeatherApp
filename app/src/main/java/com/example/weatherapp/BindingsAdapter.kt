@@ -63,7 +63,7 @@ fun setspeed(textView: TextView, temp: Double) {
     val context=textView.context
     when(context.getSharedPreferences(settings, Context.MODE_PRIVATE).getInt(speed,consts.MS.ordinal)){
         consts.MS.ordinal->textView.text= "$temp ${context.getString(R.string.MS)}"
-        consts.MH.ordinal->textView.text= "$temp ${context.getString(R.string.MH)}"
+        consts.MH.ordinal->textView.text= "${from_MS_to_MH(temp)} ${context.getString(R.string.MH)}"
     }
 }
 @BindingAdapter("setHumidity")
@@ -81,7 +81,6 @@ fun setCloud(textView: TextView, cloud: Int) {
 @SuppressLint("NewApi")
 @BindingAdapter("setDate")
 fun setDate(textView: TextView, dateInMillis: ExampleJson2KtKotlin) {
-
     textView.text =convertUnixToDateTime3(dateInMillis.dt!!,getTimeZoneFromOffset(dateInMillis.timezone!!))
 }
 @RequiresApi(Build.VERSION_CODES.O)
@@ -89,3 +88,8 @@ fun setDate(textView: TextView, dateInMillis: ExampleJson2KtKotlin) {
 fun setTime(textView: TextView, dateInMillis: ExampleJson2KtKotlin) {
     textView.text =convertUnixToDateTime2(dateInMillis.dt!!,getTimeZoneFromOffset(dateInMillis.timezone!!))
 }
+@BindingAdapter("setTime2")
+fun setTime2(textView: TextView, dateInMillis: String) {
+    textView.text =dateInMillis.split(" ").get(0)
+}
+

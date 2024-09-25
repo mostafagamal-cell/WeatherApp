@@ -5,9 +5,14 @@ plugins {
 }
 
 android {
+
     namespace = "com.example.weatherapp"
     compileSdk = 34
-
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
     defaultConfig {
         applicationId = "com.example.weatherapp"
         minSdk = 24
@@ -46,6 +51,7 @@ dependencies {
     implementation(libs.core.ktx)
     implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.androidx.core.i18n)
+    implementation(libs.androidx.preference)
     testImplementation(libs.androidx.runner)
     val room_version = "2.6.1"
 
@@ -79,6 +85,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     // Lifecycle utilities for Compose
     implementation(libs.androidx.lifecycle.runtime.compose)
+    runtimeOnly("androidx.preference:preference:1.2.1")
 
     // Saved state module for ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.savedstate)

@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.ui.util.fastFilterNotNull
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -26,6 +27,7 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
+import java.util.Locale
 import java.util.TimeZone
 
 class ForecastViewModelFac(val localDataSource: LocalDataSource, val remoteDataSource: RemoteDataSource) : ViewModelProvider.Factory{
@@ -72,8 +74,9 @@ class ForecastViewModelFac(val localDataSource: LocalDataSource, val remoteDataS
                     .collect { data ->
                         if (data != null) {
                             _forecast.value = State.Success(data)
-                            getTodayForecast(data, lang)
-                            getWeekForecast(data, lang)
+                            getWeekForecast(data.copy(), lang)
+                            getTodayForecast(data.copy(), lang)
+
                         } else{
                             _forecast.value=State.Error(Exception("no data found"))
                 }
@@ -84,35 +87,25 @@ class ForecastViewModelFac(val localDataSource: LocalDataSource, val remoteDataS
     @RequiresApi(Build.VERSION_CODES.O)
     fun getTodayForecast(data: Forcast, lang: Int) {
         _hours.value = State.Loading
-
-
-
         val  mytimezone=TimeZone.getTimeZone(getTimeZoneFromOffset2(data.city.timezone!!))
-
         val start = Calendar.getInstance(mytimezone)
         start.set(Calendar.HOUR_OF_DAY, 0)
         start.set(Calendar.MINUTE, 0)
         start.set(Calendar.SECOND, 0)
         start.set(Calendar.MILLISECOND, 0)
-
         val end = Calendar.getInstance(mytimezone)
-
-
         end.set(Calendar.HOUR_OF_DAY, 23)
         end.set(Calendar.MINUTE, 59)
         end.set(Calendar.SECOND, 59)
         end.set(Calendar.MILLISECOND, 999)
 
-        val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").apply {
+        val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).apply {
             timeZone = mytimezone
-
         }
-
         Log.i("ForecastLog", "Success ${format.format(start.time)} ${format.format(end.time.time)}")
 
         // Filter the forecast list based on the start and end times
         val lists = data.list.mapNotNull { e ->
-            val forecastTimeMillis = e.dt!! * 1000
             if (e.dtTxt.toString() in format.format(start.time)..format.format(end.time)) {
                 e.time = getDayHourFromTimestamp(e.dtTxt!!.split(" ")[1], lang)
                 e // Keep the forecast item
@@ -134,7 +127,7 @@ class ForecastViewModelFac(val localDataSource: LocalDataSource, val remoteDataS
 
     fun getWeekForecast(it:Forcast,lang: Int) {
                    _day.value = State.Loading
-                    val lists=it.list.map { e->
+                    val lists2=it.list.map { e->
                         if (e.dtTxt!!.split(" ")[1]== "21:00:00"){
                             e.dayname=getDayNameFromTimestamp(e.dt!!,lang)
                             return@map e as List
@@ -142,7 +135,12 @@ class ForecastViewModelFac(val localDataSource: LocalDataSource, val remoteDataS
                             return@map null
                         }
                     }
-                    _day.value=State.Success(lists)
+        var list=lists2.fastFilterNotNull()
+        // Update the forecast object
+        val forecast = _forecast.value as State.Success
+        val updatedForecast = forecast.data as Forcast
+        updatedForecast.list = ArrayList(list) // Update with the filtered list
+                    _day.value=State.Success(updatedForecast)
     }
 }
 

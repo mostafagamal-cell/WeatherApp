@@ -27,7 +27,7 @@
         <androidx.cardview.widget.CardView
             android:id="@+id/details"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="150dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -78,13 +78,13 @@
                     android:id="@+id/textView13"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    app:setCloud="@{viewModel.clouds.all}"
                     app:layout_constraintBottom_toBottomOf="@+id/textView11"
                     app:layout_constraintEnd_toEndOf="@+id/imageView5"
                     app:layout_constraintHorizontal_bias="0.103"
                     app:layout_constraintStart_toStartOf="@+id/imageView5"
                     app:layout_constraintTop_toTopOf="@+id/textView11"
-                    app:layout_constraintVertical_bias="0.0" />
+                    app:layout_constraintVertical_bias="0.0"
+                    app:setCloud="@{viewModel.clouds.all}" />
 
                 <TextView
                     android:id="@+id/textView14"
@@ -111,12 +111,12 @@
                     android:id="@+id/textView16"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    app:setHumidity="@{viewModel.main.humidity}"
                     app:layout_constraintBottom_toBottomOf="@+id/textView13"
                     app:layout_constraintEnd_toEndOf="@+id/imageView6"
                     app:layout_constraintHorizontal_bias="0.13"
                     app:layout_constraintStart_toStartOf="@+id/imageView6"
-                    app:layout_constraintTop_toTopOf="@+id/textView13" />
+                    app:layout_constraintTop_toTopOf="@+id/textView13"
+                    app:setHumidity="@{viewModel.main.humidity}" />
 
                 <TextView
                     android:id="@+id/textView17"
@@ -143,13 +143,13 @@
                     android:id="@+id/textView18"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    app:setSpeed="@{viewModel.wind.speed}"
                     app:layout_constraintBottom_toBottomOf="@+id/textView16"
                     app:layout_constraintEnd_toEndOf="@+id/imageView7"
                     app:layout_constraintHorizontal_bias="0.206"
                     app:layout_constraintStart_toStartOf="@+id/imageView7"
                     app:layout_constraintTop_toTopOf="@+id/textView16"
-                    app:layout_constraintVertical_bias="1.0" />
+                    app:layout_constraintVertical_bias="1.0"
+                    app:setSpeed="@{viewModel.wind.speed}" />
 
                 <TextView
                     android:id="@+id/textView19"
@@ -326,12 +326,13 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/recyclerView3"
-            app:layout_constraintVertical_weight="1" />
+            app:layout_constraintVertical_weight="2" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView3"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:elevation="13dp"
             android:orientation="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@+id/recyclerView"
@@ -339,7 +340,7 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/cardView4"
-            app:layout_constraintVertical_weight="2" />
+            app:layout_constraintVertical_weight="3" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>

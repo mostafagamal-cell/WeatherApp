@@ -1,14 +1,21 @@
 package com.example.weatherapp.AppViews
 
+import android.app.Activity
+import android.app.LocaleManager
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.os.LocaleList
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.util.Util
 import com.example.weatherapp.R
@@ -93,14 +100,25 @@ class SettingsFragment : Fragment() {
                 pref.edit().putInt(notification, consts.disable.ordinal).apply()
             }
         }
-        db.languge.setOnCheckedChangeListener { e, c ->
-            if (db.Englishrdb.isChecked) {
+        db.languge.setOnCheckedChangeListener { _, _ ->
+            val currentLocale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                context?.getSystemService(LocaleManager::class.java)?.applicationLocales?.toLanguageTags()
+            } else {
+                AppCompatDelegate.getApplicationLocales().toLanguageTags()
+            }
+
+            if (db.Englishrdb.isChecked && currentLocale != "en") {
                 pref.edit().putInt(language, consts.en.ordinal).apply()
+                setLocale("en")
             }
-            if (db.arabicrdb.isChecked) {
+
+            if (db.arabicrdb.isChecked && currentLocale != "ar") {
                 pref.edit().putInt(language, consts.ar.ordinal).apply()
+               setLocale("ar")
             }
+            restartApp()
         }
+
 
         db.enablenf.setOnCheckedChangeListener { e, c ->
             if (db.enablenf.isChecked) {
@@ -194,5 +212,17 @@ class SettingsFragment : Fragment() {
         val b=this.requireContext().checkSelfPermission(per[0]) == PackageManager.PERMISSION_GRANTED||this.requireContext().checkSelfPermission(per[1]) == PackageManager.PERMISSION_GRANTED
         return b
     }
-
+    fun setLocale(languageTag: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context?.getSystemService(LocaleManager::class.java)?.applicationLocales = LocaleList.forLanguageTags(languageTag)
+        } else {
+            AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(languageTag))
+        }
+    }
+    fun restartApp() {
+        val intent = Intent(context, MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        startActivity(intent)
+        (context as Activity).finish()
+    }
 }

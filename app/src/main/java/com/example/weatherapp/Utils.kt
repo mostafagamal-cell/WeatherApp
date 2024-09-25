@@ -30,7 +30,7 @@ enum class States {
     Error
 }
 fun from_C_to_K(double: Double)= (double-273.15).round(2)
-fun from_C_to_F(double: Double)=(double-459.67).round(2)
+fun from_C_to_F(double: Double)=((double - 273.15) * 9/5 + 32) .round(2)
 fun from_MS_to_MH(double: Double)=(double*2.23694).round(2)
 const val pickec="pickec"
 const val cities="cities"
