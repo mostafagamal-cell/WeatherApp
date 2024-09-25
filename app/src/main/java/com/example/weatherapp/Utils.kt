@@ -146,4 +146,29 @@ fun getTimeZoneFromOffset2(offsetInSeconds: Int): String {
     // Create a time zone string like "+02:00"
     return String.format("GMT%+02d:%02d", hours, minutes)
 }
+@RequiresApi(Build.VERSION_CODES.O)
+fun convertUnixToDateTime2(timestamp: Long, timeZone: String): String {
+    // Convert the Unix timestamp to an Instant
+    val instant = Instant.ofEpochSecond(timestamp)
+
+    // Convert the instant to a ZonedDateTime with the desired time zone
+    val zonedDateTime = instant.atZone(ZoneId.of(timeZone))
+
+    // Format the ZonedDateTime to a readable string
+    val formatter = DateTimeFormatter.ofPattern("h:mm a")
+    return zonedDateTime.format(formatter)
+}
+@RequiresApi(Build.VERSION_CODES.O)
+fun convertUnixToDateTime3(timestamp: Long, timeZone: String): String {
+    // Convert the Unix timestamp to an Instant
+    val instant = Instant.ofEpochSecond(timestamp)
+
+    // Convert the instant to a ZonedDateTime with the desired time zone
+    val zonedDateTime = instant.atZone(ZoneId.of(timeZone))
+
+    // Format the ZonedDateTime to a readable string
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    return zonedDateTime.format(formatter)
+}
+
 

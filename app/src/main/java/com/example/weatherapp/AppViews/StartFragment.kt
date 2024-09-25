@@ -130,6 +130,12 @@ class StartFragment : Fragment() {
         }
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        coolect()
+    }
+
+
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("MissingPermission", "RepeatOnLifecycleWrongUsage")
     override fun onResume() {
@@ -205,10 +211,13 @@ class StartFragment : Fragment() {
                    }
                    Log.i("eeeqqqqqqqqqqqeeeeeeeefff"," after map  $late $lon")
                   requireActivity().getSharedPreferences(map, MODE_PRIVATE).edit().clear().apply()
+
               viewModel.getWeather(late.toDouble(),lon.toDouble(),requireActivity().getSharedPreferences(settings, MODE_PRIVATE).getInt(language,consts.ar.ordinal))
               viewModel.getForecasts(late.toDouble(),lon.toDouble(),requireActivity().getSharedPreferences(settings, MODE_PRIVATE).getInt(language,consts.ar.ordinal))
-        }
 
+        }
+        }
+    fun coolect(){
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.weather.collect{
@@ -231,11 +240,11 @@ class StartFragment : Fragment() {
 
                 }
             }
-          }
+        }
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.hours.collect{
-                   // Log.i("eaaaaaaaaaaaaaaa","runned ")
+                    // Log.i("eaaaaaaaaaaaaaaa","runned ")
 
                     if (it is State.Success){
                         val  e =it.data as Forcast
@@ -244,7 +253,7 @@ class StartFragment : Fragment() {
                     if (it is State.Error){
                         Log.i("eaaaaaaaaaaaaaaa","Error ${it.message}")
 
-                             }
+                    }
                     if (it is State.Loading){
                         Log.i("eaaaaaaaaaaaaaaa","Loading")
 
@@ -252,9 +261,8 @@ class StartFragment : Fragment() {
 
                 }
             }
-         }
-
         }
+    }
     private  var fusedClient : FusedLocationProviderClient?=null
 
     override fun onPause() {
@@ -275,6 +283,7 @@ class StartFragment : Fragment() {
     fun checkpermessions():Boolean{
         return this.requireContext().checkSelfPermission(per[0]) == PackageManager.PERMISSION_GRANTED
     }
+    @SuppressLint("NewApi")
     fun  showDailalog(){
         val pref2 = requireActivity().getSharedPreferences(TAG, Context.MODE_PRIVATE)
         if (pref2.getBoolean("first", true)) {
@@ -304,6 +313,9 @@ class StartFragment : Fragment() {
                     if (pref.contains(mode) && pref.contains(language)) {
                         pref2.edit().putBoolean("first", false).apply()
                         db.scrollView.visibility = View.VISIBLE
+                        viewModel.getWeather(0.0, 0.0, pref.getInt(language, consts.ar.ordinal))
+                        viewModel.getForecasts(0.0, 0.0, pref.getInt(language, consts.ar.ordinal))
+
                         dismiss()
                     }
                 }

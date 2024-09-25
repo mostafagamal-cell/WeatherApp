@@ -78,36 +78,14 @@ fun setPressure(textView: TextView, pressure: Double) {
 fun setCloud(textView: TextView, cloud: Int) {
     textView.text= "$cloud %"
 }
+@SuppressLint("NewApi")
 @BindingAdapter("setDate")
-fun setDate(textView: TextView, dateInMillis: Long) {
-    val calendar = java.util.Calendar.getInstance()
+fun setDate(textView: TextView, dateInMillis: ExampleJson2KtKotlin) {
 
-    val sdf = java.text.SimpleDateFormat("dd MMM yyyy", java.util.Locale.getDefault())
-    val formattedDate = sdf.format(java.util.Date(    dateInMillis*1000))
-    textView.text = formattedDate
+    textView.text =convertUnixToDateTime3(dateInMillis.dt!!,getTimeZoneFromOffset(dateInMillis.timezone!!))
 }
 @RequiresApi(Build.VERSION_CODES.O)
 @BindingAdapter("setTime")
 fun setTime(textView: TextView, dateInMillis: ExampleJson2KtKotlin) {
-    // Extract the timezone offset from the object (in seconds) and convert to milliseconds
-    val timezoneOffsetInMillis = dateInMillis.timezone!! * 1000
-
-    // Create a Calendar instance
-    val cal: Calendar = Calendar.getInstance()
-
-    // Adjust the time based on the given dateInMillis and timezone offset
-    val da = Date((dateInMillis.dt!! * 1000L) + timezoneOffsetInMillis)
-    cal.time = da
-
-    // Set the timezone manually if needed (adjusting for the given timezone offset)
-    val offsetInHours = dateInMillis.timezone!! / 3600
-    cal.timeZone = TimeZone.getTimeZone("GMT+$offsetInHours")
-
-    // Format time (full string with date and time)
-    val time = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM).format(cal.time)
-
-    // Set formatted time in the TextView
-    Log.i("sssssssssiizzzz","Success  ${dateInMillis.name} ${dateInMillis.dt} ")
-    val data=Date(dateInMillis.dt!!*1000)
-    textView.text =convertUnixToDateTime(dateInMillis.dt!!,getTimeZoneFromOffset(dateInMillis.timezone!!))
+    textView.text =convertUnixToDateTime2(dateInMillis.dt!!,getTimeZoneFromOffset(dateInMillis.timezone!!))
 }
