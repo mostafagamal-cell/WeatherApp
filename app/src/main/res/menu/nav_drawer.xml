@@ -4,10 +4,12 @@
 
     <item android:title="@string/favourits"
         android:icon="@drawable/heart"
+        android:id="@+id/favFragment"
         android:checkable="true"
     />
     <item android:title="@string/alarms"
         android:icon="@drawable/bell"
+        android:id="@+id/alarmsFragment"
         android:checkable="true"
         />
     <item android:title="@string/alarms"

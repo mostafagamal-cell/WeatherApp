@@ -6,15 +6,18 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
@@ -99,12 +102,13 @@ class MainActivity : AppCompatActivity() {
             e.show()
 
     }
+    lateinit var navController: NavController
     fun checkpermessions():Boolean{
         return this.checkSelfPermission(per[0]) == PackageManager.PERMISSION_GRANTED
     }
     fun start(){
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
-        val navController = navHostFragment.navController
+         navController = navHostFragment.navController
 
         NavigationUI.setupWithNavController(db.navigationView, navController)
         val pref2 = getSharedPreferences(TAG, Context.MODE_PRIVATE)
@@ -180,6 +184,24 @@ class MainActivity : AppCompatActivity() {
                     }.create().show()
             }
         }
+
     }
     val req=101
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId==android.R.id.home){
+            if (db.drawerLayout.isDrawerOpen(GravityCompat.START)){
+                db.drawerLayout.closeDrawer(GravityCompat.START)
+            }else {
+                if (navController.currentDestination?.id != R.id.startFragment) {
+                    return navController.navigateUp() || super.onOptionsItemSelected(item)
+                }else
+                db.drawerLayout.openDrawer(GravityCompat.START)
+            }
+        }else{
+            navController.navigate(item.itemId)
+
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
 }

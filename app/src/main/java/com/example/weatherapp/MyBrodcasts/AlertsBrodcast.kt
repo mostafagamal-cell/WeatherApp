@@ -174,6 +174,14 @@ class AlertsBrodcast:BroadcastReceiver() {
     }
     fun sendNotification(context: Context,message:String,title:String) {
         val notificationId = 1
+
+
+
+
+
+
+
+
         // Build the notification
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setContentTitle(title)

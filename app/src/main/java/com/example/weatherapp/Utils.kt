@@ -113,18 +113,6 @@ fun getDayHourFromTimestamp(timestamp: String,lang:Int):String {
     }
     return x
 }
-@RequiresApi(Build.VERSION_CODES.O)
-fun convertUnixToDateTime(timestamp: Long, timeZone: String): String {
-    // Convert the Unix timestamp to an Instant
-    val instant = Instant.ofEpochSecond(timestamp)
-
-    // Convert the instant to a ZonedDateTime with the desired time zone
-    val zonedDateTime = instant.atZone(ZoneId.of(timeZone))
-
-    // Format the ZonedDateTime to a readable string
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-    return zonedDateTime.format(formatter)
-}
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun getTimeZoneFromOffset(offsetInSeconds: Int): String {

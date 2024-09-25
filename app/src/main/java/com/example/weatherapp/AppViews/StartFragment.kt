@@ -1,6 +1,7 @@
 package com.example.weatherapp.AppViews
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
@@ -127,6 +128,10 @@ class StartFragment : Fragment() {
         if (requireActivity().getSharedPreferences(settings, MODE_PRIVATE).getInt(mode,consts.Map.ordinal)==consts.GPS.ordinal){
             db.gotomap.visibility=View.INVISIBLE
          if (!checkpermessions()){
+             AlertDialog.Builder(this.requireContext())
+                 .setTitle(this.getString(R.string.request_GPS_permissions)).setMessage(R.string.please_Give_GPS_permissions).setPositiveButton(R.string.ok){e,c->
+                     requestPermessions()
+                 }
             Toast.makeText(this.requireContext(),this.getString(R.string.please_Give_GPS_permissions),Toast.LENGTH_LONG).show()
          }
             val manager=requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
