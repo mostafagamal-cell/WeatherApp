@@ -61,9 +61,7 @@ class StartFragment : Fragment() {
     val db: FragmentStartBinding by lazy {
          FragmentStartBinding.inflate(layoutInflater)
      }
-    val mydb: InialBinding by lazy {
-        InialBinding.inflate(layoutInflater)
-    }
+
      val viewModel: ForecastViewModel by lazy {
          ViewModelProvider(this,ForecastViewModelFac(LocalDataSource(ForecastDataBase.getDatabase(requireContext()).yourDao()),
              RemoteDataSource(API)
@@ -74,7 +72,6 @@ class StartFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        showDailalog()
         return db.root
     }
     private  val TAG = "StartFragment"
@@ -91,19 +88,6 @@ class StartFragment : Fragment() {
         )
     }
 
-
-    private fun startGPS(){
-        androidx.appcompat.app.AlertDialog.Builder(this.requireContext())
-            .setTitle(this.getString(R.string.request_GPS_permissions))
-            .setMessage(this.getString(R.string.please_Give_GPS_permissions))
-            .setPositiveButton(this.getString(R.string.ok)) { _, _ ->
-                requestPermessions()
-            }
-            .setNegativeButton(this.getString(R.string.cancel)) { e, c ->
-                mydb.Maprdb.isChecked=true
-                e.dismiss()
-            }.create().show()
-    }
     fun requestPermessions(){
         requestPermissions(per,req)
     }
@@ -116,10 +100,9 @@ class StartFragment : Fragment() {
         if (requestCode==req){
             val t= PackageManager.PERMISSION_GRANTED
             if (grantResults[0]==t){
-                mydb.GPSrdb.isChecked=true
+
                 requireActivity().getSharedPreferences(settings, MODE_PRIVATE).edit().putInt(mode,consts.GPS.ordinal).apply()
             }else{
-                mydb.Maprdb.isChecked=true
                 requireActivity().getSharedPreferences(settings, MODE_PRIVATE).edit().putInt(mode,consts.Map.ordinal).apply()
                 androidx.appcompat.app.AlertDialog.Builder(this.requireContext())
                     .setMessage(this.getString(R.string.faild_GPS_permissions))
@@ -178,12 +161,22 @@ class StartFragment : Fragment() {
                     fusedClient = LocationServices.getFusedLocationProviderClient(requireActivity());
                     fusedClient!!.lastLocation.addOnSuccessListener {
                         if (it != null) {
+                            Log.i("eeeeeeeeeeeeeeee","${it.latitude} ${it.longitude}")
+                            requireActivity().getSharedPreferences(map, MODE_PRIVATE).edit()
+                                .putFloat(lat, it.latitude.toFloat())
+                                .putFloat(longite, it.longitude.toFloat())
+                                .apply()
                             viewModel.getWeather(
                                 it.latitude,
                                 it.longitude,
                                 requireActivity().getSharedPreferences(settings, MODE_PRIVATE)
                                     .getInt(language, consts.ar.ordinal)
                             )
+                            viewModel.getForecasts(
+                                it.latitude,
+                                it.longitude,
+                                requireActivity().getSharedPreferences(settings, MODE_PRIVATE)
+                                    .getInt(language, consts.ar.ordinal))
                          }
                         }
                 }
@@ -202,8 +195,8 @@ class StartFragment : Fragment() {
             if (select) {
                     select=false
                     val e = requireActivity().getSharedPreferences(TAG, MODE_PRIVATE)
-                    late = requireActivity().getSharedPreferences(map, MODE_PRIVATE).getFloat(lat, e.getFloat(lat, 30.0444F))
-                    lon = requireActivity().getSharedPreferences(map, MODE_PRIVATE).getFloat(longite, e.getFloat(longite,  31.2357F))
+                    late = requireActivity().getSharedPreferences(map, MODE_PRIVATE).getFloat(lat, e.getFloat(lat,0F))
+                    lon = requireActivity().getSharedPreferences(map, MODE_PRIVATE).getFloat(longite, e.getFloat(longite,  0F))
                     val ee = e.edit()
                     ee.putFloat(lat, late)
                     ee.putFloat(longite, lon)
@@ -214,7 +207,6 @@ class StartFragment : Fragment() {
 
               viewModel.getWeather(late.toDouble(),lon.toDouble(),requireActivity().getSharedPreferences(settings, MODE_PRIVATE).getInt(language,consts.ar.ordinal))
               viewModel.getForecasts(late.toDouble(),lon.toDouble(),requireActivity().getSharedPreferences(settings, MODE_PRIVATE).getInt(language,consts.ar.ordinal))
-
         }
         }
     fun coolect(){
@@ -247,8 +239,11 @@ class StartFragment : Fragment() {
                     // Log.i("eaaaaaaaaaaaaaaa","runned ")
 
                     if (it is State.Success){
+                        Log.i("eaaaaaaaaaaaaaaa","Sucesss")
+
                         val  e =it.data as Forcast
                         adpt.submitList(e.list)
+
                     }
                     if (it is State.Error){
                         Log.i("eaaaaaaaaaaaaaaa","Error ${it.message}")
@@ -283,52 +278,7 @@ class StartFragment : Fragment() {
     fun checkpermessions():Boolean{
         return this.requireContext().checkSelfPermission(per[0]) == PackageManager.PERMISSION_GRANTED
     }
-    @SuppressLint("NewApi")
-    fun  showDailalog(){
-        val pref2 = requireActivity().getSharedPreferences(TAG, Context.MODE_PRIVATE)
-        if (pref2.getBoolean("first", true)) {
-            db.scrollView.visibility = View.INVISIBLE
-            val pref = requireActivity().getSharedPreferences(settings, MODE_PRIVATE)
-           val e= Dialog(requireContext()).apply {
-                setContentView(mydb.root)
-                mydb.radioGroup2.setOnCheckedChangeListener { radioGroup, i ->
-                    if (mydb.GPSrdb.isChecked) {
-                        if (!checkpermessions()) {
-                            startGPS()
-                            return@setOnCheckedChangeListener
-                        }
-                        pref.edit().putInt(mode, consts.GPS.ordinal).apply()
-                    } else {
-                        pref.edit().putInt(mode, consts.Map.ordinal).apply()
-                    }
-                }
-                mydb.radioGroup.setOnCheckedChangeListener { radioGroup, i ->
-                    if (mydb.radioButton.isChecked) {
-                        pref.edit().putInt(language, consts.en.ordinal).apply()
-                    } else {
-                        pref.edit().putInt(language, consts.ar.ordinal).apply()
-                    }
-                }
-                mydb.ok.setOnClickListener {
-                    if (pref.contains(mode) && pref.contains(language)) {
-                        pref2.edit().putBoolean("first", false).apply()
-                        db.scrollView.visibility = View.VISIBLE
-                        viewModel.getWeather(0.0, 0.0, pref.getInt(language, consts.ar.ordinal))
-                        viewModel.getForecasts(0.0, 0.0, pref.getInt(language, consts.ar.ordinal))
 
-                        dismiss()
-                    }
-                }
-                setCancelable(false)
-                mydb.button3.setOnClickListener {
-                    requireActivity().finish()
-                }
-
-            }
-            e.create()
-            e.show()
-        }
-    }
     fun createTempWeather():ExampleJson2KtKotlin{
         return ExampleJson2KtKotlin(
             name = "---", base = "-----", clouds = Clouds(0), cod = 0,

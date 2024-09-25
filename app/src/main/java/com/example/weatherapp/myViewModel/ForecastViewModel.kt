@@ -1,6 +1,7 @@
 package com.example.weatherapp.myViewModel
 
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -16,6 +17,7 @@ import com.example.weatherapp.getDayHourFromTimestamp
 import com.example.weatherapp.getDayNameFromTimestamp
 import com.example.weatherapp.getTimeZoneFromOffset
 import com.example.weatherapp.getTimeZoneFromOffset2
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -46,7 +48,7 @@ class ForecastViewModelFac(val localDataSource: LocalDataSource, val remoteDataS
     fun getWeather(lat: Double, lon: Double, lang: Int) {
         weatherJob?.cancel()  // Cancel the previous weather request if running
         _weather.value = State.Loading  // Reset the state to avoid old data
-        weatherJob = viewModelScope.launch {
+        weatherJob = viewModelScope.launch(Dispatchers.IO) {
             _weather.value = State.Loading
                 repo.getWeather(lat, lon, lang)
                     .catch { e -> _weather.value = State.Error(e) }
@@ -64,7 +66,7 @@ class ForecastViewModelFac(val localDataSource: LocalDataSource, val remoteDataS
     fun getForecasts(lat: Double, lon: Double, lang: Int) {
         forecastJob?.cancel()  // Cancel previous forecast request if running
         _forecast.value = State.Loading  // Reset the state
-        forecastJob = viewModelScope.launch{
+        forecastJob = viewModelScope.launch(Dispatchers.IO){
             _forecast.value = State.Loading
                 repo.getForecast(lat, lon, lang)
                     .collect { data ->
