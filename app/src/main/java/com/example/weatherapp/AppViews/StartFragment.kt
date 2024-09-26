@@ -187,6 +187,7 @@ class StartFragment : Fragment() {
                     .setPositiveButton(R.string.ok){e,c->
                         val intetn=Intent(ACTION_LOCATION_SOURCE_SETTINGS)
                         startActivity(intetn)
+                        e.dismiss()
                     }
                     .setNegativeButton(R.string.cancel){e,c->
                         e.dismiss()
