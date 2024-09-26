@@ -7,9 +7,11 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Location
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
+import android.provider.CallLog.Locations
 import android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
 import android.util.Log
 import android.view.LayoutInflater
@@ -115,9 +117,37 @@ class StartFragment : Fragment() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         coolect()
+        db.recyclerView3.adapter=adpt
+        if (requireActivity().getSharedPreferences(settings, MODE_PRIVATE).getInt(mode,consts.Map.ordinal)==consts.Map.ordinal){
+
+            db.gotomap.visibility=View.VISIBLE
+            var late=requireActivity().getSharedPreferences(TAG, MODE_PRIVATE).getFloat(lat, 0.0F)
+            var lon=requireActivity().getSharedPreferences(TAG, MODE_PRIVATE).getFloat(longite, 0.0F)
+            db.gotomap.setOnClickListener {
+                findNavController().navigate(R.id.mapFragment)
+                select=true
+            }
+            Log.i("eeeqqqqqqqqqqqeeeeeeeefff"," before map  $late $lon")
+            if (select) {
+                select=false
+                val e = requireActivity().getSharedPreferences(TAG, MODE_PRIVATE)
+                late = requireActivity().getSharedPreferences(map, MODE_PRIVATE).getFloat(lat, e.getFloat(lat,0F))
+                lon = requireActivity().getSharedPreferences(map, MODE_PRIVATE).getFloat(longite, e.getFloat(longite,  0F))
+                val ee = e.edit()
+                ee.putFloat(lat, late)
+                ee.putFloat(longite, lon)
+                ee.apply()
+            }
+            Log.i("eeeqqqqqqqqqqqeeeeeeeefff"," after map  $late $lon")
+            requireActivity().getSharedPreferences(map, MODE_PRIVATE).edit().clear().apply()
+
+            viewModel.getWeather(late.toDouble(),lon.toDouble(),requireActivity().getSharedPreferences(settings, MODE_PRIVATE).getInt(language,consts.ar.ordinal))
+            viewModel.getForecasts(late.toDouble(),lon.toDouble(),requireActivity().getSharedPreferences(settings, MODE_PRIVATE).getInt(language,consts.ar.ordinal))
+        }
     }
 
 
@@ -125,32 +155,31 @@ class StartFragment : Fragment() {
     @SuppressLint("MissingPermission", "RepeatOnLifecycleWrongUsage")
     override fun onResume() {
         super.onResume()
-        db.recyclerView3.adapter=adpt
         if (requireActivity().getSharedPreferences(settings, MODE_PRIVATE).getInt(mode,consts.Map.ordinal)==consts.GPS.ordinal){
-            db.gotomap.visibility=View.INVISIBLE
-         if (!checkpermessions()){
-             AlertDialog.Builder(this.requireContext())
-                 .setTitle(this.getString(R.string.request_GPS_permissions)).setMessage(R.string.please_Give_GPS_permissions).setPositiveButton(R.string.ok){e,c->
-                     requestPermessions()
-                 }
+        db.gotomap.visibility=View.INVISIBLE
+        if (!checkpermessions()){
+            AlertDialog.Builder(this.requireContext())
+                .setTitle(this.getString(R.string.request_GPS_permissions)).setMessage(R.string.please_Give_GPS_permissions).setPositiveButton(R.string.ok){e,c->
+                    requestPermessions()
+                }
             Toast.makeText(this.requireContext(),this.getString(R.string.please_Give_GPS_permissions),Toast.LENGTH_LONG).show()
-         }
-            val manager=requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
-            var gps=false
-            var network=false
-            var isgpsav=true
-            var isnetworkav=true
-            try {
-                gps=manager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-            }catch (e:Exception){
-               isgpsav=false
-            }
-            try {
-                network=manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-            }catch (e:Exception){
-               isnetworkav=false
-            }
-            if (isgpsav||isnetworkav){
+        }
+        val manager=requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        var gps=false
+        var network=false
+        var isgpsav=true
+        var isnetworkav=true
+        try {
+            gps=manager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        }catch (e:Exception){
+            isgpsav=false
+        }
+        try {
+            network=manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+        }catch (e:Exception){
+            isnetworkav=false
+        }
+        if (isgpsav||isnetworkav){
             if (!gps&&!network){
                 androidx.appcompat.app.AlertDialog.Builder(this.requireContext())
                     .setTitle(this.getString(R.string.GPS))
@@ -162,9 +191,10 @@ class StartFragment : Fragment() {
                     .setNegativeButton(R.string.cancel){e,c->
                         e.dismiss()
                     }.show()
-                }
-                if (checkpermessions()) {
-                    fusedClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+            }
+            if (checkpermessions()) {
+                fusedClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+                if (checkpermessions())
                     fusedClient!!.lastLocation.addOnSuccessListener {
                         if (it != null) {
                             Log.i("eeeeeeeeeeeeeeee","${it.latitude} ${it.longitude}")
@@ -183,38 +213,17 @@ class StartFragment : Fragment() {
                                 it.longitude,
                                 requireActivity().getSharedPreferences(settings, MODE_PRIVATE)
                                     .getInt(language, consts.ar.ordinal))
-                         }
                         }
-                }
-            }else{
-                Toast.makeText(this.requireContext(),this.getString(R.string.no_loc_av),Toast.LENGTH_LONG).show()
+                    }
+
             }
         }else{
-            db.gotomap.visibility=View.VISIBLE
-            var late=requireActivity().getSharedPreferences(TAG, MODE_PRIVATE).getFloat(lat, 0.0F)
-            var lon=requireActivity().getSharedPreferences(TAG, MODE_PRIVATE).getFloat(longite, 0.0F)
-            db.gotomap.setOnClickListener {
-                findNavController().navigate(R.id.mapFragment)
-                select=true
+            Toast.makeText(this.requireContext(),this.getString(R.string.no_loc_av),Toast.LENGTH_LONG).show()
+        }
             }
-            Log.i("eeeqqqqqqqqqqqeeeeeeeefff"," before map  $late $lon")
-            if (select) {
-                    select=false
-                    val e = requireActivity().getSharedPreferences(TAG, MODE_PRIVATE)
-                    late = requireActivity().getSharedPreferences(map, MODE_PRIVATE).getFloat(lat, e.getFloat(lat,0F))
-                    lon = requireActivity().getSharedPreferences(map, MODE_PRIVATE).getFloat(longite, e.getFloat(longite,  0F))
-                    val ee = e.edit()
-                    ee.putFloat(lat, late)
-                    ee.putFloat(longite, lon)
-                    ee.apply()
-                   }
-                   Log.i("eeeqqqqqqqqqqqeeeeeeeefff"," after map  $late $lon")
-                  requireActivity().getSharedPreferences(map, MODE_PRIVATE).edit().clear().apply()
+        }
 
-              viewModel.getWeather(late.toDouble(),lon.toDouble(),requireActivity().getSharedPreferences(settings, MODE_PRIVATE).getInt(language,consts.ar.ordinal))
-              viewModel.getForecasts(late.toDouble(),lon.toDouble(),requireActivity().getSharedPreferences(settings, MODE_PRIVATE).getInt(language,consts.ar.ordinal))
-        }
-        }
+
     fun coolect(){
         db.recyclerView.adapter=adpt2
         viewLifecycleOwner.lifecycleScope.launch {
@@ -269,7 +278,7 @@ class StartFragment : Fragment() {
                     // Log.i("eaaaaaaaaaaaaaaa","runned ")
 
                     if (it is State.Success){
-                        Log.i("eaaaaaaaaaaaaaaa","Sucesss ${it.data as Forcast}")
+                        Log.i("xzdfafafdsafdsfsdfsdfsdfdf","Sucesss ${it.data as Forcast}")
                         val  data=it.data as Forcast
                         adpt2.submitList(data.list)
 

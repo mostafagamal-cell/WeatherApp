@@ -66,14 +66,18 @@ fun Double.round(decimals: Int): Double {
     return kotlin.math.round(this * multiplier) / multiplier
 }
 
-fun getDayNameFromTimestamp(timestamp: Long,lang:Int): String {
-    val date = Date(timestamp)
-    var format:SimpleDateFormat?=null
-    if (lang== consts.ar.ordinal)
-        format =SimpleDateFormat("EEEE dd-MM-yyyy", Locale("ar"))
-    if (lang== consts.en.ordinal)
-        format = SimpleDateFormat("EEEE dd-MM-yyyy", Locale("en"))
-    return format!!.format(date)
+@RequiresApi(Build.VERSION_CODES.O)
+fun getDayNameFromTimestamp(datas:String,timestamp: Long, timeZone: Int,lang:Int): String {
+     val e=datas
+     val date = convertUnixToZonedDateTime(timestamp,getTimeZoneFromOffset(timeZone))
+     val es=date.minusDays(1)
+      val dayOfWeek =es.dayOfWeek
+    Log.i("adasddasdasad","Success  ${dayOfWeek} ${e} ")
+      return when (lang) {
+        consts.ar.ordinal -> dayOfWeek.getDisplayName(java.time.format.TextStyle.FULL, Locale("ar")) // Arabic
+        consts.en.ordinal -> dayOfWeek.getDisplayName(java.time.format.TextStyle.FULL, Locale("en")) // English
+        else -> dayOfWeek.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault()) // Default language
+    }
 }
 fun getDayHourFromTimestamp(timestamp: String,lang:Int):String {
     Log.i("sssssssssiizzzz","Success  ${timestamp} ${lang==consts.ar.ordinal} ")
@@ -160,3 +164,9 @@ fun convertUnixToDateTime3(timestamp: Long, timeZone: String): String {
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
+fun convertUnixToZonedDateTime(timestamp: Long, timeZone: String): ZonedDateTime {
+    // Convert the Unix timestamp to an Instant and then to a ZonedDateTime with the desired time zone
+    val instant = Instant.ofEpochSecond(timestamp)
+    return instant.atZone(ZoneId.of(timeZone))
+}

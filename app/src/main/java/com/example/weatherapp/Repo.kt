@@ -53,10 +53,8 @@ class Repo private constructor(
                 Log.i("eeeeeeeeeeeeeeeeeeeeeeeeeeee",d.body()!!.name)
             }
             return localDataSource.getWeather(lat,lon,lang)
-        }catch (e: UnknownHostException){
+        }catch (e: Exception){
             return localDataSource.getWeather(lat,lon,lang)
-        }catch (e:IOException){
-            throw e
         }
     }
     suspend fun getForecast(lat:Double,lon:Double,lang:Int):Flow<Forcast>{
@@ -82,8 +80,8 @@ class Repo private constructor(
                 }
             }
             return localDataSource.getForecast(lat,lon,lang)
-        }catch (e:IOError){
-            throw e
+        }catch (e:Exception){
+            return localDataSource.getForecast(lat,lon,lang)
         }
     }
     @RequiresApi(Build.VERSION_CODES.O)

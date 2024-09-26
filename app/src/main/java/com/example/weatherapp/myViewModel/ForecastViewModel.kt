@@ -3,6 +3,7 @@ package com.example.weatherapp.myViewModel
 
 import android.annotation.SuppressLint
 import android.os.Build
+import android.provider.CallLog.Locations
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.ui.util.fastFilterNotNull
@@ -74,9 +75,10 @@ class ForecastViewModelFac(val localDataSource: LocalDataSource, val remoteDataS
                     .collect { data ->
                         if (data != null) {
                             _forecast.value = State.Success(data)
-                            getWeekForecast(data.copy(), lang)
-                            getTodayForecast(data.copy(), lang)
-
+                            val d1=data.copy()
+                            val d2=data.copy()
+                            getWeekForecast(d1, lang)
+                            getTodayForecast(d2, lang)
                         } else{
                             _forecast.value=State.Error(Exception("no data found"))
                 }
@@ -125,20 +127,22 @@ class ForecastViewModelFac(val localDataSource: LocalDataSource, val remoteDataS
         _hours.value = State.Success(updatedForecast)
     }
 
-    fun getWeekForecast(it:Forcast,lang: Int) {
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getWeekForecast(it:Forcast, lang: Int) {
                    _day.value = State.Loading
                     val lists2=it.list.map { e->
                         if (e.dtTxt!!.split(" ")[1]== "21:00:00"){
-                            e.dayname=getDayNameFromTimestamp(e.dt!!,lang)
+                            e.dayname=getDayNameFromTimestamp(e.dtTxt!!,e.dt!!,it.city.timezone!!,lang)
+                            Log.i("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz", "Filtered forecasts: ${e.dayname}")
                             return@map e as List
                         } else {
                             return@map null
                         }
                     }
-        var list=lists2.fastFilterNotNull()
+        val list=lists2.fastFilterNotNull()
         // Update the forecast object
-        val forecast = _forecast.value as State.Success
-        val updatedForecast = forecast.data as Forcast
+
+        val updatedForecast = it
         updatedForecast.list = ArrayList(list) // Update with the filtered list
                     _day.value=State.Success(updatedForecast)
     }

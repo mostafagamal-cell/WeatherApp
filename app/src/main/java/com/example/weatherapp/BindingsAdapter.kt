@@ -92,4 +92,13 @@ fun setTime(textView: TextView, dateInMillis: ExampleJson2KtKotlin) {
 fun setTime2(textView: TextView, dateInMillis: String) {
     textView.text =dateInMillis.split(" ").get(0)
 }
+@BindingAdapter("tempMax", "tempMin")
 
+fun setTempMaxMin(textView: TextView, tempmax: Double ,tempmin: Double) {
+    val context=textView.context
+    when(context.getSharedPreferences(settings, Context.MODE_PRIVATE).getInt(units,consts.C.ordinal)){
+        consts.C.ordinal->textView.text= "${from_C_to_K(tempmax)} / ${from_C_to_K(tempmin)} °C"
+        consts.F.ordinal->textView.text="${from_C_to_F(tempmax)}  / ${from_C_to_F(tempmin)} °F"
+        consts.K.ordinal->textView.text="${tempmax} / ${tempmin} °K"
+    }
+}
