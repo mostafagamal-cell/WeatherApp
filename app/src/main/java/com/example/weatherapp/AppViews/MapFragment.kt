@@ -93,7 +93,7 @@ class MapFragment : Fragment() {
             val selectedCity = MainActivity.allcities!!.find { it.city == parent.getItemAtPosition(position).toString().split(",")[0] && it.country==parent.getItemAtPosition(position).toString().split(",")[1].trim() }
 
             db.multiAutoCompleteTextView.setText("${selectedCity!!.city}, ${selectedCity.country}")
-
+            res="${selectedCity.city}, ${selectedCity.country}"
             val geoPoint = GeoPoint(selectedCity.lat, selectedCity.lng)
             mymap.overlays.remove(marker)
             marker = Marker(mymap).apply {
@@ -154,6 +154,7 @@ class MapFragment : Fragment() {
            val mylong=marker?.position?.longitude?.toFloat()
            editor.putFloat(lat,mylat!!)
            editor.putFloat(longite,mylong!!)
+           editor.putString("name",res)
            editor.apply()
            findNavController().popBackStack()
        }

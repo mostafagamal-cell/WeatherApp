@@ -3,6 +3,7 @@ package com.example.weatherapp.DataSource
 import com.example.weatherapp.Alerts.MyAlerts
 import com.example.weatherapp.forcastmodel.Forcast
 import com.example.weatherapp.ForecastDatabase.ForecastDao
+import com.example.weatherapp.forcastmodel.Favorites
 import com.example.weatherapp.weathermodel.ExampleJson2KtKotlin
 import kotlinx.coroutines.flow.Flow
 
@@ -16,7 +17,7 @@ class LocalDataSource(private val dataBase: ForecastDao) {
     suspend fun deleteForecast(forecast: Forcast) {
         return dataBase.deleteAll(forecast)
     }
-    suspend fun getFavorite(): List<ExampleJson2KtKotlin> {
+     fun getFavorite(): Flow<List<Favorites>> {
         return dataBase.getfavorite()
     }
     suspend fun insertWeather(weather: ExampleJson2KtKotlin):Long {
@@ -44,10 +45,10 @@ class LocalDataSource(private val dataBase: ForecastDao) {
     suspend fun getAlert(id:Int): MyAlerts {
         return dataBase.getAlert(id)
     }
-    suspend fun addFavorite(name: String) {
+    suspend fun addFavorite(name: Favorites) {
         return dataBase.addFavorite(name)
     }
-    suspend fun deleteFavorite(name: String) {
+    suspend fun deleteFavorite(name: Favorites) {
         return dataBase.deleteFavorite(name)}
 
     suspend fun getAllWeather(): List<ExampleJson2KtKotlin> {

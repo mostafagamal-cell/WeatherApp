@@ -13,6 +13,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.DataSource.LocalDataSource
 import com.example.weatherapp.DataSource.RemoteDataSource
 import com.example.weatherapp.Repo
+import com.example.weatherapp.forcastmodel.Favorites
 import com.example.weatherapp.forcastmodel.Forcast
 import com.example.weatherapp.forcastmodel.List
 import com.example.weatherapp.getDayHourFromTimestamp
@@ -146,6 +147,31 @@ class ForecastViewModelFac(val localDataSource: LocalDataSource, val remoteDataS
         updatedForecast.list = ArrayList(list) // Update with the filtered list
                     _day.value=State.Success(updatedForecast)
     }
+    val _favorete= MutableStateFlow<State>(State.Loading)
+    val _alarm= MutableStateFlow<State>(State.Loading)
+    val favorete: StateFlow<State> get() = _favorete
+    val alarm: StateFlow<State> get() = _alarm
+    fun getFavs(){
+        viewModelScope.launch(Dispatchers.IO) {
+            _favorete.value = State.Loading
+            repo.getFavorite().catch { e ->
+                _favorete.value = State.Error(e)
+            }.collect {
+                _favorete.value = State.Success(it)
+            }
+        }
+    }
+    fun addFav(name:String,lat:Double,lon:Double){
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.addFavorite(Favorites(name,lat,lon))
+        }
+    }
+    fun deleteFav(name:Favorites){
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.deleteFavorite(name)
+        }
+    }
+
 }
 
 

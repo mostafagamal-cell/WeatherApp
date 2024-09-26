@@ -6,10 +6,11 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.weatherapp.Alerts.MyAlerts
+import com.example.weatherapp.forcastmodel.Favorites
 import com.example.weatherapp.forcastmodel.Forcast
 import com.example.weatherapp.weathermodel.ExampleJson2KtKotlin
 
-@Database(entities = [Forcast::class,ExampleJson2KtKotlin::class, MyAlerts::class], version = 1)
+@Database(entities = [Forcast::class,ExampleJson2KtKotlin::class, MyAlerts::class,Favorites::class], version = 1)
 @TypeConverters(ForecastTypeConverter::class, WeatherTypeConverter::class)
 abstract class ForecastDataBase : RoomDatabase(){
     abstract fun yourDao(): ForecastDao

@@ -47,6 +47,7 @@ const val settings="settings"
 const val nextid="nextid"
 const val lat="latitude"
 const val longite="longitude"
+const val favitem="favitem"
 fun createAlarm(context: Context, startDate:Long){
     var id= context.getSharedPreferences(nextid,Context.MODE_PRIVATE).getInt("id",0)
     val alarm=context.getSystemService(android.app.AlarmManager::class.java) as AlarmManager

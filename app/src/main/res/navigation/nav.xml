@@ -30,4 +30,9 @@
         android:name="com.example.weatherapp.AppViews.SettingsFragment"
         android:label="@string/Settings"
         tools:layout="@layout/fragment_settings" />
+    <fragment
+        android:id="@+id/itemFav"
+        android:name="com.example.weatherapp.AppViews.ItemFav"
+        android:label="@string/favourits"
+        tools:layout="@layout/ddd" />
 </navigation>

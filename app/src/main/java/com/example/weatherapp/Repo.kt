@@ -9,6 +9,7 @@ import com.example.weatherapp.Alerts.MyAlerts
 import com.example.weatherapp.AppViews.consts
 import com.example.weatherapp.DataSource.LocalDataSource
 import com.example.weatherapp.DataSource.RemoteDataSource
+import com.example.weatherapp.forcastmodel.Favorites
 import com.example.weatherapp.forcastmodel.Forcast
 import com.example.weatherapp.weathermodel.ExampleJson2KtKotlin
 import kotlinx.coroutines.flow.Flow
@@ -88,13 +89,13 @@ class Repo private constructor(
     suspend fun getDailyForecast(lat:Double,lon:Double,lang:Int):Flow<Forcast>{
        return getForecast(lat,lon,lang)
     }
-    suspend fun getFavorite():List<ExampleJson2KtKotlin>{
+     fun getFavorite():Flow<List<Favorites>>{
         return localDataSource.getFavorite()
     }
-    suspend fun addFavorite(name:String){
+    suspend fun addFavorite(name: Favorites){
         localDataSource.addFavorite(name)
     }
-    suspend fun deleteFavorite(name:String){
+    suspend fun deleteFavorite(name:Favorites){
         localDataSource.deleteFavorite(name)
     }
     suspend fun getAllWeather():List<ExampleJson2KtKotlin>{

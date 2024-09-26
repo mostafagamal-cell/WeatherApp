@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.weatherapp.Alerts.MyAlerts
+import com.example.weatherapp.forcastmodel.Favorites
 import com.example.weatherapp.forcastmodel.Forcast
 import com.example.weatherapp.weathermodel.ExampleJson2KtKotlin
 import kotlinx.coroutines.flow.Flow
@@ -23,12 +24,12 @@ interface ForecastDao {
     suspend fun deleteAll(forecast: Forcast)
     @Query("SELECT * FROM myweather")
     suspend fun getAllWeather(): List<ExampleJson2KtKotlin>
-    @Query("UPDATE myweather SET isFavorite = 1 WHERE name = :name")
-    suspend fun addFavorite( name: String)
-    @Query("UPDATE myweather SET isFavorite = 0 WHERE name = :name")
-    suspend fun deleteFavorite( name: String)
-    @Query("SELECT * FROM myweather where isFavorite=1")
-    suspend fun getfavorite(): List<ExampleJson2KtKotlin>
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun addFavorite( name: Favorites)
+    @Delete
+    suspend fun deleteFavorite( name: Favorites)
+    @Query("SELECT * FROM favorites")
+    fun getfavorite(): Flow<List<Favorites>>
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(weather: ExampleJson2KtKotlin):Long
 
