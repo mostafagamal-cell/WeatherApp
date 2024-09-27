@@ -9,13 +9,16 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import com.example.weatherapp.DataSource.LocalDataSource
 import com.example.weatherapp.DataSource.RemoteDataSource
 import com.example.weatherapp.ForecastDatabase.ForecastDataBase
 import com.example.weatherapp.MyNetwork.API
 import com.example.weatherapp.R
+import com.example.weatherapp.createAlarm
 import com.example.weatherapp.databinding.FragmentFavBinding
 import com.example.weatherapp.databinding.SelecttimedialogBinding
 import com.example.weatherapp.lat
@@ -40,25 +43,64 @@ class AlarmsFragment : Fragment() {
         )
         return@lazy ViewModelProvider(this,fac)[ForecastViewModel::class.java]
     }
+    var startDate=0L
+    var endtDate=0L
+    val startDateString=MutableLiveData<String>()
+    val endtDateString=MutableLiveData<String>()
+    var type=1;
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         return db.root
     }
+    private  val TAG = "StartFragment"
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         db.floatingActionButton.setOnClickListener {
-            val binding= SelecttimedialogBinding.inflate(layoutInflater)
-            binding.button2.setOnClickListener {
-                
-            }
+            startDate=0
+            endtDate=0
+            startDateString.value=""
+            endtDateString.value=""
             Dialog(this.requireContext()).apply {
-                setContentView(db.root)
+                val binding= SelecttimedialogBinding.inflate(layoutInflater)
+                startDateString.observe(viewLifecycleOwner){
+                    binding.start.text=it
+                }
+                endtDateString.observe(viewLifecycleOwner){
+                    binding.end.text=it
+                }
+                binding.button2.setOnClickListener {
+                    showDateTimePicker(true)
+                }
+                binding.button4.setOnClickListener {
+                    showDateTimePicker(false)
+                }
+                binding.radioButton.isChecked=true
+                binding.radioGroup.setOnCheckedChangeListener{ group, checkedId ->
+                    if (checkedId==R.id.radioButton){
+                        type=1
+                    }
+                    if (checkedId==R.id.radioButton2){
+                        type=2
+
+                    }
+                }
+
+                binding.button5.setOnClickListener {
+                    if (startDate!=0L&&endtDate!=0L){
+                        val lates=(requireActivity().getSharedPreferences(TAG, MODE_PRIVATE).getFloat(lat, 0.0F))
+                        val lons=(requireActivity().getSharedPreferences(TAG, MODE_PRIVATE).getFloat(longite, 0.0F))
+                        viewmodel.addAlarm(createAlarm(this@AlarmsFragment.requireContext(),startDate),type,lates.toDouble(),lons.toDouble(),startDate,endtDate)
+                        dismiss()
+                    }else{
+                        Toast.makeText(requireContext(),getString(R.string.plzinsertdate), Toast.LENGTH_LONG).show()
+                    }
+                }
+                setContentView(binding.root)
                 show()
             }
-            showDateTimePicker()
         }
 
     }
@@ -72,7 +114,7 @@ class AlarmsFragment : Fragment() {
             requireActivity().getSharedPreferences(map, MODE_PRIVATE).edit().clear().apply()
         }
     }
-    private fun showDateTimePicker() {
+    private fun showDateTimePicker(e:Boolean) {
         // Get Current Date and Time
         val calendar = Calendar.getInstance()
         val year = calendar.get(Calendar.YEAR)
@@ -84,7 +126,7 @@ class AlarmsFragment : Fragment() {
             requireContext(),
             { _, selectedYear, selectedMonth, selectedDay ->
                 // When date is selected, show the TimePickerDialog
-                showTimePicker(selectedYear, selectedMonth, selectedDay)
+                showTimePicker(e,selectedYear, selectedMonth, selectedDay)
             },
             year, month, day
         )
@@ -93,7 +135,7 @@ class AlarmsFragment : Fragment() {
         datePickerDialog.show()
     }
 
-    private fun showTimePicker(year: Int, month: Int, day: Int) {
+    private fun showTimePicker(type:Boolean,year: Int, month: Int, day: Int) {
         // Get Current Time
         val calendar = Calendar.getInstance()
         val hour = calendar.get(Calendar.HOUR_OF_DAY)
@@ -106,12 +148,17 @@ class AlarmsFragment : Fragment() {
                 // When time is selected, get the selected date and time in milliseconds
                 val selectedDateTime = Calendar.getInstance()
                 selectedDateTime.set(year, month, day, selectedHour, selectedMinute, 0)
-
                 // Convert selected date and time to milliseconds
                 val timeInMillis = selectedDateTime.timeInMillis
                 val format1: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd")
-                val formatter = format1.format(calendar.time)
-
+                val formatter = format1.format(selectedDateTime.time)
+                if (type){
+                    startDate=timeInMillis
+                    startDateString.value=formatter
+                }else{
+                    endtDate=timeInMillis
+                    endtDateString.value=formatter
+                }
                 // Do something with timeInMillis (e.g., print or use it in your app)
                Log.i("sssssssssiizzzz","Success  ${timeInMillis}  ${formatter}")
             },

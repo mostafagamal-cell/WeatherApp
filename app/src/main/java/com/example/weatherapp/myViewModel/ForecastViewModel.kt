@@ -172,7 +172,7 @@ class ForecastViewModelFac(val localDataSource: LocalDataSource, val remoteDataS
             repo.deleteFavorite(name)
         }
     }
-    fun addAlarm(type:Int,name:String,lat:Double,lon:Double,start:Long,end:Long,id:Int){
+    fun addAlarm(id:Int,type:Int,lat:Double,lon:Double,start:Long,end:Long){
         viewModelScope.launch(Dispatchers.IO) {
             repo.addAlert(MyAlerts(id,type,start,end,lat,lon))
         }

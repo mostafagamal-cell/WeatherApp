@@ -48,19 +48,20 @@ const val nextid="nextid"
 const val lat="latitude"
 const val longite="longitude"
 const val favitem="favitem"
-fun createAlarm(context: Context, startDate:Long){
+fun createAlarm(context: Context, startDate:Long): Int {
     var id= context.getSharedPreferences(nextid,Context.MODE_PRIVATE).getInt("id",0)
-    val alarm=context.getSystemService(android.app.AlarmManager::class.java) as AlarmManager
-    val intent= Intent(context,AlertsBrodcast::class.java)
-    intent.putExtra("id",id)
-    val pendingIntent = PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT)
     id++
     if (id>=Int.MAX_VALUE){
         id=0
     }
-    id++
     context.getSharedPreferences(nextid,Context.MODE_PRIVATE).edit().putInt("id",id+1).apply()
+    val alarm=context.getSystemService(android.app.AlarmManager::class.java) as AlarmManager
+    val intent= Intent(context,AlertsBrodcast::class.java)
+    intent.putExtra("id",id)
+    val pendingIntent = PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+
     alarm.set(AlarmManager.RTC_WAKEUP, startDate, pendingIntent)
+    return id
 }
 fun Double.round(decimals: Int): Double {
     var multiplier = 10.0.pow(decimals)
