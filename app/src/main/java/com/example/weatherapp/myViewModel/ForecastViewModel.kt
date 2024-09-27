@@ -10,6 +10,7 @@ import androidx.compose.ui.util.fastFilterNotNull
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.weatherapp.Alerts.MyAlerts
 import com.example.weatherapp.DataSource.LocalDataSource
 import com.example.weatherapp.DataSource.RemoteDataSource
 import com.example.weatherapp.Repo
@@ -171,7 +172,26 @@ class ForecastViewModelFac(val localDataSource: LocalDataSource, val remoteDataS
             repo.deleteFavorite(name)
         }
     }
-
+    fun addAlarm(type:Int,name:String,lat:Double,lon:Double,start:Long,end:Long,id:Int){
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.addAlert(MyAlerts(id,type,start,end,lat,lon))
+        }
+    }
+    fun deleteAlarm(name:MyAlerts){
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.deleteAlert(name)
+        }
+    }
+    fun getAlarms(){
+        viewModelScope.launch(Dispatchers.IO) {
+            _alarm.value = State.Loading
+            repo.getAlerts().catch { e ->
+                _alarm.value = State.Error(e)
+            }.collect {
+                _alarm.value = State.Success(it)
+            }
+        }
+    }
 }
 
 

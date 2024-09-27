@@ -22,8 +22,6 @@ interface ForecastDao {
     suspend fun getAllForecast(city:String): Forcast
     @Delete
     suspend fun deleteAll(forecast: Forcast)
-    @Query("SELECT * FROM myweather")
-    suspend fun getAllWeather(): List<ExampleJson2KtKotlin>
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addFavorite( name: Favorites)
     @Delete
@@ -32,7 +30,6 @@ interface ForecastDao {
     fun getfavorite(): Flow<List<Favorites>>
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(weather: ExampleJson2KtKotlin):Long
-
 
     @Query("SELECT * FROM myweather where id=:myname and language=:lang")
     fun getWeather(myname: Int,lang:Int): Flow<ExampleJson2KtKotlin>
@@ -46,7 +43,7 @@ interface ForecastDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAlerm(weather: MyAlerts):Long
     @Query("SELECT * FROM Alerts")
-    suspend fun getAlerts(): List<MyAlerts>
+     fun getAlerts(): Flow<List<MyAlerts>>
     @Delete
     suspend fun deleteAlert(weather: MyAlerts)
     @Query("SELECT * FROM Alerts WHERE id=:id")

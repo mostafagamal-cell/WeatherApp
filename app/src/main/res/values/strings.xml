@@ -63,4 +63,8 @@
     <string name="conf_msg">save</string>
     <string name="open_location_settings">open location</string>
     <string name="no_loc_av">location no available in your device</string>
+    <string name="start_data">start date</string>
+    <string name="end_date">end date</string>
+    <string name="start">start</string>
+    <string name="end">end</string>
 </resources>

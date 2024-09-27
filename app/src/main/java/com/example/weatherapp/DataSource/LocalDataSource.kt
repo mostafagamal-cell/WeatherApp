@@ -33,7 +33,7 @@ class LocalDataSource(private val dataBase: ForecastDao) {
     suspend fun deleteWeather(weather: ExampleJson2KtKotlin) {
         return dataBase.deleteAll(weather)
     }
-    suspend fun getAlerts(): List<MyAlerts> {
+     fun getAlerts(): Flow<List<MyAlerts>> {
         return dataBase.getAlerts()
     }
     suspend fun addAlert(weather: MyAlerts):Long {
@@ -51,9 +51,7 @@ class LocalDataSource(private val dataBase: ForecastDao) {
     suspend fun deleteFavorite(name: Favorites) {
         return dataBase.deleteFavorite(name)}
 
-    suspend fun getAllWeather(): List<ExampleJson2KtKotlin> {
-        return dataBase.getAllWeather()
-    }
+
     suspend fun addWeather(weather: ExampleJson2KtKotlin) {
         dataBase.insert(weather)
         }
