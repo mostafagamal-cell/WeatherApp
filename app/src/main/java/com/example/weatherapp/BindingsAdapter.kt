@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
+import com.example.weatherapp.Alerts.MyAlerts
 import com.example.weatherapp.AppViews.consts
 import com.example.weatherapp.weathermodel.ExampleJson2KtKotlin
 import java.text.DateFormat
@@ -101,4 +102,10 @@ fun setTempMaxMin(textView: TextView, tempmax: Double ,tempmin: Double) {
         consts.F.ordinal->textView.text="${from_C_to_F(tempmax)}  / ${from_C_to_F(tempmin)} °F"
         consts.K.ordinal->textView.text="${tempmax} / ${tempmin} °K"
     }
+}
+@BindingAdapter("setAlert")
+fun setAlert(textView: TextView, alert: MyAlerts) {
+    val date=SimpleDateFormat("yyyy-MM-dd").format(alert.start)
+    val date2=SimpleDateFormat("yyyy-MM-dd").format(alert.end)
+    textView.text="${alert.type} ${alert.name} ${date} --> ${date2}"
 }

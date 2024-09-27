@@ -13,6 +13,9 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import com.example.weatherapp.Alerts.MyAlerts
 import com.example.weatherapp.DataSource.LocalDataSource
 import com.example.weatherapp.DataSource.RemoteDataSource
 import com.example.weatherapp.ForecastDatabase.ForecastDataBase
@@ -26,6 +29,8 @@ import com.example.weatherapp.longite
 import com.example.weatherapp.map
 import com.example.weatherapp.myViewModel.ForecastViewModel
 import com.example.weatherapp.myViewModel.ForecastViewModelFac
+import com.example.weatherapp.myViewModel.State
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
@@ -35,7 +40,9 @@ class AlarmsFragment : Fragment() {
          return@lazy FragmentFavBinding.inflate(layoutInflater)
      }
     var selected=false
-    val adapter=ItemFav()
+    val adapter=AlertIems({
+        viewmodel.deleteAlarm(it)
+    })
     val viewmodel: ForecastViewModel by lazy {
         val fac= ForecastViewModelFac(
             LocalDataSource(ForecastDataBase.getDatabase(requireContext()).yourDao()),
@@ -84,15 +91,30 @@ class AlarmsFragment : Fragment() {
                     }
                     if (checkedId==R.id.radioButton2){
                         type=2
+                        if (startDate!=0L&&endtDate!=0L){
 
+                        }
                     }
                 }
+                viewLifecycleOwner.lifecycleScope.launch {
+                    viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED){
+                        viewmodel.alarm.collect{
+                            viewmodel.alarm.collect{
+                                if (it is State.Success){
+                                    adapter.submitList(it.data as List<MyAlerts>)
+                                }
+                            }
+                        }
+                    }
+                }
+
 
                 binding.button5.setOnClickListener {
                     if (startDate!=0L&&endtDate!=0L){
                         val lates=(requireActivity().getSharedPreferences(TAG, MODE_PRIVATE).getFloat(lat, 0.0F))
                         val lons=(requireActivity().getSharedPreferences(TAG, MODE_PRIVATE).getFloat(longite, 0.0F))
-                        viewmodel.addAlarm(createAlarm(this@AlarmsFragment.requireContext(),startDate),type,lates.toDouble(),lons.toDouble(),startDate,endtDate)
+                        val name=(requireActivity().getSharedPreferences(TAG, MODE_PRIVATE).getString("name",""))
+                        viewmodel.addAlarm(createAlarm(this@AlarmsFragment.requireContext(),startDate),name!!,type,lates.toDouble(),lons.toDouble(),startDate,endtDate)
                         dismiss()
                     }else{
                         Toast.makeText(requireContext(),getString(R.string.plzinsertdate), Toast.LENGTH_LONG).show()

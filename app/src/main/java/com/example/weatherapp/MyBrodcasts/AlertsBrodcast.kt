@@ -31,6 +31,7 @@ import com.example.weatherapp.from_C_to_F
 import com.example.weatherapp.from_C_to_K
 import com.example.weatherapp.from_MS_to_MH
 import com.example.weatherapp.language
+import com.example.weatherapp.notification
 import com.example.weatherapp.settings
 import com.example.weatherapp.speed
 import com.example.weatherapp.units
@@ -42,9 +43,10 @@ import java.util.Calendar
 class AlertsBrodcast:BroadcastReceiver() {
     var job: Job?=null
     override fun onReceive(context: Context?, p1: Intent?):Unit= runBlocking {
+        if (context!!.getSharedPreferences(settings, MODE_PRIVATE).getBoolean(notification,true)){
         val id = p1!!.getIntExtra("id", -1)
         val repo = Repo.getInstance(
-            LocalDataSource(ForecastDataBase.getDatabase(context!!).yourDao()),
+            LocalDataSource(ForecastDataBase.getDatabase(context).yourDao()),
             RemoteDataSource(API)
         )
         val alert = repo.getAlert(id)
@@ -157,6 +159,7 @@ class AlertsBrodcast:BroadcastReceiver() {
             }
         }
     }
+}
       val CHANNEL_ID = "channel_id_example_01"
     private fun createNotificationChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

@@ -68,8 +68,10 @@ class FavFragment : Fragment() {
                     if(it is State.Success) {
                         Log.i("FavFragment", "onViewCreated: ${it.data}")
                         adapter.submitList(it.data as List<Favorites>)}
-                    else if(it is State.Error)  Toast.makeText(requireContext(), it.message.message, Toast.LENGTH_SHORT).show()
-                    else if(it is State.Loading) Toast.makeText(requireContext(), "Loading", Toast.LENGTH_SHORT).show()
+                    else if(it is State.Error)
+                        Toast.makeText(requireContext(), it.message.message, Toast.LENGTH_SHORT).show()
+                    else if(it is State.Loading)
+                        db.progressBar.visibility=View.VISIBLE
                 }
             }
         }

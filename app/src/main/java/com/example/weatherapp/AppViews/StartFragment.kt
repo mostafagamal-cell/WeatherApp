@@ -240,6 +240,7 @@ class StartFragment : Fragment() {
                     if (it is State.Success){
                         Log.i("SSSSSTTTTTAAAATTTTEEEEE","Success ${it.data as ExampleJson2KtKotlin}")
                         val t= it.data as ExampleJson2KtKotlin
+                        requireActivity().getSharedPreferences(TAG, MODE_PRIVATE).edit().putString("name",t.name).apply()
                         db.viewModel=(t)
                     }
                     if (it is State.Error){
