@@ -28,9 +28,9 @@
         android:theme="@style/Theme.CustomSplashScreenTheme"
         tools:targetApi="tiramisu">
         <service
-            android:name=".MyBrodcasts.overlayserices"
+            android:name=".MyBrodcasts.OverlayServices"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true"/>
 
         <activity
             android:name=".MainActivity"

@@ -70,4 +70,5 @@
     <string name="save">Save</string>
     <string name="dismiss">dismiss</string>
     <string name="plzinsertdate">please insert date</string>
+    <string name="Alarm">Alarm</string>
 </resources>
