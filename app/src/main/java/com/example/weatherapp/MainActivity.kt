@@ -2,6 +2,7 @@ package com.example.weatherapp
 
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.app.ProgressDialog.show
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -16,6 +17,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.accessibility.AccessibilityEventCompat.setAction
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -28,6 +30,7 @@ import com.example.weatherapp.AppViews.consts
 import com.example.weatherapp.databinding.ActivityMainBinding
 import com.example.weatherapp.databinding.InialBinding
 import com.example.weatherapp.weathermodel.cityes
+import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import org.json.JSONArray
@@ -58,6 +61,13 @@ class MainActivity : AppCompatActivity() {
         }
         start()
 
+        MainActivity.start(this).observe(this){
+            if (it){
+                hideDisconnectionBanner()
+            }else{
+                showDisconnectionBanner()
+            }
+        }
     }
     private  val TAG = "StartFragment"
    var dialog: Dialog?=null
@@ -143,9 +153,10 @@ class MainActivity : AppCompatActivity() {
                 }
                 db.swipeRefreshLayout.setOnRefreshListener {
                     if (navController.currentDestination?.id != null) {
-                        id = navController.currentDestination!!.id
-                        navController.popBackStack(id, true)
-                        navController.navigate(id)
+//                        id = navController.currentDestination!!.id
+//                        navController.popBackStack(id, true)
+//                        navController.navigate(id)
+                        recreate()
                     }
                     db.swipeRefreshLayout.isRefreshing = false
                 }
@@ -224,5 +235,16 @@ class MainActivity : AppCompatActivity() {
         dialog?.dismiss()  // Ensure the dialog is dismissed on destroy
         super.onDestroy()
     }
+    private fun showDisconnectionBanner() {
+        Snackbar.make(db.root, R.string.no_internet_connection, Snackbar.LENGTH_INDEFINITE).apply {
+            setAction(R.string.dismiss) { dismiss() }
+            show()
+        }
+    }
+
+    private fun hideDisconnectionBanner() {
+        // Hide any existing snackbars if needed
+    }
+
 
 }

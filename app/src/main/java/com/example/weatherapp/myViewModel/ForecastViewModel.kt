@@ -79,6 +79,8 @@ class ForecastViewModelFac(val localDataSource: LocalDataSource, val remoteDataS
                             getTodayForecast(d2, lang)
                         } else{
                             _forecast.value=State.Error(Exception("no data found"))
+                            _hours.value=State.Error(Exception("no data found"))
+                            _day.value=State.Error(Exception("no data found"))
                 }
            }
 

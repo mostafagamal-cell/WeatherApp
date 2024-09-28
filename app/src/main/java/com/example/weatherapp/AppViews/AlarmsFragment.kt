@@ -47,7 +47,17 @@ class AlarmsFragment : Fragment() {
      }
     var selected=false
     val adapter=AlertIems {
-        viewmodel.deleteAlarm(it)
+        androidx.appcompat.app.AlertDialog.Builder(requireContext()).apply {
+          setTitle(R.string.delete)
+          setCancelable(false)
+          setPositiveButton(getString(R.string.ok)) { _, _ ->
+              viewmodel.deleteAlarm(it)
+          }
+          setNegativeButton(R.string.cancel) { _, _ ->   }
+          setMessage(R.string.doyouwantdelteit)
+              create()
+      }
+            .show()
     }
     val viewmodel: ForecastViewModel by lazy {
         val fac= ForecastViewModelFac(

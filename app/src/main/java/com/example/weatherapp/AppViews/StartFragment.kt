@@ -20,6 +20,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.MutableState
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.MutableLiveData
@@ -63,6 +64,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationTokenSource
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -132,7 +134,6 @@ class StartFragment : Fragment() {
         late=MutableLiveData(requireActivity().getSharedPreferences(TAG, MODE_PRIVATE).getFloat(lat, 0.0F))
         lon=MutableLiveData(requireActivity().getSharedPreferences(TAG, MODE_PRIVATE).getFloat(longite, 0.0F))
         MainActivity.Companion.start(requireContext()).observe(viewLifecycleOwner){e->
-            Log.i("eeeeeeeeeeeeeeeeee","onViewCreated: $e")
             if (e==true){
                 if (requireActivity().getSharedPreferences(settings, MODE_PRIVATE).getInt(mode,consts.Map.ordinal)==consts.GPS.ordinal){
 
@@ -149,6 +150,7 @@ class StartFragment : Fragment() {
         }
         coolect()
             lon.observe(viewLifecycleOwner){
+                Log.i("dasdasdasder3433434","onViewCreated: $it")
             viewModel.getWeather(
                 late.value!!.toDouble()
                 ,lon.value!!.toDouble(),
@@ -190,7 +192,10 @@ class StartFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         if (requireActivity().getSharedPreferences(settings, MODE_PRIVATE).getInt(mode,consts.Map.ordinal)==consts.GPS.ordinal){
-        db.gotomap.visibility=View.INVISIBLE
+            Log.i("sdasdasdasdasdas","hhhhhhhhhhhhhhhhhhhhh")
+            late=MutableLiveData(requireActivity().getSharedPreferences(TAG, MODE_PRIVATE).getFloat(lat, 0.0F))
+            lon=MutableLiveData(requireActivity().getSharedPreferences(TAG, MODE_PRIVATE).getFloat(longite, 0.0F))
+            db.gotomap.visibility=View.INVISIBLE
         if (!checkpermessions()){
             AlertDialog.Builder(this.requireContext())
                 .setTitle(this.getString(R.string.request_GPS_permissions)).setMessage(R.string.please_Give_GPS_permissions).setPositiveButton(R.string.ok){e,c->
@@ -198,6 +203,7 @@ class StartFragment : Fragment() {
                 }
             Toast.makeText(this.requireContext(),this.getString(R.string.please_Give_GPS_permissions),Toast.LENGTH_LONG).show()
         }
+
         val manager=requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
         var gps=false
         var network=false
@@ -227,6 +233,7 @@ class StartFragment : Fragment() {
                         e.dismiss()
                     }.show()
             }
+            getDeviceLocation()
         }else{
             Toast.makeText(this.requireContext(),this.getString(R.string.no_loc_av),Toast.LENGTH_LONG).show()
         }
@@ -239,15 +246,20 @@ class StartFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.weather.collect{
+                    Log.i("1111111111111111111","onViewCreated: ${db.weatherstate.isVisible}")
+
                     if (it is State.Success){
                         val t= it.data as ExampleJson2KtKotlin
                         requireActivity().getSharedPreferences(TAG, MODE_PRIVATE).edit().putString("name",t.name).apply()
                         db.viewModel=(t)
                         db.weatherprograss.visibility=View.INVISIBLE
                         db.weatherstate.visibility=View.VISIBLE
+
+                        db.invalidateAll()
                     }
                     if (it is State.Error){
-
+                        db.weatherprograss.visibility=View.INVISIBLE
+                        db.weatherstate.visibility=View.VISIBLE
                         db.viewModel=createTempWeather()
                         Toast.makeText(requireContext(),it.message.message,Toast.LENGTH_LONG).show()
                     }
@@ -256,7 +268,6 @@ class StartFragment : Fragment() {
                     db.weatherprograss.visibility=View.VISIBLE
 
                     }
-
                 }
             }
         }
@@ -269,9 +280,11 @@ class StartFragment : Fragment() {
                         adpt.submitList(e.list)
                         db.recyclerView3.visibility=View.VISIBLE
                         db.timeprograss.visibility=View.INVISIBLE
+                        db.invalidateAll()
                     }
                     if (it is State.Error){
-
+                        db.recyclerView3.visibility=View.VISIBLE
+                        db.timeprograss.visibility=View.INVISIBLE
                     }
                     if (it is State.Loading){
                             db.recyclerView3.visibility=View.INVISIBLE
@@ -289,9 +302,11 @@ class StartFragment : Fragment() {
                         adpt2.submitList(data.list)
                         db.recyclerView.visibility=View.VISIBLE
                         db.daysprograss.visibility=View.INVISIBLE
+                        db.invalidateAll()
                     }
                     if (it is State.Error){
-
+                        db.recyclerView.visibility=View.VISIBLE
+                        db.daysprograss.visibility=View.INVISIBLE
                     }
                     if (it is State.Loading){
                         db.recyclerView.visibility=View.INVISIBLE
@@ -301,6 +316,7 @@ class StartFragment : Fragment() {
             }
         }
     }
+
     private  var fusedClient : FusedLocationProviderClient?=null
 
     override fun onPause() {

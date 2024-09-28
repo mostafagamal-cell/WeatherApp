@@ -15,6 +15,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.app.ActivityCompat.recreate
 import androidx.core.os.LocaleListCompat
 import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.util.Util
@@ -116,7 +117,7 @@ class SettingsFragment : Fragment() {
                 pref.edit().putInt(language, consts.ar.ordinal).apply()
                setLocale("ar")
             }
-            restartApp()
+            recreate(requireActivity())
         }
 
 

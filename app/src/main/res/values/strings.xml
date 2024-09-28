@@ -73,5 +73,7 @@
     <string name="Alarm">Alarm</string>
     <string name="req">request display over app permession</string>
     <string name="reeq">please give us request display over app permession</string>
+    <string name="no_internet_connection">no internet connection</string>
+    <string name="doyouwantdelteit">do you realy want to delelte it</string>
 
 </resources>
