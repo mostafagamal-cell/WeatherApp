@@ -42,7 +42,7 @@ class LocalDataSource(private val dataBase: ForecastDao) {
     suspend fun deleteAlert(weather: MyAlerts) {
         return dataBase.deleteAlert(weather)
     }
-    suspend fun getAlert(id:Int): MyAlerts {
+    suspend fun getAlert(id:Int): Flow<MyAlerts> {
         return dataBase.getAlert(id)
     }
     suspend fun addFavorite(name: Favorites) {

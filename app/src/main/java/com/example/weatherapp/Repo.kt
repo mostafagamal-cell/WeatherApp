@@ -118,12 +118,7 @@ class Repo private constructor(
     suspend fun deleteFavorite(name:Favorites){
         localDataSource.deleteFavorite(name)
     }
-    suspend fun addWeather(weather: ExampleJson2KtKotlin){
-        localDataSource.addWeather(weather)
-    }
-    suspend fun deleteWeather(weather: ExampleJson2KtKotlin){
-        localDataSource.deleteWeather(weather)
-    }
+
     suspend fun addAlert(myAlerts: MyAlerts):Long{
        return localDataSource.addAlert(myAlerts)
     }
@@ -133,7 +128,7 @@ class Repo private constructor(
      fun getAlerts():Flow<List<MyAlerts>>{
         return localDataSource.getAlerts()
     }
-    suspend fun getAlert(id:Int):MyAlerts{
+    suspend fun getAlert(id:Int):Flow<MyAlerts>{
         return localDataSource.getAlert(id)
     }
 

@@ -18,8 +18,6 @@ interface ForecastDao {
     suspend fun insert(forecast: Forcast)
     @Query("SELECT * FROM forecast where  lat =:lat and lon=:lon and lang=:lang")
      fun getAllForecast(lat:Double,lon:Double,lang:Int): Flow<Forcast>
-    @Query("SELECT * FROM forecast where cityName=:city")
-    suspend fun getAllForecast(city:String): Forcast
     @Delete
     suspend fun deleteAll(forecast: Forcast)
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -47,7 +45,7 @@ interface ForecastDao {
     @Delete
     suspend fun deleteAlert(weather: MyAlerts)
     @Query("SELECT * FROM Alerts WHERE id=:id")
-    suspend fun getAlert(id:Int): MyAlerts
+     fun getAlert(id:Int):Flow<MyAlerts>
     @Query("SELECT * FROM forecast where lat=:lat and lon=:lon and lang=:lang")
     fun getTodayForecast(lat:Double,lon:Double,lang:Int): Flow<Forcast>
 

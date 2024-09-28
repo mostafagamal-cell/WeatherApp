@@ -1,10 +1,16 @@
 package com.example.weatherapp.AppViews
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.app.TimePickerDialog
+import android.content.Context
 import android.content.Context.MODE_PRIVATE
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -74,7 +80,6 @@ class AlarmsFragment : Fragment() {
                         Log.i("dasdasdasdasdadsd","Success ${it.data}")
                         adapter.submitList(it.data as List<MyAlerts>)
                     }
-
                 }
             }
         }
@@ -105,9 +110,24 @@ class AlarmsFragment : Fragment() {
                     }
                     if (checkedId==R.id.radioButton2){
                         type=2
-                        if (startDate!=0L&&endtDate!=0L){
+
+                        if (!hasOverlayPermission(context)){
+                            AlertDialog.Builder(context)
+                                .setTitle(R.string.req)
+                                .setMessage(R.string.reeq)
+                                .setCancelable(false)
+                                .setPositiveButton(getString(R.string.ok)) { _, _ ->
+                                    requestOverlayPermission(context)
+                                }
+                                .setOnDismissListener {
+                                    binding.radioButton.isChecked = true
+                                    type = 1
+                                }
+                                .create()
+                                .show()
 
                         }
+
                     }
                 }
 
@@ -117,7 +137,10 @@ class AlarmsFragment : Fragment() {
                         val lates=(requireActivity().getSharedPreferences(TAG, MODE_PRIVATE).getFloat(lat, 0.0F))
                         val lons=(requireActivity().getSharedPreferences(TAG, MODE_PRIVATE).getFloat(longite, 0.0F))
                         val name=(requireActivity().getSharedPreferences(TAG, MODE_PRIVATE).getString("name",""))
-                        viewmodel.addAlarm(createAlarm(this@AlarmsFragment.requireContext(),startDate),name!!,type,lates.toDouble(),lons.toDouble(),startDate,endtDate)
+                        val id=createID()
+                        val alrm=MyAlerts(name!!,id,type,startDate,endtDate,lates.toDouble(),lons.toDouble())
+                        createAlarm(requireContext(),alrm)
+                        viewmodel.addAlarm(alrm)
                         dismiss()
                     }else{
                         Toast.makeText(requireContext(),getString(R.string.plzinsertdate), Toast.LENGTH_LONG).show()
@@ -193,5 +216,30 @@ class AlarmsFragment : Fragment() {
         // Show the TimePickerDialog
         timePickerDialog.show()
     }
+    fun hasOverlayPermission(context: Context): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Settings.canDrawOverlays(context)
+        } else {
+            true // Permission is automatically granted on versions before Android M
+        }
+    }
+
+    // To prompt the user to grant the overlay permission if not already granted:
+    fun requestOverlayPermission(context: Context) {
+        if (!hasOverlayPermission(context)) {
+            val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${context.packageName}"))
+            context.startActivity(intent)
+        }
+    }
+    fun createID():Int{
+        var id =requireActivity().getSharedPreferences("nextid", MODE_PRIVATE).getInt("nextid",0)
+        id++
+        if (id==Int.MAX_VALUE){
+            id=0
+        }
+        requireActivity().getSharedPreferences("nextid", MODE_PRIVATE).edit().putInt("nextid",id+1).apply()
+        return id
+    }
 }
+
 

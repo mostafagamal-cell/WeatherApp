@@ -9,6 +9,8 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import com.example.weatherapp.AppViews.consts
 import com.example.weatherapp.MyBrodcasts.AlertsBrodcast
+import com.example.weatherapp.alerts.MyAlerts
+import com.google.gson.Gson
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -48,20 +50,20 @@ const val nextid="nextid"
 const val lat="latitude"
 const val longite="longitude"
 const val favitem="favitem"
-fun createAlarm(context: Context, startDate:Long): Int {
-    var id= context.getSharedPreferences(nextid,Context.MODE_PRIVATE).getInt("id",0)
-    id++
-    if (id>=Int.MAX_VALUE){
-        id=0
-    }
-    context.getSharedPreferences(nextid,Context.MODE_PRIVATE).edit().putInt("id",id+1).apply()
+fun createAlarm(context: Context,alert:MyAlerts,isTheEnd:Boolean=false){
+
     val alarm=context.getSystemService(android.app.AlarmManager::class.java) as AlarmManager
     val intent= Intent(context,AlertsBrodcast::class.java)
-    intent.putExtra("id",id)
-    val pendingIntent = PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-
-    alarm.set(AlarmManager.RTC_WAKEUP, startDate, pendingIntent)
-    return id
+    val gson= Gson().toJson(alert)
+    intent.putExtra("id",gson)
+    val pendingIntent = PendingIntent.getBroadcast(context, alert.id, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+   if (!isTheEnd) {
+       Log.i("aaaaaaaaaaaaaaaaaaaaaaee","start")
+       alarm.set(AlarmManager.RTC_WAKEUP, alert.start, pendingIntent)
+   }else{
+       Log.i("aaaaaaaaaaaaaaaaaaaaaaee","end")
+       alarm.set(AlarmManager.RTC_WAKEUP, alert.end, pendingIntent)
+}
 }
 fun Double.round(decimals: Int): Double {
     var multiplier = 10.0.pow(decimals)

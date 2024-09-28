@@ -71,4 +71,7 @@
     <string name="dismiss">dismiss</string>
     <string name="plzinsertdate">please insert date</string>
     <string name="Alarm">Alarm</string>
+    <string name="req">request display over app permession</string>
+    <string name="reeq">please give us request display over app permession</string>
+
 </resources>

@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
 
     }
     private  val TAG = "StartFragment"
-  lateinit var dialog: Dialog
+   var dialog: Dialog?=null
     @SuppressLint("NewApi")
     fun  showDailalog(){
 
@@ -100,8 +100,8 @@ class MainActivity : AppCompatActivity() {
                 }
 
             }
-        dialog.create()
-        dialog.show()
+        dialog?.create()
+        dialog?.show()
 
     }
     lateinit var navController: NavController
@@ -221,7 +221,7 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
     override fun onDestroy() {
-        dialog.dismiss()  // Ensure the dialog is dismissed on destroy
+        dialog?.dismiss()  // Ensure the dialog is dismissed on destroy
         super.onDestroy()
     }
 
