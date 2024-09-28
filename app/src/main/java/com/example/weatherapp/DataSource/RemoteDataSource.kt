@@ -7,14 +7,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.Response
 
-class RemoteDataSource(val api: Iweather) {
+class RemoteDataSource(val api: Iweather) : IRemoteDataSource {
 
-      fun getWeather(lat:Double,lon:Double,lang:String): Flow<Response<ExampleJson2KtKotlin>> {
+      override fun getWeather(lat:Double, lon:Double, lang:String): Flow<Response<ExampleJson2KtKotlin>> {
        return flow {
            emit(api.getWeatherByCity(lat,lon,lang))
        }
     }
-     fun getForecast(lat:Double,lon:Double,lang:String): Flow<Response<Forcast>> {
+     override fun getForecast(lat:Double, lon:Double, lang:String): Flow<Response<Forcast>> {
         return flow {   emit(api.getForecastByCity(lat,lon,lang))}
     }
 }

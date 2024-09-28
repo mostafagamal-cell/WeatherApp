@@ -26,6 +26,7 @@ import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
+import com.example.weatherapp.AppViews.SettingsFragment
 import com.example.weatherapp.AppViews.consts
 import com.example.weatherapp.databinding.ActivityMainBinding
 import com.example.weatherapp.databinding.InialBinding
@@ -102,6 +103,7 @@ class MainActivity : AppCompatActivity() {
                         pref2.edit().putBoolean("first", false).apply()
                         dismiss()
                         e.value=false
+                        SettingsFragment.setLocale(if (pref.getInt(language,consts.en.ordinal)==consts.en.ordinal) "en" else "ar",this@MainActivity)
                     }
                 }
                 setCancelable(false)
@@ -122,12 +124,30 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
          navController = navHostFragment.navController
          navController.addOnDestinationChangedListener { controller, destination, arguments ->
+             when(destination.id){
+                 R.id.startFragment->{
+                     supportActionBar?.title=getString(R.string.home)
+                 }
+                 R.id.mapFragment->{
+                     supportActionBar?.title=getString(R.string.map)
+                 }
+                 R.id.settingsFragment-> {
+                     supportActionBar?.title = getString(R.string.settings)
+                 }
+                 R.id.alarmsFragment->{
+                     supportActionBar?.title=getString(R.string.alarms)
+                 }
+                 R.id.favFragment->{
+                     supportActionBar?.title=getString(R.string.favourits)
+                 }
+             }
              if (destination.id==R.id.mapFragment){
                  db.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
              }else{
                  db.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
              }
              if (destination.id==R.id.startFragment){
+             }else if (destination.id==R.id.settingsFragment){
                  db.swipeRefreshLayout.post {
                      supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_menu_24)
                  }
@@ -136,6 +156,7 @@ class MainActivity : AppCompatActivity() {
                      supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_arrow_back_24)
                  }
              }
+
          }
         NavigationUI.setupWithNavController(db.navigationView, navController)
         val pref2 = getSharedPreferences(TAG, Context.MODE_PRIVATE)
@@ -143,7 +164,7 @@ class MainActivity : AppCompatActivity() {
         e.value=pref2.getBoolean("first", true)
         e.observe(this) {
             if (it==false) {
-                             var id = navController.currentDestination!!.id
+               var id = navController.currentDestination!!.id
                 navController.popBackStack(id, true)
                 navController.navigate(id)
                 db.swipeRefreshLayout.visibility= View.VISIBLE
@@ -227,7 +248,6 @@ class MainActivity : AppCompatActivity() {
             }
         }else{
             navController.navigate(item.itemId)
-
         }
         return super.onOptionsItemSelected(item)
     }

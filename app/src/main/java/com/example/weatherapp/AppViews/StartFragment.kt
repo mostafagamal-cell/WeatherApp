@@ -189,7 +189,9 @@ class StartFragment : Fragment() {
                     requestPermessions()
                 }
         }
-        val manager=requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            getDeviceLocation()
+
+            val manager=requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
         var gps=false
         var network=false
         var isgpsav=true
@@ -212,6 +214,7 @@ class StartFragment : Fragment() {
                     .setPositiveButton(R.string.ok){e,c->
                         val intetn=Intent(ACTION_LOCATION_SOURCE_SETTINGS)
                         startActivity(intetn)
+                        reqeustToGetData()
                         e.dismiss()
                     }
                     .setNegativeButton(R.string.cancel){e,c->
@@ -220,10 +223,8 @@ class StartFragment : Fragment() {
             }
         }else{
             Toast.makeText(this.requireContext(),this.getString(R.string.no_loc_av),Toast.LENGTH_LONG).show()
-        }
-            reqeustToGetData()
-        }
-
+         }
+         }
         }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -244,10 +245,10 @@ class StartFragment : Fragment() {
 
     fun coolect(){
         db.recyclerView.adapter=adpt2
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED){
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.weather.collect{
-
+                    Log.i("1111111111111111111","onViewCreated: ${it}")
                     if (it is State.Success){
                         val t= it.data as ExampleJson2KtKotlin
                         Log.i("1111111111111111111","onViewCreated: ${t.name}")
@@ -272,8 +273,8 @@ class StartFragment : Fragment() {
                 }
             }
         }
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED){
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner. repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.hours.collect{
 
                     if (it is State.Success){
@@ -295,8 +296,8 @@ class StartFragment : Fragment() {
                 }
             }
         }
-       lifecycleScope.launch {
-          repeatOnLifecycle(Lifecycle.State.STARTED){
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.day.collect{
                     if (it is State.Success){
                         val  data=it.data as Forcast
@@ -358,7 +359,7 @@ class StartFragment : Fragment() {
     private fun handleNewLocation() {
         val fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireContext())
-        lifecycleScope.launch(Dispatchers.IO) {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                     val priority = LocationRequest.PRIORITY_HIGH_ACCURACY
             val result = fusedLocationProviderClient.getCurrentLocation(
                 priority,
@@ -379,7 +380,9 @@ class StartFragment : Fragment() {
             }}
         }
     }
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun getDeviceLocation() {
+        Log.i("lllllllllllllllllllllllllllllllllll","get device location")
         val fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireContext())
         val locationResult = fusedLocationProviderClient.lastLocation
@@ -398,6 +401,7 @@ class StartFragment : Fragment() {
                     .apply()
                 late.value=task.result.latitude.toFloat()
                 lon.value=task.result.longitude.toFloat()
+                reqeustToGetData()
             } else {
                 handleNewLocation()
             }

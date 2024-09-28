@@ -43,39 +43,48 @@ class MapFragment : Fragment() {
         db = FragmentMapBinding.inflate(layoutInflater)
         return db.root
     }
-    private lateinit var startPoint:GeoPoint
+
+    private lateinit var startPoint: GeoPoint
     lateinit var mymap: MapView
-     var marker: Marker?=null
-    var res=""
+    var marker: Marker? = null
+    var res = ""
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         mymap = db.map
 
         db.multiAutoCompleteTextView.apply {
-            val c=MainActivity.allcities
-            setAdapter(ArrayAdapter(requireContext(), R.layout.simple_dropdown_item_1line,  c!!.map { it.city+", "+it.country }))
+            val c = MainActivity.allcities
+            setAdapter(
+                ArrayAdapter(
+                    requireContext(),
+                    R.layout.simple_dropdown_item_1line,
+                    c!!.map { it.city + ", " + it.country })
+            )
             setTokenizer(MultiAutoCompleteTextView.CommaTokenizer())
             inputType = EditorInfo.TYPE_CLASS_TEXT
         }
 
         startPoint = GeoPoint(48.8583, 2.2944)
-        val connection= MainActivity.start(requireContext())
-        if (savedInstanceState!=null){
-            if (savedInstanceState.containsKey("res")&&savedInstanceState.containsKey("lat")&&savedInstanceState.containsKey("lon")){
-            val la=savedInstanceState.getDouble("lat")
-            val lo=savedInstanceState.getDouble("lon")
-            res=savedInstanceState.getString("res","")
-            startPoint=GeoPoint(la, lo)
-            marker=Marker(mymap)
-        }
+        val connection = MainActivity.start(requireContext())
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey("res") && savedInstanceState.containsKey("lat") && savedInstanceState.containsKey(
+                    "lon"
+                )
+            ) {
+                val la = savedInstanceState.getDouble("lat")
+                val lo = savedInstanceState.getDouble("lon")
+                res = savedInstanceState.getString("res", "")
+                startPoint = GeoPoint(la, lo)
+                marker = Marker(mymap)
+            }
         }
         requireActivity().getSharedPreferences(map, Context.MODE_PRIVATE).edit().clear().apply()
         super.onViewCreated(view, savedInstanceState)
         val sharedPreferences = requireContext().getSharedPreferences(map, Context.MODE_PRIVATE)
         Configuration.getInstance().load(requireContext(), sharedPreferences)
-        if (marker==null){
+        if (marker == null) {
             set_invis(db.floatingActionButton2)
             set_invis(db.floatingActionButton3)
-        }else{
+        } else {
             set_vis(db.floatingActionButton2)
             set_vis(db.floatingActionButton3)
             marker?.position = startPoint
@@ -83,17 +92,20 @@ class MapFragment : Fragment() {
             try {
                 marker?.title = res
                 Toast.makeText(requireContext(), res, Toast.LENGTH_LONG).show()
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 Toast.makeText(requireContext(), "No connection", Toast.LENGTH_LONG).show()
 
             }
             mymap.overlays.add(marker)
         }
         db.multiAutoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
-            val selectedCity = MainActivity.allcities!!.find { it.city == parent.getItemAtPosition(position).toString().split(",")[0] && it.country==parent.getItemAtPosition(position).toString().split(",")[1].trim() }
-
+            val selectedCity = MainActivity.allcities!!.find {
+                it.city == parent.getItemAtPosition(position).toString()
+                    .split(",")[0] && it.country == parent.getItemAtPosition(position).toString()
+                    .split(",")[1].trim()
+            }
             db.multiAutoCompleteTextView.setText("${selectedCity!!.city}, ${selectedCity.country}")
-            res="${selectedCity.city}, ${selectedCity.country}"
+            res = "${selectedCity.city}, ${selectedCity.country}"
             val geoPoint = GeoPoint(selectedCity.lat, selectedCity.lng)
             mymap.overlays.remove(marker)
             marker = Marker(mymap).apply {
@@ -119,20 +131,23 @@ class MapFragment : Fragment() {
                 Log.e("MapView", "normal click")
                 return true
             }
+
             override fun longPressHelper(p: GeoPoint): Boolean {
                 val latitude = p.latitude
                 val longitude = p.longitude
-                val geocoder= Geocoder(requireContext())
+                val geocoder = Geocoder(requireContext())
                 mymap.overlays.remove(marker)
                 marker = Marker(mymap)
                 marker?.position = p
                 marker?.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                 try {
-                    res= geocoder.getFromLocation(latitude,longitude,1)?.get(0)?.getAddressLine(0)?:""
-                    Log.i("mmmmmmmmmm33333333333333","$latitude $longitude")
+                    res =
+                        geocoder.getFromLocation(latitude, longitude, 1)?.get(0)?.getAddressLine(0)
+                            ?: ""
+                    Log.i("mmmmmmmmmm33333333333333", "$latitude $longitude")
                     marker?.title = res
                     Toast.makeText(requireContext(), res, Toast.LENGTH_LONG).show()
-                }catch (e:Exception){
+                } catch (e: Exception) {
                     Toast.makeText(requireContext(), "No connection", Toast.LENGTH_LONG).show()
                 }
                 mymap.overlays.add(marker)
@@ -142,37 +157,40 @@ class MapFragment : Fragment() {
                 return true
             }
         }))
-        var e=false
-        MainActivity.start(requireContext()).observe(viewLifecycleOwner){
-            e=it
+        var e = false
+        MainActivity.start(requireContext()).observe(viewLifecycleOwner) {
+            e = it
         }
 
-       db.floatingActionButton2.setOnClickListener {
-           val ysharedPreferences = requireContext().getSharedPreferences(map, Context.MODE_PRIVATE)
-           val editor = ysharedPreferences.edit()
-           val mylat=marker?.position?.latitude?.toFloat()
-           val mylong=marker?.position?.longitude?.toFloat()
-           editor.putFloat(lat,mylat!!)
-           editor.putFloat(longite,mylong!!)
-           editor.putString("name",res)
-           editor.apply()
-           findNavController().popBackStack()
-       }
-       db.floatingActionButton3.setOnClickListener {
+        db.floatingActionButton2.setOnClickListener {
+            val ysharedPreferences =
+                requireContext().getSharedPreferences(map, Context.MODE_PRIVATE)
+            val editor = ysharedPreferences.edit()
+            val mylat = marker?.position?.latitude?.toFloat()
+            val mylong = marker?.position?.longitude?.toFloat()
+            editor.putFloat(lat, mylat!!)
+            editor.putFloat(longite, mylong!!)
+            editor.putString("name", res)
+            editor.apply()
+            findNavController().popBackStack()
+        }
+        db.floatingActionButton3.setOnClickListener {
             set_invis(db.floatingActionButton2)
             set_invis(db.floatingActionButton3)
             mymap.overlays.remove(marker)
             mymap.invalidate()
-            marker=null
-       }
+            marker = null
+        }
     }
-    private fun set_vis(view:View){
-        view.isEnabled=true
-        view.visibility=View.VISIBLE
+
+    private fun set_vis(view: View) {
+        view.isEnabled = true
+        view.visibility = View.VISIBLE
     }
-    private fun set_invis(view:View){
-        view.isEnabled=false
-        view.visibility=View.INVISIBLE
+
+    private fun set_invis(view: View) {
+        view.isEnabled = false
+        view.visibility = View.INVISIBLE
     }
 
     override fun onResume() {
@@ -187,7 +205,7 @@ class MapFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        if (marker!=null){
+        if (marker != null) {
             outState.putString("res", marker!!.title)
             outState.putDouble("lat", marker!!.position.latitude)
             outState.putDouble("lon", marker!!.position.longitude)

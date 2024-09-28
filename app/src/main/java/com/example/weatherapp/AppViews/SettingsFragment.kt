@@ -110,12 +110,12 @@ class SettingsFragment : Fragment() {
 
             if (db.Englishrdb.isChecked && currentLocale != "en") {
                 pref.edit().putInt(language, consts.en.ordinal).apply()
-                setLocale("en")
+                setLocale("en",requireContext())
             }
 
             if (db.arabicrdb.isChecked && currentLocale != "ar") {
                 pref.edit().putInt(language, consts.ar.ordinal).apply()
-               setLocale("ar")
+               setLocale("ar",requireContext())
             }
             recreate(requireActivity())
         }
@@ -213,17 +213,21 @@ class SettingsFragment : Fragment() {
         val b=this.requireContext().checkSelfPermission(per[0]) == PackageManager.PERMISSION_GRANTED||this.requireContext().checkSelfPermission(per[1]) == PackageManager.PERMISSION_GRANTED
         return b
     }
-    fun setLocale(languageTag: String) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            context?.getSystemService(LocaleManager::class.java)?.applicationLocales = LocaleList.forLanguageTags(languageTag)
-        } else {
-            AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(languageTag))
+    companion object {
+        fun setLocale(languageTag: String,context: Context) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                context.getSystemService(LocaleManager::class.java)?.applicationLocales =
+                    LocaleList.forLanguageTags(languageTag)
+            } else {
+                AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(languageTag))
+            }
         }
-    }
-    fun restartApp() {
-        val intent = Intent(context, MainActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        startActivity(intent)
-        (context as Activity).finish()
+
+        fun restartApp(context: Context) {
+            val intent = Intent(context, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            context.startActivity(intent)
+            (context as Activity).finish()
+        }
     }
 }

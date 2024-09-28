@@ -48,7 +48,17 @@ class FavFragment : Fragment() {
     ): View {
         return db.root
     }
-    val adapter=FavAdp({ viewmodel.deleteFav(it) }, {
+    val adapter=FavAdp({  androidx.appcompat.app.AlertDialog.Builder(requireContext()).apply {
+        setTitle(R.string.delete)
+        setCancelable(false)
+        setPositiveButton(getString(R.string.ok)) { _, _ ->
+            viewmodel.deleteFav(it)
+        }
+        setNegativeButton(R.string.cancel) { _, _ ->   }
+        setMessage(R.string.doyouwantdelteit)
+        create()
+    }
+        .show() }, {
         val item=it
         val gson= Gson().toJson(it)
         requireActivity().getSharedPreferences(favitem, MODE_PRIVATE).edit().putString(favitem,gson).apply()
@@ -83,7 +93,9 @@ class FavFragment : Fragment() {
             val lat = requireActivity().getSharedPreferences(map, MODE_PRIVATE).getFloat(lat, 0f).toDouble()
             val lon = requireActivity().getSharedPreferences(map, MODE_PRIVATE).getFloat(longite, 0f).toDouble()
             val e = requireActivity().getSharedPreferences(map, MODE_PRIVATE).getString("name","")
-            viewmodel.addFav(e!!,lat,lon)
+            if (lat!=0.0||lon!=0.0) {
+                viewmodel.addFav(e!!, lat, lon)
+            }
             selected=false
             requireActivity().getSharedPreferences(map, MODE_PRIVATE).edit().clear().apply()
         }

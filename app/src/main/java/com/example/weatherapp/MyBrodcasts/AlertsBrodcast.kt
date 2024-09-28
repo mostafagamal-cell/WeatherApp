@@ -107,13 +107,13 @@ class AlertsBrodcast:BroadcastReceiver() {
                                            )
                                                .getInt(units, consts.C.ordinal)
                                        val speed = when (speedUnits) {
-                                           consts.MS.ordinal -> "${it.wind?.speed!!} ${
+                                           consts.MS.ordinal -> "${it?.wind?.speed!!} ${
                                                context.getString(
                                                    R.string.MS
                                                )
                                            }"
 
-                                           consts.MH.ordinal -> "${from_MS_to_MH(it.wind?.speed!!)} ${
+                                           consts.MH.ordinal -> "${from_MS_to_MH(it?.wind?.speed!!)} ${
                                                context.getString(
                                                    R.string.MH
                                                )
@@ -122,19 +122,19 @@ class AlertsBrodcast:BroadcastReceiver() {
                                            else -> "Meter / Sec"
                                        }
                                        val temp = when (tempUnits) {
-                                           consts.C.ordinal -> "${from_C_to_K(it.main?.temp!!)} ${
+                                           consts.C.ordinal -> "${from_C_to_K(it?.main?.temp!!)} ${
                                                context.getString(
                                                    R.string.C
                                                )
                                            }"
 
-                                           consts.K.ordinal -> "${it.main?.temp!!} ${
+                                           consts.K.ordinal -> "${it?.main?.temp!!} ${
                                                context.getString(
                                                    R.string.K
                                                )
                                            }"
 
-                                           consts.F.ordinal -> "${from_C_to_F(it.main?.temp!!)} ${
+                                           consts.F.ordinal -> "${from_C_to_F(it?.main?.temp!!)} ${
                                                context.getString(
                                                    R.string.F
                                                )
@@ -149,7 +149,7 @@ class AlertsBrodcast:BroadcastReceiver() {
                                                    "eeeeeeeeeeeeeeeeeee"
                                                )
                                                createNotificationChannel(context)
-                                               sendNotification(context, "$temp $speed", it.name)
+                                               sendNotification(context, "$temp $speed", it?.name?:"")
                                                job?.cancel()
                                            }
                                            2 -> {
@@ -160,7 +160,7 @@ class AlertsBrodcast:BroadcastReceiver() {
                                                            context,
                                                            OverlayServices::class.java
                                                        ).apply {
-                                                           putExtra("city", it.name)
+                                                           putExtra("city", it?.name)
                                                            putExtra("temp", temp)
                                                            putExtra("speed", speed)
                                                        }

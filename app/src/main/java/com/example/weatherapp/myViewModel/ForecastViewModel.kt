@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.alerts.MyAlerts
 import com.example.weatherapp.DataSource.LocalDataSource
 import com.example.weatherapp.DataSource.RemoteDataSource
+import com.example.weatherapp.IRepo
 import com.example.weatherapp.Repo
 import com.example.weatherapp.forcastmodel.Favorites
 import com.example.weatherapp.forcastmodel.Forcast
@@ -33,7 +34,7 @@ class ForecastViewModelFac(val localDataSource: LocalDataSource, val remoteDataS
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return ForecastViewModel(Repo.getInstance(localDataSource,remoteDataSource)) as T
     }
-}class ForecastViewModel(val repo: Repo) : ViewModel() {
+}class ForecastViewModel(private val repo: IRepo) : ViewModel() {
     private var weatherJob: Job? = null
     private var forecastJob: Job? = null
 
@@ -54,6 +55,7 @@ class ForecastViewModelFac(val localDataSource: LocalDataSource, val remoteDataS
                 repo.getWeather(lat, lon, lang)
                     .catch { e -> _weather.value = State.Error(e) }
                     .collect { data ->
+                        Log.i("1111111111111111111","onViewCreated: ${data}")
                         if (data != null) {
                             _weather.value = State.Success(data)
                         }else{
@@ -156,7 +158,10 @@ class ForecastViewModelFac(val localDataSource: LocalDataSource, val remoteDataS
             repo.getFavorite().catch { e ->
                 _favorete.value = State.Error(e)
             }.collect {
-                _favorete.value = State.Success(it)
+                if (it==null)
+                    _favorete.value = State.Error(Exception("no data found"))
+                else
+                      _favorete.value = State.Success(it)
             }
         }
     }
@@ -186,6 +191,9 @@ class ForecastViewModelFac(val localDataSource: LocalDataSource, val remoteDataS
             repo.getAlerts().catch { e ->
                 _alarm.value = State.Error(e)
             }.collect {
+                if (it==null)
+                    _alarm.value = State.Error(Exception("no data found"))
+                else
                 _alarm.value = State.Success(it)
             }
         }
