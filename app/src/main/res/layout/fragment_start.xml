@@ -7,24 +7,15 @@
             name="viewModel"
             type="com.example.weatherapp.weathermodel.ExampleJson2KtKotlin" />
     </data>
-    <FrameLayout
-        android:id="@+id/main"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <ProgressBar
-            android:layout_gravity="center"
-            android:visibility="invisible"
-            android:id="@+id/prog"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-    <androidx.constraintlayout.widget.ConstraintLayout
+
+        <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".AppViews.StartFragment">
 
 
-        <androidx.cardview.widget.CardView
+            <androidx.cardview.widget.CardView
             android:id="@+id/details"
             android:layout_width="match_parent"
             android:layout_height="150dp"
@@ -177,7 +168,7 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardView4"
+            android:id="@+id/weatherstate"
             android:layout_width="0dp"
             android:layout_height="240dp"
             app:layout_constraintBottom_toTopOf="@+id/recyclerView3"
@@ -328,20 +319,61 @@
             app:layout_constraintTop_toBottomOf="@+id/recyclerView3"
             app:layout_constraintVertical_weight="2" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView3"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:elevation="13dp"
-            android:orientation="horizontal"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toTopOf="@+id/recyclerView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cardView4"
-            app:layout_constraintVertical_weight="3" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView3"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:elevation="13dp"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintBottom_toTopOf="@+id/recyclerView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/weatherstate"
+                app:layout_constraintVertical_weight="3" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-    </FrameLayout>
+            <ProgressBar
+                android:id="@+id/timeprograss"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@+id/recyclerView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/weatherstate" />
+
+            <ProgressBar
+                android:id="@+id/daysprograss"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@+id/details"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.498"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/recyclerView" />
+
+            <ProgressBar
+                android:id="@+id/stateprograss"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/details" />
+
+            <ProgressBar
+                android:id="@+id/weatherprograss"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@+id/weatherstate"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>

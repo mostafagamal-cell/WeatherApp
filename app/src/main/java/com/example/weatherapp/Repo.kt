@@ -1,24 +1,22 @@
 package com.example.weatherapp
 
 import android.annotation.SuppressLint
-import android.location.Geocoder
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import com.example.weatherapp.Alerts.MyAlerts
+import com.example.weatherapp.alerts.MyAlerts
 import com.example.weatherapp.AppViews.consts
 import com.example.weatherapp.DataSource.LocalDataSource
 import com.example.weatherapp.DataSource.RemoteDataSource
 import com.example.weatherapp.forcastmodel.Favorites
 import com.example.weatherapp.forcastmodel.Forcast
 import com.example.weatherapp.weathermodel.ExampleJson2KtKotlin
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.cancel
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import java.io.IOError
-import java.io.IOException
-import java.lang.NullPointerException
-import java.net.UnknownHostException
-import java.util.Calendar
 
 class Repo private constructor(
     private val localDataSource: LocalDataSource
@@ -33,57 +31,79 @@ class Repo private constructor(
         return localDataSource.getWeather(cityName,lang)
     }
       @SuppressLint("SuspiciousIndentation")
-      suspend fun getWeather(lat:Double, lon:Double, lang:Int): Flow<ExampleJson2KtKotlin> {
-        try {
-             val e = remoteDataSource.getWeather(lat,lon,"en")
-             val d=  remoteDataSource.getWeather(lat,lon,"ar")
-            val m=consts.en.ordinal
-            val m2=consts.ar.ordinal
-                if (e.body()!=null){
-                    e.body()?.lat=lat
-                    e.body()?.lon=lon
-                    e.body()?.language= m
-                    localDataSource.insertWeather(e.body()!!)
-                    Log.i("eeeeeeeeeeeeeeeeeeeeeeeeeeee",e.body()!!.name)
+       fun getWeather(lat:Double, lon:Double, lang:Int): Flow<ExampleJson2KtKotlin> = runBlocking {
+          val m=consts.en.ordinal
+          val m2=consts.ar.ordinal
+        launch {
+            remoteDataSource.getWeather(lat, lon, "en").catch() {
+                Log.i("dddddddddddddddddddddddd", "${it.message}")
+            }.collect {
+                Log.i("dddddddddddddddddddddddd", "eeeeeeeeeeeeeeeeeee")
+
+                if (it.isSuccessful) {
+                    Log.i("dddddddddddddddddddddddd", "${it.body()}")
+                    it.body()?.lat = lat
+                    it.body()?.lon = lon
+                    it.body()?.language = m
+                    localDataSource.insertWeather(it.body()!!)
                 }
-            if (e.body()!=null){
-                d.body()?.lat=lat
-                d.body()?.lon=lon
-                d.body()?.language= m2
-                localDataSource.insertWeather(d.body()!!)
-                Log.i("eeeeeeeeeeeeeeeeeeeeeeeeeeee",d.body()!!.name)
+                cancel()
             }
-            return localDataSource.getWeather(lat,lon,lang)
-        }catch (e: Exception){
-            return localDataSource.getWeather(lat,lon,lang)
         }
+          launch {
+              remoteDataSource.getWeather(lat, lon, "ar").catch {
+                  Log.i("dddddddddddddddddddddddd", "${it.message}")
+              }.collect {
+                  Log.i("dddddddddddddddddddddddd", "eeeeeeeeeeeeeeeeeee")
+
+                  if(it.isSuccessful){
+                      Log.i("dddddddddddddddddddddddd", "eeeeeeeeeeeeeeeeeee")
+                      it.body()?.lat = lat
+                      it.body()?.lon = lon
+                      it.body()?.language = m2
+                      localDataSource.insertWeather(it.body()!!)
+                  }
+                  cancel()
+              }
+          }
+          return@runBlocking localDataSource.getWeather(lat,lon,lang)
     }
-    suspend fun getForecast(lat:Double,lon:Double,lang:Int):Flow<Forcast>{
-        try {
-            val e = remoteDataSource.getForecast(lat,lon,"en")
-            val d=  remoteDataSource.getForecast(lat,lon,"ar")
-            if (e.isSuccessful){
-                e.body()?.lang=consts.en.ordinal
-                e.body()?.cityName= e.body()?.city?.name.toString()
-                e.body()?.lat=lat
-                e.body()?.lon=lon
-                if (e.body()!=null&&e.body()?.list!=null && e.body()?.list?.size!=0){
-                    localDataSource.insertForecast(e.body()!!)
+         fun getForecast(lat:Double,lon:Double,lang:Int):Flow<Forcast> = runBlocking{
+
+          launch {
+                remoteDataSource.getForecast(lat, lon, "en").catch {
+                    Log.i("dddddddddddddddddddddddd", "${it.message}")
+                }.collect {
+                    if (it.isSuccessful) {
+                        it.body()?.lang = consts.en.ordinal
+                        it.body()?.cityName = it.body()?.city?.name.toString()
+                        it.body()?.lat = lat
+                        it.body()?.lon = lon
+                        if (it.body() != null && it.body()?.list != null && it.body()?.list?.size != 0) {
+                            localDataSource.insertForecast(it.body()!!)
+                        }
+
+                    }
+                    cancel()
                 }
             }
-            if (d.isSuccessful) {
-                d.body()?.lat=lat
-                d.body()?.lon=lon
-                d.body()?.lang =consts.ar.ordinal
-                d.body()?.cityName = d.body()?.city?.name.toString()
-                if (d.body()!=null&&d.body()?.list!=null && d.body()?.list?.size!=0){
-                    localDataSource.insertForecast(d.body()!!)
+              launch { remoteDataSource.getForecast(lat, lon, "ar").catch {
+                  Log.i("dddddddddddddddddddddddd", "${it.message}")
+              }.collect {
+                    if (it.isSuccessful) {
+                        it.body()?.lat = lat
+                        it.body()?.lon = lon
+                        it.body()?.lang = consts.ar.ordinal
+                        it.body()?.cityName = it.body()?.city?.name.toString()
+                        if (it.body() != null && it.body()?.list != null && it.body()?.list?.size != 0) {
+                            localDataSource.insertForecast(it.body()!!)
+                        }
+                    }
+                cancel()
                 }
             }
-            return localDataSource.getForecast(lat,lon,lang)
-        }catch (e:Exception){
-            return localDataSource.getForecast(lat,lon,lang)
-        }
+
+             return@runBlocking localDataSource.getForecast(lat,lon,lang)
     }
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun getDailyForecast(lat:Double,lon:Double,lang:Int):Flow<Forcast>{

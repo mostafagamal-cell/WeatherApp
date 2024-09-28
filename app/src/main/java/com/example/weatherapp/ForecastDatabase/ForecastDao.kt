@@ -5,7 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.weatherapp.Alerts.MyAlerts
+import com.example.weatherapp.alerts.MyAlerts
 import com.example.weatherapp.forcastmodel.Favorites
 import com.example.weatherapp.forcastmodel.Forcast
 import com.example.weatherapp.weathermodel.ExampleJson2KtKotlin

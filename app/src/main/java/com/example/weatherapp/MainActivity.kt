@@ -60,14 +60,14 @@ class MainActivity : AppCompatActivity() {
 
     }
     private  val TAG = "StartFragment"
-
+  lateinit var dialog: Dialog
     @SuppressLint("NewApi")
     fun  showDailalog(){
 
         val pref2 = getSharedPreferences(TAG, Context.MODE_PRIVATE)
 
             val pref =getSharedPreferences(settings, MODE_PRIVATE)
-            val e= Dialog(this).apply {
+        dialog= Dialog(this).apply {
                 setContentView(mydb.root)
                 mydb.radioGroup2.setOnCheckedChangeListener { radioGroup, i ->
                     if (mydb.GPSrdb.isChecked) {
@@ -100,8 +100,8 @@ class MainActivity : AppCompatActivity() {
                 }
 
             }
-            e.create()
-            e.show()
+        dialog.create()
+        dialog.show()
 
     }
     lateinit var navController: NavController
@@ -219,6 +219,10 @@ class MainActivity : AppCompatActivity() {
 
         }
         return super.onOptionsItemSelected(item)
+    }
+    override fun onDestroy() {
+        dialog.dismiss()  // Ensure the dialog is dismissed on destroy
+        super.onDestroy()
     }
 
 }

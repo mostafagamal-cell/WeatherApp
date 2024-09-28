@@ -1,5 +1,6 @@
 package com.example.weatherapp.AppViews
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -20,6 +21,7 @@ class TodayAdapter:ListAdapter<List,TodayAdapter.VH,>(object : DiffUtil.ItemCall
 {
     class VH(val itemTimeBinding: ItemtimeBinding): RecyclerView.ViewHolder(itemTimeBinding.root){
         fun bind(list: List){
+            Log.d("fasdsadadasdasaddasdasdasTAG", "bind: ${list.weather[0].description}")
             itemTimeBinding.viewModel=list
         }
     }
@@ -31,5 +33,4 @@ class TodayAdapter:ListAdapter<List,TodayAdapter.VH,>(object : DiffUtil.ItemCall
     override fun onBindViewHolder(holder: VH, position: Int) {
         holder.bind(getItem(position))
     }
-
 }

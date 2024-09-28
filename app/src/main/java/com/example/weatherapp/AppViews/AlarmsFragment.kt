@@ -15,7 +15,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.example.weatherapp.Alerts.MyAlerts
+import com.example.weatherapp.alerts.MyAlerts
 import com.example.weatherapp.DataSource.LocalDataSource
 import com.example.weatherapp.DataSource.RemoteDataSource
 import com.example.weatherapp.ForecastDatabase.ForecastDataBase
@@ -40,9 +40,9 @@ class AlarmsFragment : Fragment() {
          return@lazy FragmentFavBinding.inflate(layoutInflater)
      }
     var selected=false
-    val adapter=AlertIems({
+    val adapter=AlertIems {
         viewmodel.deleteAlarm(it)
-    })
+    }
     val viewmodel: ForecastViewModel by lazy {
         val fac= ForecastViewModelFac(
             LocalDataSource(ForecastDataBase.getDatabase(requireContext()).yourDao()),
@@ -65,6 +65,20 @@ class AlarmsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        db.fav.adapter=adapter
+        viewmodel.getAlarms()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED){
+                viewmodel.alarm.collect{
+                    if (it is State.Success){
+                        Log.i("dasdasdasdasdadsd","Success ${it.data}")
+                        adapter.submitList(it.data as List<MyAlerts>)
+                    }
+
+                }
+            }
+        }
+
         db.floatingActionButton.setOnClickListener {
             startDate=0
             endtDate=0
@@ -93,17 +107,6 @@ class AlarmsFragment : Fragment() {
                         type=2
                         if (startDate!=0L&&endtDate!=0L){
 
-                        }
-                    }
-                }
-                viewLifecycleOwner.lifecycleScope.launch {
-                    viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED){
-                        viewmodel.alarm.collect{
-                            viewmodel.alarm.collect{
-                                if (it is State.Success){
-                                    adapter.submitList(it.data as List<MyAlerts>)
-                                }
-                            }
                         }
                     }
                 }

@@ -43,7 +43,7 @@ import java.util.Calendar
 class AlertsBrodcast:BroadcastReceiver() {
     var job: Job?=null
     override fun onReceive(context: Context?, p1: Intent?):Unit= runBlocking {
-        if (context!!.getSharedPreferences(settings, MODE_PRIVATE).getBoolean(notification,true)){
+            context!!
         val id = p1!!.getIntExtra("id", -1)
         val repo = Repo.getInstance(
             LocalDataSource(ForecastDataBase.getDatabase(context).yourDao()),
@@ -51,102 +51,106 @@ class AlertsBrodcast:BroadcastReceiver() {
         )
         val alert = repo.getAlert(id)
         if (alert != null) {
-            job = launch {
-                repo.getWeather(
-                    alert.lat,
-                    alert.lon,
-                    context.getSharedPreferences(settings, MODE_PRIVATE)
-                        .getInt(language, consts.en.ordinal)
-                ).collect {
-                    if (it == null) {
-                        return@collect
-                    }
-                    // set date to the start of today
-                    val calendar = Calendar.getInstance().apply {
-                        set(Calendar.HOUR_OF_DAY, 0)
-                        set(Calendar.MINUTE, 0)
-                        set(Calendar.SECOND, 0)
-                        set(Calendar.MILLISECOND, 0)
-                    }
-                    if (calendar.timeInMillis > it.dt!! * 1000) {
-                        // no connection since yesterday weather
-                        createNotificationChannel(context)
-                        sendNotification(context, context.getString(R.string.expire), it.name)
-                        return@collect
-                    }
+            if (context.getSharedPreferences(settings,Context.MODE_PRIVATE).getInt(notification,consts.enable.ordinal)==consts.enable.ordinal){
+                job = launch {
                     repo.getWeather(
-                        alert.lat, alert.lon,
+                        alert.lat,
+                        alert.lon,
                         context.getSharedPreferences(settings, MODE_PRIVATE)
                             .getInt(language, consts.en.ordinal)
                     ).collect {
-                        val speedUnits =
-                            context.getSharedPreferences(settings, Context.MODE_PRIVATE)
-                                .getInt(speed, consts.MS.ordinal)
-                        val tempUnits = context.getSharedPreferences(settings, Context.MODE_PRIVATE)
-                            .getInt(units, consts.C.ordinal)
-                        val speed = when (speedUnits) {
-                            consts.MS.ordinal -> "${it.wind?.speed!!} ${context.getString(R.string.MS)}"
-                            consts.MH.ordinal -> "${from_MS_to_MH(it.wind?.speed!!)} ${
-                                context.getString(
-                                    R.string.MH
-                                )
-                            }"
-
-                            else -> "Meter / Sec"
+                        if (it == null) {
+                            job?.cancel()
+                            return@collect
                         }
-                        val temp = when (tempUnits) {
-                            consts.C.ordinal -> "${from_C_to_K(it.main?.temp!!)} ${
-                                context.getString(
-                                    R.string.C
-                                )
-                            }"
-
-                            consts.K.ordinal -> "${it.main?.temp!!} ${
-                                context.getString(
-                                    R.string.K
-                                )
-                            }"
-
-                            consts.F.ordinal -> "${from_C_to_F(it.main?.temp!!)} ${
-                                context.getString(
-                                    R.string.F
-                                )
-                            }"
-
-                            else -> "Celsius"
+                        // set date to the start of today
+                        val calendar = Calendar.getInstance().apply {
+                            set(Calendar.HOUR_OF_DAY, 0)
+                            set(Calendar.MINUTE, 0)
+                            set(Calendar.SECOND, 0)
+                            set(Calendar.MILLISECOND, 0)
                         }
-                        when (alert.type) {
-                            1 -> {
-                                Log.i("dddddddddddddddddddddddd", "eeeeeeeeeeeeeeeeeee")
-                                createNotificationChannel(context)
-                                sendNotification(context, "$temp $speed", it.name)
-                                job?.cancel()
+                        if (calendar.timeInMillis > it.dt!! * 1000) {
+                            // no connection since yesterday weather
+                            createNotificationChannel(context)
+                            sendNotification(context, context.getString(R.string.expire), it.name)
+                            job?.cancel()
+                            return@collect
+                        }
+                        repo.getWeather(
+                            alert.lat, alert.lon,
+                            context.getSharedPreferences(settings, MODE_PRIVATE)
+                                .getInt(language, consts.en.ordinal)
+                        ).collect {
+                            val speedUnits =
+                                context.getSharedPreferences(settings, Context.MODE_PRIVATE)
+                                    .getInt(speed, consts.MS.ordinal)
+                            val tempUnits =
+                                context.getSharedPreferences(settings, Context.MODE_PRIVATE)
+                                    .getInt(units, consts.C.ordinal)
+                            val speed = when (speedUnits) {
+                                consts.MS.ordinal -> "${it.wind?.speed!!} ${context.getString(R.string.MS)}"
+                                consts.MH.ordinal -> "${from_MS_to_MH(it.wind?.speed!!)} ${
+                                    context.getString(
+                                        R.string.MH
+                                    )
+                                }"
+
+                                else -> "Meter / Sec"
                             }
+                            val temp = when (tempUnits) {
+                                consts.C.ordinal -> "${from_C_to_K(it.main?.temp!!)} ${
+                                    context.getString(
+                                        R.string.C
+                                    )
+                                }"
 
-                            2 -> {
-                                if (Settings.canDrawOverlays(context)) {
-                                    // Prepare data for the overlay
-                                    val overlayIntent =
-                                        Intent(context, OverlayServices::class.java).apply {
-                                            putExtra("city", it.name)
-                                            putExtra("temp", temp)
-                                            putExtra("speed", speed)
-                                        }
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                        context.startForegroundService(overlayIntent)
-                                    } else {
-                                        context.startService(overlayIntent)
-                                    }
+                                consts.K.ordinal -> "${it.main?.temp!!} ${
+                                    context.getString(
+                                        R.string.K
+                                    )
+                                }"
+
+                                consts.F.ordinal -> "${from_C_to_F(it.main?.temp!!)} ${
+                                    context.getString(
+                                        R.string.F
+                                    )
+                                }"
+
+                                else -> "Celsius"
+                            }
+                            when (alert.type) {
+                                1 -> {
+                                    Log.i("dddddddddddddddddddddddd", "eeeeeeeeeeeeeeeeeee")
+                                    createNotificationChannel(context)
+                                    sendNotification(context, "$temp $speed", it.name)
+                                    job?.cancel()
                                 }
-                                job?.cancel()
-                            }
 
+                                2 -> {
+                                    if (Settings.canDrawOverlays(context)) {
+                                        // Prepare data for the overlay
+                                        val overlayIntent =
+                                            Intent(context, OverlayServices::class.java).apply {
+                                                putExtra("city", it.name)
+                                                putExtra("temp", temp)
+                                                putExtra("speed", speed)
+                                            }
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                            context.startForegroundService(overlayIntent)
+                                        } else {
+                                            context.startService(overlayIntent)
+                                        }
+                                    }
+                                    job?.cancel()
+                                }
+
+                            }
                         }
                     }
+
                 }
-
             }
-
             val tomorrow = Calendar.getInstance()
             tomorrow.add(Calendar.DAY_OF_YEAR, 1)
             val time = tomorrow.timeInMillis
@@ -159,7 +163,7 @@ class AlertsBrodcast:BroadcastReceiver() {
             }
         }
     }
-}
+
       val CHANNEL_ID = "channel_id_example_01"
     private fun createNotificationChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

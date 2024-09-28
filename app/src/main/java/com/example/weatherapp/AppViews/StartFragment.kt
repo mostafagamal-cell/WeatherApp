@@ -19,6 +19,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.MutableState
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.MutableLiveData
@@ -71,7 +72,6 @@ class StartFragment : Fragment() {
     val db: FragmentStartBinding by lazy {
          FragmentStartBinding.inflate(layoutInflater)
      }
-
      val viewModel: ForecastViewModel by lazy {
          ViewModelProvider(this,ForecastViewModelFac(LocalDataSource(ForecastDataBase.getDatabase(requireContext()).yourDao()),
              RemoteDataSource(API)
@@ -97,6 +97,7 @@ class StartFragment : Fragment() {
             , lang = requireActivity().getSharedPreferences(settings, MODE_PRIVATE).getInt(language,consts.ar.ordinal)
         )
     }
+
 
     fun requestPermessions(){
         requestPermissions(per,req)
@@ -127,6 +128,7 @@ class StartFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        db.viewModel=createTempWeather()
         late=MutableLiveData(requireActivity().getSharedPreferences(TAG, MODE_PRIVATE).getFloat(lat, 0.0F))
         lon=MutableLiveData(requireActivity().getSharedPreferences(TAG, MODE_PRIVATE).getFloat(longite, 0.0F))
         MainActivity.Companion.start(requireContext()).observe(viewLifecycleOwner){e->
@@ -238,21 +240,21 @@ class StartFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.weather.collect{
                     if (it is State.Success){
-                        Log.i("SSSSSTTTTTAAAATTTTEEEEE","Success ${it.data as ExampleJson2KtKotlin}")
                         val t= it.data as ExampleJson2KtKotlin
                         requireActivity().getSharedPreferences(TAG, MODE_PRIVATE).edit().putString("name",t.name).apply()
                         db.viewModel=(t)
+                        db.weatherprograss.visibility=View.INVISIBLE
+                        db.weatherstate.visibility=View.VISIBLE
                     }
                     if (it is State.Error){
-                        Log.i("SSSSSTTTTTAAAATTTTEEEEE","Error")
 
                         db.viewModel=createTempWeather()
                         Toast.makeText(requireContext(),it.message.message,Toast.LENGTH_LONG).show()
                     }
                     if (it is State.Loading){
-                        Log.i("SSSSSTTTTTAAAATTTTEEEEE","Loading")
+                    db.weatherstate.visibility=View.INVISIBLE
+                    db.weatherprograss.visibility=View.VISIBLE
 
-                        db.viewModel=createTempWeather()
                     }
 
                 }
@@ -263,18 +265,17 @@ class StartFragment : Fragment() {
                 viewModel.hours.collect{
 
                     if (it is State.Success){
-                        Log.i("eaaaaaaaaaaaaaaa","Sucesss ${it.data as Forcast}")
-
                         val  e =it.data as Forcast
                         adpt.submitList(e.list)
-
+                        db.recyclerView3.visibility=View.VISIBLE
+                        db.timeprograss.visibility=View.INVISIBLE
                     }
                     if (it is State.Error){
-                        Log.i("eaaaaaaaaaaaaaaa","Error ${it.message}")
 
                     }
                     if (it is State.Loading){
-                        Log.i("eaaaaaaaaaaaaaaa","Loading")
+                            db.recyclerView3.visibility=View.INVISIBLE
+                            db.timeprograss.visibility=View.VISIBLE
 
                     }
                 }
@@ -284,18 +285,17 @@ class StartFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.day.collect{
                     if (it is State.Success){
-                        Log.i("xzdfafafdsafdsfsdfsdfsdfdf","Sucesss ${it.data as Forcast}")
                         val  data=it.data as Forcast
                         adpt2.submitList(data.list)
-
+                        db.recyclerView.visibility=View.VISIBLE
+                        db.daysprograss.visibility=View.INVISIBLE
                     }
                     if (it is State.Error){
-                        Log.i("eaaaaaaaaaaaaaaa","Error ${it.message}")
 
                     }
                     if (it is State.Loading){
-                        Log.i("eaaaaaaaaaaaaaaa","Loading")
-
+                        db.recyclerView.visibility=View.INVISIBLE
+                        db.daysprograss.visibility=View.VISIBLE
                     }
                 }
             }

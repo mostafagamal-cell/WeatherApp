@@ -1,6 +1,6 @@
 package com.example.weatherapp.DataSource
 
-import com.example.weatherapp.Alerts.MyAlerts
+import com.example.weatherapp.alerts.MyAlerts
 import com.example.weatherapp.forcastmodel.Forcast
 import com.example.weatherapp.ForecastDatabase.ForecastDao
 import com.example.weatherapp.forcastmodel.Favorites

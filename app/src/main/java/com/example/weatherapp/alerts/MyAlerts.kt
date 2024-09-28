@@ -1,7 +1,6 @@
-package com.example.weatherapp.Alerts
+package com.example.weatherapp.alerts
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 
 @Entity(tableName = "Alerts", primaryKeys = ["lat","lon"])
 data class MyAlerts(

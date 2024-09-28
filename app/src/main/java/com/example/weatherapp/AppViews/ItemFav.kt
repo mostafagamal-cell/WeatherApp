@@ -67,32 +67,33 @@ class ItemFav : Fragment() {
         viewModel.getForecasts(args.lat,args.lon,requireActivity().getSharedPreferences(
             settings, MODE_PRIVATE
         ).getInt(language,consts.ar.ordinal))
-
+        db.recyclerView.adapter=adpt2
+        db.recyclerView3.adapter=adpt
         db.gotomap.visibility=View.INVISIBLE
+        db.viewModel=createTempWeather()
         coolect()
 
     }
     fun coolect(){
-        db.recyclerView3.adapter=adpt
-        db.recyclerView.adapter=adpt2
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.weather.collect{
                     if (it is State.Success){
-                        Log.i("SSSSSTTTTTAAAATTTTEEEEE","Success ${it.data as ExampleJson2KtKotlin}")
                         val t= it.data as ExampleJson2KtKotlin
                         db.viewModel=(t)
+                        db.weatherprograss.visibility=View.INVISIBLE
+                        db.weatherstate.visibility=View.VISIBLE
                     }
                     if (it is State.Error){
-                        Log.i("SSSSSTTTTTAAAATTTTEEEEE","Error")
 
                         db.viewModel=createTempWeather()
-                        Toast.makeText(requireContext(),it.message.message, Toast.LENGTH_LONG).show()
+                        Toast.makeText(requireContext(),it.message.message,Toast.LENGTH_LONG).show()
                     }
                     if (it is State.Loading){
-                        Log.i("SSSSSTTTTTAAAATTTTEEEEE","Loading")
+                        db.weatherstate.visibility=View.INVISIBLE
+                        db.weatherprograss.visibility=View.VISIBLE
 
-                        db.viewModel=createTempWeather()
                     }
 
                 }
@@ -103,18 +104,17 @@ class ItemFav : Fragment() {
                 viewModel.hours.collect{
 
                     if (it is State.Success){
-                        Log.i("eaaaaaaaaaaaaaaa","Sucesss ${it.data as Forcast}")
-
                         val  e =it.data as Forcast
+                        db.recyclerView3.visibility=View.VISIBLE
+                        db.timeprograss.visibility=View.INVISIBLE
                         adpt.submitList(e.list)
-
                     }
                     if (it is State.Error){
-                        Log.i("eaaaaaaaaaaaaaaa","Error ${it.message}")
 
                     }
                     if (it is State.Loading){
-                        Log.i("eaaaaaaaaaaaaaaa","Loading")
+                        db.recyclerView3.visibility=View.INVISIBLE
+                        db.timeprograss.visibility=View.VISIBLE
 
                     }
                 }
@@ -124,18 +124,17 @@ class ItemFav : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.day.collect{
                     if (it is State.Success){
-                        Log.i("xzdfafafdsafdsfsdfsdfsdfdf","Sucesss ${it.data as Forcast}")
                         val  data=it.data as Forcast
                         adpt2.submitList(data.list)
-
+                        db.recyclerView.visibility=View.VISIBLE
+                        db.daysprograss.visibility=View.INVISIBLE
                     }
                     if (it is State.Error){
-                        Log.i("eaaaaaaaaaaaaaaa","Error ${it.message}")
 
                     }
                     if (it is State.Loading){
-                        Log.i("eaaaaaaaaaaaaaaa","Loading")
-
+                        db.recyclerView.visibility=View.INVISIBLE
+                        db.daysprograss.visibility=View.VISIBLE
                     }
                 }
             }

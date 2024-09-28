@@ -3,25 +3,15 @@ package com.example.weatherapp
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
-import com.example.weatherapp.Alerts.MyAlerts
+import com.example.weatherapp.alerts.MyAlerts
 import com.example.weatherapp.AppViews.consts
 import com.example.weatherapp.weathermodel.ExampleJson2KtKotlin
-import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.ZoneId
-import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
-import java.util.Calendar
-import java.util.Date
-import java.util.TimeZone
-import java.util.concurrent.TimeUnit
 
 @BindingAdapter("setTemp")
 fun setTemp(textView: TextView, temp: Double) {

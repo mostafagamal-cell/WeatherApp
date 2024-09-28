@@ -1,16 +1,14 @@
 package com.example.weatherapp.myViewModel
 
 
-import android.annotation.SuppressLint
 import android.os.Build
-import android.provider.CallLog.Locations
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.ui.util.fastFilterNotNull
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.weatherapp.Alerts.MyAlerts
+import com.example.weatherapp.alerts.MyAlerts
 import com.example.weatherapp.DataSource.LocalDataSource
 import com.example.weatherapp.DataSource.RemoteDataSource
 import com.example.weatherapp.Repo
@@ -19,7 +17,6 @@ import com.example.weatherapp.forcastmodel.Forcast
 import com.example.weatherapp.forcastmodel.List
 import com.example.weatherapp.getDayHourFromTimestamp
 import com.example.weatherapp.getDayNameFromTimestamp
-import com.example.weatherapp.getTimeZoneFromOffset
 import com.example.weatherapp.getTimeZoneFromOffset2
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -28,7 +25,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
 import java.util.TimeZone
@@ -121,7 +117,7 @@ class ForecastViewModelFac(val localDataSource: LocalDataSource, val remoteDataS
         Log.i("ForecastLog", "Filtered forecasts: ${lists}")
 
         // Update the forecast object
-        val forecast = _forecast.value as State.Success
+        val forecast = State.Success(data)
         val updatedForecast = forecast.data as Forcast
         updatedForecast.list = ArrayList(lists) // Update with the filtered list
 

@@ -2,20 +2,15 @@ package com.example.weatherapp
 
 import android.app.Application
 import android.content.Context
-import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
-import com.example.weatherapp.Alerts.MyAlerts
 import com.example.weatherapp.AppViews.consts
 import com.example.weatherapp.DataSource.LocalDataSource
 import com.example.weatherapp.DataSource.RemoteDataSource
 import com.example.weatherapp.ForecastDatabase.ForecastDataBase
-import com.example.weatherapp.MyBrodcasts.AlertsBrodcast
 import com.example.weatherapp.MyNetwork.API
 import com.example.weatherapp.myViewModel.ForecastViewModel
 import com.example.weatherapp.myViewModel.State
-import com.example.weatherapp.weathermodel.ExampleJson2KtKotlin
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -27,7 +22,6 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import java.util.Calendar
 
 @RunWith(RobolectricTestRunner::class)
 class ExampleUnitTest {

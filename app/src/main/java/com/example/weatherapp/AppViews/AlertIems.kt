@@ -5,10 +5,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.weatherapp.Alerts.MyAlerts
+import com.example.weatherapp.alerts.MyAlerts
 import com.example.weatherapp.databinding.AlarmitemBinding
-import com.example.weatherapp.databinding.FavitemBinding
-import com.example.weatherapp.forcastmodel.Favorites
 
 class AlertIems ( val ed:(item: MyAlerts)->Unit) : ListAdapter<MyAlerts, AlertIems.VH, >(object : DiffUtil.ItemCallback<MyAlerts>() {
     override fun areItemsTheSame(oldItem: MyAlerts, newItem: MyAlerts): Boolean {
