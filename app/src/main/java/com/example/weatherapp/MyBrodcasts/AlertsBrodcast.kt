@@ -38,6 +38,7 @@ import com.example.weatherapp.speed
 import com.example.weatherapp.units
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.util.Calendar
@@ -54,10 +55,7 @@ class AlertsBrodcast:BroadcastReceiver() {
             LocalDataSource(ForecastDataBase.getDatabase(context).yourDao()),
             RemoteDataSource(API)
         )
-
-            job2= launch {
-               repo.getAlert(id.id).collect { alert ->
-
+        val alert=  repo.getAlert(id.id).firstOrNull()
                    if (alert != null) {
                        if (context.getSharedPreferences(settings, Context.MODE_PRIVATE)
                                .getInt(notification, consts.enable.ordinal) == consts.enable.ordinal
@@ -154,7 +152,6 @@ class AlertsBrodcast:BroadcastReceiver() {
                                                sendNotification(context, "$temp $speed", it.name)
                                                job?.cancel()
                                            }
-
                                            2 -> {
                                                if (Settings.canDrawOverlays(context)) {
                                                    // Prepare data for the overlay
@@ -198,9 +195,7 @@ class AlertsBrodcast:BroadcastReceiver() {
                        }
 
                    }
-               }
-            job2?.cancel()
-           }
+
     }
 
       val CHANNEL_ID = "channel_id_example_01"

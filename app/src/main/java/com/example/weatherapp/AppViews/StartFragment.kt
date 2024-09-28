@@ -26,7 +26,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.weatherapp.DataSource.LocalDataSource
@@ -144,24 +143,9 @@ class StartFragment : Fragment() {
                         requestPermessions()
                     }
                 }else{
-                    lon.value=lon.value
+                   reqeustToGetData()
                 }
             }
-        }
-        coolect()
-            lon.observe(viewLifecycleOwner){
-                Log.i("dasdasdasder3433434","onViewCreated: $it")
-            viewModel.getWeather(
-                late.value!!.toDouble()
-                ,lon.value!!.toDouble(),
-                requireActivity().getSharedPreferences(settings, MODE_PRIVATE)
-                    .getInt(language, consts.ar.ordinal)
-            )
-            viewModel.getForecasts(
-                late.value!!.toDouble(),
-                lon.value!!.toDouble(),
-                requireActivity().getSharedPreferences(settings, MODE_PRIVATE)
-                    .getInt(language, consts.ar.ordinal))
         }
         db.recyclerView3.adapter=adpt
         if (requireActivity().getSharedPreferences(settings, MODE_PRIVATE).getInt(mode,consts.Map.ordinal)==consts.Map.ordinal){
@@ -180,10 +164,13 @@ class StartFragment : Fragment() {
                 ee.putFloat(lat, late.value!!)
                 ee.putFloat(longite, lon.value!!)
                 ee.apply()
+                reqeustToGetData()
             }
             Log.i("eeeqqqqqqqqqqqeeeeeeeefff"," after map  $late $lon")
             requireActivity().getSharedPreferences(map, MODE_PRIVATE).edit().clear().apply()
         }
+        coolect()
+
     }
 
 
@@ -201,9 +188,7 @@ class StartFragment : Fragment() {
                 .setTitle(this.getString(R.string.request_GPS_permissions)).setMessage(R.string.please_Give_GPS_permissions).setPositiveButton(R.string.ok){e,c->
                     requestPermessions()
                 }
-            Toast.makeText(this.requireContext(),this.getString(R.string.please_Give_GPS_permissions),Toast.LENGTH_LONG).show()
         }
-
         val manager=requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
         var gps=false
         var network=false
@@ -233,28 +218,44 @@ class StartFragment : Fragment() {
                         e.dismiss()
                     }.show()
             }
-            getDeviceLocation()
         }else{
             Toast.makeText(this.requireContext(),this.getString(R.string.no_loc_av),Toast.LENGTH_LONG).show()
         }
+            reqeustToGetData()
         }
+
         }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun reqeustToGetData() {
+        viewModel.getWeather(
+            late.value!!.toDouble(), lon.value!!.toDouble(),
+            requireActivity().getSharedPreferences(settings, MODE_PRIVATE)
+                .getInt(language, consts.ar.ordinal)
+        )
+        viewModel.getForecasts(
+            late.value!!.toDouble(),
+            lon.value!!.toDouble(),
+            requireActivity().getSharedPreferences(settings, MODE_PRIVATE)
+                .getInt(language, consts.ar.ordinal)
+        )
+    }
 
 
     fun coolect(){
         db.recyclerView.adapter=adpt2
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.weather.collect{
-                    Log.i("1111111111111111111","onViewCreated: ${db.weatherstate.isVisible}")
 
                     if (it is State.Success){
                         val t= it.data as ExampleJson2KtKotlin
+                        Log.i("1111111111111111111","onViewCreated: ${t.name}")
+
                         requireActivity().getSharedPreferences(TAG, MODE_PRIVATE).edit().putString("name",t.name).apply()
                         db.viewModel=(t)
                         db.weatherprograss.visibility=View.INVISIBLE
                         db.weatherstate.visibility=View.VISIBLE
-
                         db.invalidateAll()
                     }
                     if (it is State.Error){
@@ -271,8 +272,8 @@ class StartFragment : Fragment() {
                 }
             }
         }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.hours.collect{
 
                     if (it is State.Success){
@@ -294,8 +295,8 @@ class StartFragment : Fragment() {
                 }
             }
         }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+       lifecycleScope.launch {
+          repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.day.collect{
                     if (it is State.Success){
                         val  data=it.data as Forcast
@@ -318,12 +319,6 @@ class StartFragment : Fragment() {
     }
 
     private  var fusedClient : FusedLocationProviderClient?=null
-
-    override fun onPause() {
-        super.onPause()
-
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         fusedClient=null
@@ -359,6 +354,7 @@ class StartFragment : Fragment() {
             visibility = 0, timezone = 0, coord = com.example.weatherapp.weathermodel.Coord(0.0,0.0), language = requireActivity().getSharedPreferences(settings, MODE_PRIVATE).getInt(language,consts.ar.ordinal)
         )
     }
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun handleNewLocation() {
         val fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireContext())
@@ -370,9 +366,17 @@ class StartFragment : Fragment() {
             )
             result.let { fetchedLocation ->
                 withContext(Dispatchers.Main) {
-                    // do what you want with fetchedLocation
+                    if (fetchedLocation.isSuccessful){
+                    Log.i("lllllllllllllllllllllllllllllllllll","${fetchedLocation.result.latitude} ${fetchedLocation.result.longitude}")
+                    requireActivity().getSharedPreferences(TAG, MODE_PRIVATE).edit()
+                        .putFloat(lat, fetchedLocation.result.latitude.toFloat())
+                        .putFloat(longite, fetchedLocation.result.longitude.toFloat())
+                        .apply()
+                    late.value=fetchedLocation.result.latitude.toFloat()
+                    lon.value=(fetchedLocation.result.longitude.toFloat())
+                    reqeustToGetData()
                 }
-            }
+            }}
         }
     }
     private fun getDeviceLocation() {
@@ -387,8 +391,7 @@ class StartFragment : Fragment() {
                     handleNewLocation()
                     return@addOnCompleteListener
                 }
-
-                Log.i("eeeeeeeeeeeeeeee","${task.result.latitude} ${task.result.longitude}")
+                Log.i("lllllllllllllllllllllllllllllllllll","${task.result.latitude} ${task.result.longitude}")
                 requireActivity().getSharedPreferences(TAG, MODE_PRIVATE).edit()
                     .putFloat(lat, task.result.latitude.toFloat())
                     .putFloat(longite, task.result.longitude.toFloat())
