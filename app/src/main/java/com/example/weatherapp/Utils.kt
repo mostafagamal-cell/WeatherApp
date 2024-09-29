@@ -56,7 +56,7 @@ fun createAlarm(context: Context,alert:MyAlerts,isTheEnd:Boolean=false){
     val intent= Intent(context,AlertsBrodcast::class.java)
     val gson= Gson().toJson(alert)
     intent.putExtra("id",gson)
-    val pendingIntent = PendingIntent.getBroadcast(context, alert.id, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+    val pendingIntent = PendingIntent.getBroadcast(context, alert.id, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT )
    if (!isTheEnd) {
        Log.i("aaaaaaaaaaaaaaaaaaaaaaee","start")
        alarm.set(AlarmManager.RTC_WAKEUP, alert.start, pendingIntent)

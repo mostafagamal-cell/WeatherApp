@@ -10,7 +10,7 @@ import com.example.weatherapp.databinding.ItemdailyBinding
 import com.example.weatherapp.forcastmodel.Favorites
 
 
-class FavAdp(val e:(item:Favorites)->Unit,val ed:(item:Favorites)->Unit) : ListAdapter<Favorites, FavAdp.VH, >(object : DiffUtil.ItemCallback<Favorites>() {
+class FavAdp(val addalert:(item:Favorites)->Unit,val e:(item:Favorites)->Unit,val ed:(item:Favorites)->Unit) : ListAdapter<Favorites, FavAdp.VH, >(object : DiffUtil.ItemCallback<Favorites>() {
     override fun areItemsTheSame(oldItem: Favorites, newItem: Favorites): Boolean {
         return oldItem==newItem
     }
@@ -19,13 +19,16 @@ class FavAdp(val e:(item:Favorites)->Unit,val ed:(item:Favorites)->Unit) : ListA
     }
 }) {
     class VH(private val itemTimeBinding: FavitemBinding) : RecyclerView.ViewHolder(itemTimeBinding.root) {
-        fun bind(list: Favorites, e:(item:Favorites)->Unit,ed:(item:Favorites)->Unit) {
+        fun bind( addalert:(item:Favorites)->Unit,list: Favorites, e:(item:Favorites)->Unit,ed:(item:Favorites)->Unit) {
             itemTimeBinding.viewmodel = list
             itemTimeBinding.imageButton.setOnClickListener {
                 e(list)
             }
             itemTimeBinding.root.setOnClickListener {
                 ed(list)
+            }
+            itemTimeBinding.imageButton2.setOnClickListener {
+                addalert(list)
             }
         }
     }
@@ -35,6 +38,6 @@ class FavAdp(val e:(item:Favorites)->Unit,val ed:(item:Favorites)->Unit) : ListA
     }
 
     override fun onBindViewHolder(holder: VH, position: Int) {
-        holder.bind(getItem(position),e,ed)
+        holder.bind(addalert,getItem(position),e,ed)
     }
 }
