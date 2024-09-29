@@ -13,6 +13,7 @@ import android.os.IBinder
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.View
 import android.view.WindowManager
 import androidx.core.app.NotificationCompat
 import com.example.weatherapp.AppViews.consts
@@ -20,15 +21,17 @@ import com.example.weatherapp.R
 import com.example.weatherapp.databinding.PopupfragmentBinding
 import com.example.weatherapp.language
 import com.example.weatherapp.settings
-
 class OverlayServices : Service() {
 
     private lateinit var mediaPlayer: MediaPlayer
+    private var overlayView: View? = null // Variable to hold the reference to the current overlay
+    private lateinit var windowManager: WindowManager // WindowManager variable
 
     @SuppressLint("ForegroundServiceType")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.i("asdasdasdasdasdasdasdasdasasd", "onStartCommand: ")
-        val windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+        Log.i("OverlayService", "onStartCommand: ")
+
+        windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         val params = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -50,20 +53,20 @@ class OverlayServices : Service() {
         // Center the overlay in the middle of the screen
         params.gravity = Gravity.CENTER
 
+        // Remove the previous overlay if it exists
+        if (overlayView != null) {
+            windowManager.removeView(overlayView) // Remove the previous overlay
+            overlayView = null // Clear the reference
+        }
+
         // Inflate the layout
         val inflater = LayoutInflater.from(this)
         val binding = PopupfragmentBinding.inflate(inflater)
 
         // Set background to gray
         binding.root.setBackgroundColor(getColor(R.color.gray))
-        if(getSharedPreferences(settings, MODE_PRIVATE)
-                .getInt(language, consts.en.ordinal)== consts.ar.ordinal) {
-            binding.textView2.text="مدينة"
-            binding.textView4.text="سرعة"
-            binding.textView6.text="حرارة"
-        }
 
-            // Set text from intent extras
+        // Set text from intent extras
         binding.city.text = intent?.getStringExtra("city")
         binding.temp.text = intent?.getStringExtra("temp")
         binding.speed.text = intent?.getStringExtra("speed")
@@ -71,8 +74,9 @@ class OverlayServices : Service() {
         // Button to close the overlay and stop sound
         binding.button.setOnClickListener {
             windowManager.removeView(binding.root)
-            mediaPlayer.stop() // Stop the sound when the overlay is canceled
+            mediaPlayer.stop()
             mediaPlayer.release()
+            overlayView = null // Clear the reference to the overlay
             stopSelf()
         }
 
@@ -89,14 +93,16 @@ class OverlayServices : Service() {
             .setSmallIcon(R.drawable.p03d)
             .build()
 
-        // Add the view to the window
+        // Add the new view to the window and store the reference
         windowManager.addView(binding.root, params)
+        overlayView = binding.root // Save reference to the overlay view
+
         startForeground(1, notification)
 
         return START_NOT_STICKY
     }
 
-    val CHANNEL_ID = "channel_id_example_01"
+    private val CHANNEL_ID = "channel_id_example_01"
 
     private fun createNotificationChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -120,6 +126,10 @@ class OverlayServices : Service() {
         super.onDestroy()
         if (::mediaPlayer.isInitialized) {
             mediaPlayer.release()
+        }
+        if (overlayView != null) {
+            windowManager.removeView(overlayView) // Remove the view if it exists
+            overlayView = null
         }
     }
 }
