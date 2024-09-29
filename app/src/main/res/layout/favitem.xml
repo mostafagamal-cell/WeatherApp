@@ -7,13 +7,20 @@
             name="viewmodel"
             type="com.example.weatherapp.forcastmodel.Favorites" />
     </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingStart="15dp"
+        android:paddingLeft="15dp"
+        android:paddingTop="15dp"
+        android:paddingEnd="15dp"
+        android:paddingBottom="15dp">
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:backgroundTint="#623AA8"
             app:cardCornerRadius="50dp"
             app:cardElevation="50dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -31,12 +38,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="32dp"
-                    android:layout_marginBottom="64dp"
-                    app:setname="@{viewmodel.name}"
+                    android:layout_marginBottom="32dp"
+                    android:textColor="#E4E4E4"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/imageButton"
                     app:layout_constraintHorizontal_chainStyle="spread_inside"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:setname="@{viewmodel.name}" />
 
                 <ImageButton
                     android:id="@+id/imageButton"

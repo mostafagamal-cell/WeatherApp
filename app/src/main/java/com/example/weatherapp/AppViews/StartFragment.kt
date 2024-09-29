@@ -146,6 +146,7 @@ class StartFragment : Fragment() {
                    reqeustToGetData()
                 }
             }else{
+                db.stateprograss.visibility=View.INVISIBLE
                 db.weatherprograss.visibility=View.INVISIBLE
                 db.weatherstate.visibility=View.VISIBLE
                 db.weatherprograss.visibility=View.INVISIBLE
@@ -264,17 +265,23 @@ class StartFragment : Fragment() {
                         db.viewModel=(t)
                         db.weatherprograss.visibility=View.INVISIBLE
                         db.weatherstate.visibility=View.VISIBLE
+                        db.stateprograss.visibility=View.INVISIBLE
+
                         db.invalidateAll()
                     }
                     if (it is State.Error){
                         db.viewModel=createTempWeather()
                         db.weatherprograss.visibility=View.INVISIBLE
                         db.weatherstate.visibility=View.VISIBLE
+                        db.stateprograss.visibility=View.INVISIBLE
+
 
                     }
                     if (it is State.Loading){
                     db.weatherstate.visibility=View.INVISIBLE
                     db.weatherprograss.visibility=View.VISIBLE
+                        db.stateprograss.visibility=View.VISIBLE
+
 
                     }
                 }
