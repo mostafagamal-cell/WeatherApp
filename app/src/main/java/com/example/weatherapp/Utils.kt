@@ -65,6 +65,10 @@ fun createAlarm(context: Context,alert:MyAlerts,isTheEnd:Boolean=false){
        alarm.set(AlarmManager.RTC_WAKEUP, alert.end, pendingIntent)
 }
 }
+
+
+
+
 fun Double.round(decimals: Int): Double {
     var multiplier = 10.0.pow(decimals)
     return kotlin.math.round(this * multiplier) / multiplier
