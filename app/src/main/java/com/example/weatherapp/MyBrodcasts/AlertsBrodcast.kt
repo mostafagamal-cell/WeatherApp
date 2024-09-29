@@ -99,17 +99,6 @@ class AlertsBrodcast:BroadcastReceiver() {
                                        set(Calendar.SECOND, 0)
                                        set(Calendar.MILLISECOND, 0)
                                    }
-                                   if (calendar.timeInMillis > it.dt!! * 1000) {
-                                       // no connection since yesterday weather
-                                       createNotificationChannel(context)
-                                       sendNotification(
-                                           context,
-                                           context.getString(R.string.expire),
-                                           it.name
-                                       )
-                                       job?.cancel()
-                                       return@collect
-                                   }
                                    repo.getWeather(
                                        alert.lat, alert.lon,
                                        context.getSharedPreferences(settings, MODE_PRIVATE)
