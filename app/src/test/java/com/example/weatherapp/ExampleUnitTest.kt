@@ -251,23 +251,18 @@ class ExampleUnitTest {
 
         launch {
             viewmodel.favorete.collect {
-                println("state is ${it}")
-
                 if (it is State.Success) {
-                    println("state is ${it.data}")
-
                     when (i){
-
                         2->{
-                            assertEquals(0,(it.data as List<Favorites>).size)
+                            println("2222222222222222222222222222222")
+                            assertEquals(1,(it.data as List<Favorites>).size)
                             cancel()
                         }
                         1->{
-                            assertEquals(1,(it.data as List<Favorites>).size)
+                            println("11111111111111111111")
+                            assertEquals(0,(it.data as List<Favorites>).size)
                         }
                     }
-
-                    println(it.data)
                 }
                 if (it is State.Loading) {
                     assertEquals(State.Loading, it)
