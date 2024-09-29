@@ -18,6 +18,8 @@ import android.view.WindowManager
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.example.weatherapp.AppViews.SettingsFragment
+import com.example.weatherapp.AppViews.SettingsFragment.Companion.setLocale
 import com.example.weatherapp.AppViews.consts
 import com.example.weatherapp.DataSource.LocalDataSource
 import com.example.weatherapp.DataSource.RemoteDataSource
@@ -42,19 +44,38 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.util.Calendar
+import java.util.Locale
 
 class AlertsBrodcast:BroadcastReceiver() {
     var job: Job?=null
     var job2: Job?=null
-    override fun onReceive(context: Context?, p1: Intent?):Unit= runBlocking {
-        context!!
+    override fun onReceive(context1: Context?, p1: Intent?):Unit= runBlocking {
+        context1!!
         val id1 = p1!!.getStringExtra("id")
         val gson = com.google.gson.Gson()
         val id = gson.fromJson(id1, MyAlerts::class.java)
         val repo = Repo.getInstance(
-            LocalDataSource(ForecastDataBase.getDatabase(context).yourDao()),
+            LocalDataSource(ForecastDataBase.getDatabase(context1).yourDao()),
             RemoteDataSource(API)
         )
+        var context:Context?=context1
+        if(context1.getSharedPreferences(settings, MODE_PRIVATE)
+            .getInt(language, consts.en.ordinal)==consts.ar.ordinal){
+            SettingsFragment.setLocale( "ar",context1)
+             setLocale("ar",context1)
+            Log.i("the arabic new context",context!!.getString(R.string.alarms))
+
+        }
+        if(context1.getSharedPreferences(settings, MODE_PRIVATE)
+                .getInt(language, consts.en.ordinal)==consts.en.ordinal){
+            SettingsFragment.setLocale( "en",context1)
+            setLocale("en",context1)
+            Log.i("the english new context",context!!.getString(R.string.alarms))
+
+        }
+
+        context!!
+
         val alert=  repo.getAlert(id.id).firstOrNull()
                    if (alert != null) {
                        if (context.getSharedPreferences(settings, Context.MODE_PRIVATE)
@@ -108,45 +129,72 @@ class AlertsBrodcast:BroadcastReceiver() {
                                                .getInt(units, consts.C.ordinal)
                                        val speed = when (speedUnits) {
                                            consts.MS.ordinal -> "${it?.wind?.speed!!} ${
-                                               context.getString(
-                                                   R.string.MS
-                                               )
+                                               if(context1.getSharedPreferences(settings, MODE_PRIVATE)
+                                                       .getInt(language, consts.en.ordinal)==consts.en.ordinal) {
+
+                                                   context.getString(
+                                                       R.string.MS
+                                                   )
+                                               }else{
+                                                   "متر / ساعة"
+                                               }
                                            }"
 
                                            consts.MH.ordinal -> "${from_MS_to_MH(it?.wind?.speed!!)} ${
-                                               context.getString(
-                                                   R.string.MH
-                                               )
+                                               if(context1.getSharedPreferences(settings, MODE_PRIVATE)
+                                                       .getInt(language, consts.en.ordinal)==consts.en.ordinal) {
+                                                   context.getString(
+                                                       R.string.MH
+                                                   )
+                                               }else{
+                                                   "ميل / ساعة"
+                                               }
                                            }"
 
                                            else -> "Meter / Sec"
                                        }
                                        val temp = when (tempUnits) {
                                            consts.C.ordinal -> "${from_C_to_K(it?.main?.temp!!)} ${
-                                               context.getString(
+                                               if(context1.getSharedPreferences(settings, MODE_PRIVATE)
+                                                       .getInt(language, consts.en.ordinal)==consts.en.ordinal) {
+
+                                                   context.getString(
                                                    R.string.C
-                                               )
+                                               )}else{
+                                                   "سليزيوس"
+                                               }
                                            }"
 
                                            consts.K.ordinal -> "${it?.main?.temp!!} ${
-                                               context.getString(
+                                               if(context1.getSharedPreferences(settings, MODE_PRIVATE)
+                                                       .getInt(language, consts.en.ordinal)==consts.en.ordinal) {
+
+                                                   context.getString(
                                                    R.string.K
-                                               )
+                                               )}else{
+                                                   "كيلفن"
+                                               }
                                            }"
 
                                            consts.F.ordinal -> "${from_C_to_F(it?.main?.temp!!)} ${
-                                               context.getString(
-                                                   R.string.F
-                                               )
+                                               if(context1.getSharedPreferences(settings, MODE_PRIVATE)
+                                                       .getInt(language, consts.en.ordinal)==consts.en.ordinal) {
+
+                                                   context.getString(
+                                                       R.string.F
+                                                   )
+                                               }else{
+                                                   "فينيهيت"
+                                               }
                                            }"
 
-                                           else -> "Celsius"
+                                           else -> "${context.getString(R.string.C)}"
                                        }
                                        when (alert.type) {
                                            1 -> {
                                                Log.i(
                                                    "dddddddddddddddddddddddd",
-                                                   "eeeeeeeeeeeeeeeeeee"
+                                                   "${temp} ${speed} ${it?.name}"
                                                )
                                                createNotificationChannel(context)
                                                sendNotification(context, "$temp $speed", it?.name?:"")
@@ -236,5 +284,6 @@ class AlertsBrodcast:BroadcastReceiver() {
         }
         notificationManager.notify(notificationId, builder.build())
     }
+
 
 }

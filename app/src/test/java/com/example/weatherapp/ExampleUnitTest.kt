@@ -1,5 +1,6 @@
 package com.example.weatherapp
 
+import FakeLocal
 import android.app.Application
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
@@ -11,7 +12,6 @@ import com.example.weatherapp.DataSource.RemoteDataSource
 import com.example.weatherapp.ForecastDatabase.ForecastDataBase
 import com.example.weatherapp.MyNetwork.API
 import com.example.weatherapp.alerts.MyAlerts
-import com.example.weatherapp.fakesourses.FakeLocal
 import com.example.weatherapp.fakesourses.FakeRemote
 import com.example.weatherapp.forcastmodel.*
 import com.example.weatherapp.myViewModel.ForecastViewModel
@@ -227,52 +227,65 @@ class ExampleUnitTest {
         context.getSharedPreferences(settings, Context.MODE_PRIVATE).edit()
             .putInt(language, consts.en.ordinal).apply()
         val viewmodel= ForecastViewModel(repo!!)
-        viewmodel.addFav(favoriteLocations[0].name,favoriteLocations[0].lat,favoriteLocations[0].lon)
-        assertEquals(repo!!.getFavorite().firstOrNull(), listOf(favoriteLocations[0]))
-    }
-    @Test
-    fun test_add_get_remove_fav():Unit=runTest {
-        val context = ApplicationProvider.getApplicationContext() as Application
-        context.getSharedPreferences(settings, Context.MODE_PRIVATE).edit()
-            .putInt(language, consts.en.ordinal).apply()
-        val viewmodel = ForecastViewModel(repo!!)
-        var i=1
         viewmodel.getFavs()
         launch {
             viewmodel.favorete.collect {
                 if (it is State.Success) {
+                    assertEquals(listOf(favoriteLocations[0]), it.data)
+                    println(it.data)
+                    cancel()
+                }
+            }
+        }
+        viewmodel.addFav(favoriteLocations[0].name,favoriteLocations[0].lat,favoriteLocations[0].lon)
+        delay(2000)
+    }
+    @Test
+    fun test_add_get():Unit=runTest {
+        val context = ApplicationProvider.getApplicationContext() as Application
+        context.getSharedPreferences(settings, Context.MODE_PRIVATE).edit()
+            .putInt(language, consts.en.ordinal).apply()
+        val viewmodel = ForecastViewModel(repo!!)
+        var i=0
+        viewmodel.getFavs()
+
+        launch {
+            viewmodel.favorete.collect {
+                println("state is ${it}")
+
+                if (it is State.Success) {
+                    println("state is ${it.data}")
+
                     when (i){
-                        1->{
-                            assertEquals((it.data as List<Favorites>).size,1)
-                        }
+
                         2->{
-                            assertEquals((it.data as List<Favorites>).size,0)
+                            assertEquals(0,(it.data as List<Favorites>).size)
                             cancel()
                         }
+                        1->{
+                            assertEquals(1,(it.data as List<Favorites>).size)
+                        }
                     }
-                    i++
+
                     println(it.data)
                 }
                 if (it is State.Loading) {
-                    println("i is  loading")
                     assertEquals(State.Loading, it)
                 }
                 println("i is $i")
+                i++
             }
         }
-        delay(2000)
 
+        delay(2000)
         viewmodel.addFav(
             favoriteLocations[0].name,
             favoriteLocations[0].lat,
             favoriteLocations[0].lon
         )
         delay(2000)
-
         viewmodel.deleteFav(favoriteLocations[0])
         delay(2000)
-        viewmodel.getFavs()
-
     }
 
     @After

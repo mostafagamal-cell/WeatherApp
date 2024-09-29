@@ -15,8 +15,11 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.WindowManager
 import androidx.core.app.NotificationCompat
+import com.example.weatherapp.AppViews.consts
 import com.example.weatherapp.R
 import com.example.weatherapp.databinding.PopupfragmentBinding
+import com.example.weatherapp.language
+import com.example.weatherapp.settings
 
 class OverlayServices : Service() {
 
@@ -53,8 +56,14 @@ class OverlayServices : Service() {
 
         // Set background to gray
         binding.root.setBackgroundColor(getColor(R.color.gray))
+        if(getSharedPreferences(settings, MODE_PRIVATE)
+                .getInt(language, consts.en.ordinal)== consts.ar.ordinal) {
+            binding.textView2.text="مدينة"
+            binding.textView4.text="سرعة"
+            binding.textView6.text="حرارة"
+        }
 
-        // Set text from intent extras
+            // Set text from intent extras
         binding.city.text = intent?.getStringExtra("city")
         binding.temp.text = intent?.getStringExtra("temp")
         binding.speed.text = intent?.getStringExtra("speed")
