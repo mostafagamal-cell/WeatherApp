@@ -93,8 +93,7 @@ class MapFragment : Fragment() {
                 marker?.title = res
                 Toast.makeText(requireContext(), res, Toast.LENGTH_LONG).show()
             } catch (e: Exception) {
-                Toast.makeText(requireContext(), "No connection", Toast.LENGTH_LONG).show()
-
+                    res=""
             }
             mymap.overlays.add(marker)
         }
@@ -148,7 +147,7 @@ class MapFragment : Fragment() {
                     marker?.title = res
                     Toast.makeText(requireContext(), res, Toast.LENGTH_LONG).show()
                 } catch (e: Exception) {
-                    Toast.makeText(requireContext(), "No connection", Toast.LENGTH_LONG).show()
+                        res=""
                 }
                 mymap.overlays.add(marker)
                 mymap.invalidate()

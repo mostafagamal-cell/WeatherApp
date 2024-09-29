@@ -145,6 +145,10 @@ class StartFragment : Fragment() {
                 }else{
                    reqeustToGetData()
                 }
+            }else{
+                db.weatherprograss.visibility=View.INVISIBLE
+                db.weatherstate.visibility=View.VISIBLE
+                db.weatherprograss.visibility=View.INVISIBLE
             }
         }
         db.recyclerView3.adapter=adpt
@@ -218,6 +222,9 @@ class StartFragment : Fragment() {
                         e.dismiss()
                     }
                     .setNegativeButton(R.string.cancel){e,c->
+                        late=MutableLiveData(requireActivity().getSharedPreferences(TAG, MODE_PRIVATE).getFloat(lat, 0.0F))
+                        lon=MutableLiveData(requireActivity().getSharedPreferences(TAG, MODE_PRIVATE).getFloat(longite, 0.0F))
+                        reqeustToGetData()
                         e.dismiss()
                     }.show()
             }
@@ -260,10 +267,10 @@ class StartFragment : Fragment() {
                         db.invalidateAll()
                     }
                     if (it is State.Error){
+                        db.viewModel=createTempWeather()
                         db.weatherprograss.visibility=View.INVISIBLE
                         db.weatherstate.visibility=View.VISIBLE
-                        db.viewModel=createTempWeather()
-                        Toast.makeText(requireContext(),it.message.message,Toast.LENGTH_LONG).show()
+
                     }
                     if (it is State.Loading){
                     db.weatherstate.visibility=View.INVISIBLE
@@ -285,6 +292,7 @@ class StartFragment : Fragment() {
                         db.invalidateAll()
                     }
                     if (it is State.Error){
+                        db.viewModel=createTempWeather()
                         db.recyclerView3.visibility=View.VISIBLE
                         db.timeprograss.visibility=View.INVISIBLE
                     }
@@ -307,6 +315,7 @@ class StartFragment : Fragment() {
                         db.invalidateAll()
                     }
                     if (it is State.Error){
+                        db.viewModel=createTempWeather()
                         db.recyclerView.visibility=View.VISIBLE
                         db.daysprograss.visibility=View.INVISIBLE
                     }

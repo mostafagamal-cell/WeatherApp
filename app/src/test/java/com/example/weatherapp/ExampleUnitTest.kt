@@ -17,6 +17,7 @@ import com.example.weatherapp.forcastmodel.*
 import com.example.weatherapp.myViewModel.ForecastViewModel
 import com.example.weatherapp.myViewModel.State
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 
 
 import kotlinx.coroutines.flow.collectLatest
@@ -220,10 +221,63 @@ class ExampleUnitTest {
         }
         viewmodel.getAlarms()
     }
+    @Test
+    fun test_add_get_fav()=runTest {
+        val context = ApplicationProvider.getApplicationContext() as Application
+        context.getSharedPreferences(settings, Context.MODE_PRIVATE).edit()
+            .putInt(language, consts.en.ordinal).apply()
+        val viewmodel= ForecastViewModel(repo!!)
+        viewmodel.addFav(favoriteLocations[0].name,favoriteLocations[0].lat,favoriteLocations[0].lon)
+        assertEquals(repo!!.getFavorite().firstOrNull(), listOf(favoriteLocations[0]))
+    }
+    @Test
+    fun test_add_get_remove_fav():Unit=runTest {
+        val context = ApplicationProvider.getApplicationContext() as Application
+        context.getSharedPreferences(settings, Context.MODE_PRIVATE).edit()
+            .putInt(language, consts.en.ordinal).apply()
+        val viewmodel = ForecastViewModel(repo!!)
+        var i=1
+        viewmodel.getFavs()
+        launch {
+            viewmodel.favorete.collect {
+                if (it is State.Success) {
+                    when (i){
+                        1->{
+                            assertEquals((it.data as List<Favorites>).size,1)
+                        }
+                        2->{
+                            assertEquals((it.data as List<Favorites>).size,0)
+                            cancel()
+                        }
+                    }
+                    i++
+                    println(it.data)
+                }
+                if (it is State.Loading) {
+                    println("i is  loading")
+                    assertEquals(State.Loading, it)
+                }
+                println("i is $i")
+            }
+        }
+        delay(2000)
 
+        viewmodel.addFav(
+            favoriteLocations[0].name,
+            favoriteLocations[0].lat,
+            favoriteLocations[0].lon
+        )
+        delay(2000)
+
+        viewmodel.deleteFav(favoriteLocations[0])
+        delay(2000)
+        viewmodel.getFavs()
+
+    }
 
     @After
     fun  tearDown(){
+        println("tearDown")
         repo=null
     }
 }

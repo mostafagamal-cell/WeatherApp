@@ -59,7 +59,7 @@ class ForecastViewModelFac(val localDataSource: LocalDataSource, val remoteDataS
                         if (data != null) {
                             _weather.value = State.Success(data)
                         }else{
-                            _weather.value=State.Error(Exception("no data found"))
+                            _weather.value=State.Error(Exception())
                         }
                     }
         }
@@ -159,7 +159,7 @@ class ForecastViewModelFac(val localDataSource: LocalDataSource, val remoteDataS
                 _favorete.value = State.Error(e)
             }.collect {
                 if (it==null)
-                    _favorete.value = State.Error(Exception("no data found"))
+                    _favorete.value = State.Error(Exception())
                 else
                       _favorete.value = State.Success(it)
             }

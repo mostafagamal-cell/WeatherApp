@@ -3,6 +3,7 @@ package com.example.weatherapp
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
@@ -99,3 +100,20 @@ fun setAlert(textView: TextView, alert: MyAlerts) {
     val date2=SimpleDateFormat("yyyy-MM-dd").format(alert.end)
     textView.text="${alert.type} ${alert.name} ${date} --> ${date2}"
 }
+@BindingAdapter("setAlert2")
+fun setAlert2(textView: TextView, alert: MyAlerts) {
+    when(alert.type){
+        1->textView.text=textView.context.getString(R.string.notif)
+        2->textView.text=textView.context.getString(R.string.Alarm)
+    }
+}
+@BindingAdapter("setname")
+fun setname(textView: TextView, name: String) {
+    Log.d("nameof location",name)
+    if (name.trim().isEmpty()||name.trim()=="null"||name.trim()==" "||name==null||name.trim()=="---") {
+        textView.text = textView.context.getString(R.string.no_name)
+    }else{
+     textView.text=name
+    }
+}
+

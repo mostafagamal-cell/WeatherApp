@@ -124,6 +124,18 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
          navController = navHostFragment.navController
          navController.addOnDestinationChangedListener { controller, destination, arguments ->
+             if (destination.id==R.id.mapFragment){
+                 db.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+             }else{
+                 db.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+             }
+             if (destination.id==R.id.startFragment){
+                     supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_menu_24)
+             }else{
+                 db.swipeRefreshLayout.post {
+                     supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_arrow_back_24)
+                 }
+             }
              when(destination.id){
                  R.id.startFragment->{
                      supportActionBar?.title=getString(R.string.home)
@@ -141,22 +153,6 @@ class MainActivity : AppCompatActivity() {
                      supportActionBar?.title=getString(R.string.favourits)
                  }
              }
-             if (destination.id==R.id.mapFragment){
-                 db.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-             }else{
-                 db.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
-             }
-             if (destination.id==R.id.startFragment){
-             }else if (destination.id==R.id.settingsFragment){
-                 db.swipeRefreshLayout.post {
-                     supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_menu_24)
-                 }
-             }else{
-                 db.swipeRefreshLayout.post {
-                     supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_arrow_back_24)
-                 }
-             }
-
          }
         NavigationUI.setupWithNavController(db.navigationView, navController)
         val pref2 = getSharedPreferences(TAG, Context.MODE_PRIVATE)

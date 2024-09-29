@@ -66,5 +66,6 @@ class FakeLocal:ILocalDataSource {
 
     override suspend fun deleteFavorite(name: Favorites) {
         favourts.remove(name)
+        println("favourts.size  ${favourts.size}")
     }
 }

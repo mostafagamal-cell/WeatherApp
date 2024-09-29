@@ -76,5 +76,7 @@
     <string name="reeq">يرجى منحنا الإذن لعرض فوق التطبيقات</string>
     <string name="no_internet_connection">لايوجد اتصال</string>
     <string name="doyouwantdelteit">هلتريد حذفه</string>
+    <string name="no_data_found">لا يموجد بيانات</string>
+    <string name="no_name">لا يمكن الحصول على اسم لهذه المنطقة</string>
 
 </resources>

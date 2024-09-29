@@ -75,5 +75,7 @@
     <string name="reeq">please give us request display over app permession</string>
     <string name="no_internet_connection">no internet connection</string>
     <string name="doyouwantdelteit">do you realy want to delelte it</string>
+    <string name="no_data_found">no data found</string>
+    <string name="no_name">cannot get name for that location</string>
 
 </resources>
