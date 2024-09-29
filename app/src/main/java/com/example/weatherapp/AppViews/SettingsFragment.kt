@@ -110,12 +110,12 @@ class SettingsFragment : Fragment() {
 
             if (db.Englishrdb.isChecked && currentLocale != "en") {
                 pref.edit().putInt(language, consts.en.ordinal).apply()
-                setLocale("en",requireContext())
+                setLocale("en",requireContext().applicationContext)
             }
 
             if (db.arabicrdb.isChecked && currentLocale != "ar") {
                 pref.edit().putInt(language, consts.ar.ordinal).apply()
-               setLocale("ar",requireContext())
+               setLocale("ar",requireContext().applicationContext)
             }
             recreate(requireActivity())
         }
@@ -230,4 +230,5 @@ class SettingsFragment : Fragment() {
             (context as Activity).finish()
         }
     }
+
 }

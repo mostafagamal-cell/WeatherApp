@@ -61,15 +61,15 @@ class AlertsBrodcast:BroadcastReceiver() {
         var context:Context?=context1
         if(context1.getSharedPreferences(settings, MODE_PRIVATE)
             .getInt(language, consts.en.ordinal)==consts.ar.ordinal){
-            SettingsFragment.setLocale( "ar",context1)
-             setLocale("ar",context1)
+            SettingsFragment.setLocale( "ar",context1.applicationContext)
+            setLocale1(context1,"ar")
             Log.i("the arabic new context",context!!.getString(R.string.alarms))
 
         }
         if(context1.getSharedPreferences(settings, MODE_PRIVATE)
                 .getInt(language, consts.en.ordinal)==consts.en.ordinal){
-            SettingsFragment.setLocale( "en",context1)
-            setLocale("en",context1)
+            SettingsFragment.setLocale( "en",context1.applicationContext)
+            setLocale1(context1,"en")
             Log.i("the english new context",context!!.getString(R.string.alarms))
 
         }
@@ -129,64 +129,39 @@ class AlertsBrodcast:BroadcastReceiver() {
                                                .getInt(units, consts.C.ordinal)
                                        val speed = when (speedUnits) {
                                            consts.MS.ordinal -> "${it?.wind?.speed!!} ${
-                                               if(context1.getSharedPreferences(settings, MODE_PRIVATE)
-                                                       .getInt(language, consts.en.ordinal)==consts.en.ordinal) {
-
                                                    context.getString(
                                                        R.string.MS
                                                    )
-                                               }else{
-                                                   "متر / ساعة"
-                                               }
                                            }"
 
                                            consts.MH.ordinal -> "${from_MS_to_MH(it?.wind?.speed!!)} ${
-                                               if(context1.getSharedPreferences(settings, MODE_PRIVATE)
-                                                       .getInt(language, consts.en.ordinal)==consts.en.ordinal) {
-                                                   context.getString(
+                                                      context.getString(
                                                        R.string.MH
                                                    )
-                                               }else{
-                                                   "ميل / ساعة"
-                                               }
+                                            
                                            }"
 
                                            else -> "Meter / Sec"
                                        }
                                        val temp = when (tempUnits) {
                                            consts.C.ordinal -> "${from_C_to_K(it?.main?.temp!!)} ${
-                                               if(context1.getSharedPreferences(settings, MODE_PRIVATE)
-                                                       .getInt(language, consts.en.ordinal)==consts.en.ordinal) {
-
                                                    context.getString(
                                                    R.string.C
-                                               )}else{
-                                                   "سليزيوس"
-                                               }
+                                               )
                                            }"
 
                                            consts.K.ordinal -> "${it?.main?.temp!!} ${
-                                               if(context1.getSharedPreferences(settings, MODE_PRIVATE)
-                                                       .getInt(language, consts.en.ordinal)==consts.en.ordinal) {
-
-                                                   context.getString(
+                                                      context.getString(
                                                    R.string.K
-                                               )}else{
-                                                   "كيلفن"
-                                               }
+                                               )
                                            }"
 
                                            consts.F.ordinal -> "${from_C_to_F(it?.main?.temp!!)} ${
-                                               if(context1.getSharedPreferences(settings, MODE_PRIVATE)
-                                                       .getInt(language, consts.en.ordinal)==consts.en.ordinal) {
-
+                                             
                                                    context.getString(
                                                        R.string.F
                                                    )
-                                               }else{
-                                                   "فينيهيت"
-                                               }
-                                           }"
+                                                   }"
 
                                            else -> "${context.getString(R.string.C)}"
                                        }
@@ -285,5 +260,11 @@ class AlertsBrodcast:BroadcastReceiver() {
         notificationManager.notify(notificationId, builder.build())
     }
 
-
+    private fun setLocale1(context: Context, language: String) {
+        val locale = Locale(language)
+        Locale.setDefault(locale)
+        val config = context.resources.configuration
+        config.setLocale(locale)
+        context.resources.updateConfiguration(config, context.resources.displayMetrics)
+    }
 }
