@@ -84,15 +84,22 @@ class ItemFav : Fragment() {
                         db.viewModel=(t)
                         db.weatherprograss.visibility=View.INVISIBLE
                         db.weatherstate.visibility=View.VISIBLE
+                        db.stateprograss.visibility=View.INVISIBLE
+                        db.details.visibility=View.VISIBLE
+                        db.invalidateAll()
                     }
                     if (it is State.Error){
 
-                        db.viewModel=createTempWeather()
-                        Toast.makeText(requireContext(),it.message.message,Toast.LENGTH_LONG).show()
+                        db.weatherprograss.visibility=View.INVISIBLE
+                        db.weatherstate.visibility=View.VISIBLE
+                        db.stateprograss.visibility=View.INVISIBLE
+                        db.details.visibility=View.VISIBLE
                     }
                     if (it is State.Loading){
                         db.weatherstate.visibility=View.INVISIBLE
                         db.weatherprograss.visibility=View.VISIBLE
+                        db.stateprograss.visibility=View.VISIBLE
+                        db.details.visibility=View.INVISIBLE
 
                     }
 
